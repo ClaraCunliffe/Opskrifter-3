@@ -1802,7 +1802,7 @@ const RECIPES=[
    steps:["Skræl ingefæren og riv eller blend den fint.","Pres saften fra citronerne.","Kombiner ingefær, citronsaft, gurkemeje, peber og honning i en blender.","Tilsæt vandet og blend til glat.","Si blandingen gennem en finmasket si eller ostelærred.","Hæld i shotglas og server koldt. Holder 5 dage på køl i en tætsluttende flaske."]}
 ];
 
-const MEALS=[{key:'morgenmad',lbl:'Morgenmad'},{key:'frokost',lbl:'Frokost'},{key:'aftensmad',lbl:'Aftensmad'},{key:'snacks',lbl:'Snack'},{key:'dessert',lbl:'Dessert'},{key:'drikkevarer',lbl:'Drik'}];
+const MEALS=[{key:'morgenmad',lbl:'Morgenmad'},{key:'frokost',lbl:'Frokost'},{key:'aftensmad',lbl:'Aftensmad'},{key:'snacks',lbl:'Snack'},{key:'dessert',lbl:'Dessert'},{key:'drikkevarer',lbl:'Drikkevare'}];
 
 const RECIPE_EXTRA={
   1:{kcal:520,protein:18,carbs:78,fat:14,cost:28,season:['all'],diet:['vegetar','vegansk','lavt-kulhydrat'],allergy:['gluten','laktose']},
@@ -3061,9 +3061,9 @@ function renderSlotList(){
     const hasAny=dayMeals.some(m=>planGet(planKey(d,m.key)).length>0);
 
     h+=`<div style="border-bottom:1px solid var(--border)">
-      <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem .3rem;background:${isToday?'var(--accent-bg)':isPast?'var(--surface2)':'var(--surface)'}">
-        <span style="font-size:.72rem;font-weight:600;color:${isToday?'var(--accent)':isPast?'var(--text3)':'var(--text2)'};width:28px">${DAY_NAMES[i]}</span>
-        <span style="font-size:.72rem;color:${isToday?'var(--accent)':isPast?'var(--text3)':'var(--text3)'}">${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}</span>
+      <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem .3rem;background:${isToday?'var(--accent-bg)':'var(--surface2)'}">
+        <span style="font-size:.72rem;font-weight:600;color:${isToday?'var(--accent)':'var(--text2)'};width:28px">${DAY_NAMES[i]}</span>
+        <span style="font-size:.72rem;color:${isToday?'var(--accent)':'var(--text3)'}">${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}</span>
         ${isToday?'<span style="font-size:.6rem;background:var(--accent);color:#fff;border-radius:50px;padding:.05rem .5rem;margin-left:auto">I dag</span>':''}
       </div>`;
 
@@ -3096,7 +3096,18 @@ function slotPickerChangeWeek(days){
   renderSlotList();
 }
 function assignSlot(rid){if(!pSlot)return;planAdd(pSlot.dateStr+'||'+pSlot.meal,rid);persist();closeModal();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
-function assignDay(ds,m){if(!pRid)return;planAdd(ds+'||'+m,pRid);persist();closeModal();closePanel();switchMenu('ugeplan');}
+function assignDay(ds,m){
+  if(!pRid)return;
+  planAdd(ds+'||'+m,pRid);
+  // Auto-enable the meal row in the week view if not already visible
+  if(!visibleMeals.includes(m)){
+    visibleMeals.push(m);
+    localStorage.setItem(userKey('dp_visible_meals'),JSON.stringify(visibleMeals));
+    const btn=document.getElementById('mt-'+m);
+    if(btn){btn.classList.add('active');btn.textContent=btn.textContent.replace(/^\+\s*/,'');}
+  }
+  persist();closeModal();closePanel();switchMenu('ugeplan');
+}
 function closeMBg(e){if(e.target===document.getElementById('mOv'))closeModal();}
 function closeModal(){document.getElementById('mOv').classList.remove('open');pSlot=null;pRid=null;}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closePanel();closeSaveModal();closeRecipeForm();closeLoadModal();closeFamilySettings();closeAutoModal();}});
