@@ -1840,6 +1840,10 @@ let clerk = null;
 
 async function initClerk() {
   try {
+  // Wait for Clerk CDN to load
+  let tries = 0;
+  while(!window.Clerk && tries < 20) { await new Promise(r=>setTimeout(r,200)); tries++; }
+  if(!window.Clerk) { console.warn('Clerk CDN not loaded'); return; }
   clerk = new window.Clerk(CLERK_PK);
   await clerk.load();
 
@@ -4540,6 +4544,7 @@ async function doLogin(){
   const pass=document.getElementById('l-pass').value;
   const err=document.getElementById('l-err');
   if(!email||!pass){err.textContent='Udfyld begge felter.';return;}
+  if(!clerk){err.textContent='Login-system loader stadig. Prøv igen om et sekund.';return;}
   err.textContent='Logger ind…';
   try {
     const res = await clerk.signIn.create({
@@ -4572,6 +4577,7 @@ async function doRegister(){
   const pass=document.getElementById('r-pass').value;
   const pass2=document.getElementById('r-pass2').value;
   const err=document.getElementById('r-err');
+  if(!clerk){err.textContent='Login-system loader stadig. Prøv igen om et sekund.';return;}
   if(!email||!email.includes('@')){err.textContent='Indtast en gyldig e-mail.';return;}
   if(pass.length<8){err.textContent='Adgangskoden skal være mindst 8 tegn.';return;}
   if(!/[A-Z]/.test(pass)){err.textContent='Adgangskoden skal indeholde mindst ét stort bogstav.';return;}
