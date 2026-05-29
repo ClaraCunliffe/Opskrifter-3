@@ -3061,10 +3061,10 @@ function renderSlotList(){
     const hasAny=dayMeals.some(m=>planGet(planKey(d,m.key)).length>0);
 
     h+=`<div style="border-bottom:1px solid var(--border)">
-      <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem .3rem;background:${isToday?'var(--accent-bg)':'var(--surface2)'}">
-        <span style="font-size:.72rem;font-weight:600;color:${isToday?'var(--accent)':'var(--text2)'};width:28px">${DAY_NAMES[i]}</span>
-        <span style="font-size:.72rem;color:${isToday?'var(--accent)':'var(--text3)'}">${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}</span>
-        ${isToday?'<span style="font-size:.6rem;background:var(--accent);color:#fff;border-radius:50px;padding:.05rem .5rem;margin-left:auto">I dag</span>':''}
+      <div style="display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem .4rem;background:${isToday?'var(--accent)':'var(--surface2)'}">
+        <span style="font-size:.72rem;font-weight:600;color:${isToday?'#fff':'var(--text2)'};width:28px">${DAY_NAMES[i]}</span>
+        <span style="font-size:.72rem;color:${isToday?'rgba(255,255,255,.8)':'var(--text3)'}">${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}</span>
+        ${isToday?'<span style="font-size:.62rem;background:rgba(255,255,255,.25);color:#fff;border-radius:50px;padding:.05rem .6rem;margin-left:auto;font-weight:500">I dag</span>':''}
       </div>`;
 
     dayMeals.forEach(m=>{
