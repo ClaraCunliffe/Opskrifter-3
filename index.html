@@ -2990,6 +2990,7 @@ function openSlotPicker(dateStr,meal){
 }
 function startPickSlot(rid,e){
   if(e)e.stopPropagation();pRid=rid;pSlot=null;
+  slotPickerWeek=new Date(selWeekStart);
   const r=allRecipes().find(x=>x.id===rid);
   document.getElementById('mTitle').textContent='Tilføj til kalender';
   document.getElementById('mSub').textContent=r.title;
@@ -3032,22 +3033,67 @@ function renderMList(){
   html+=rest.map(row).join('');
   document.getElementById('mList').innerHTML=html||'<div style="padding:1.5rem;text-align:center;font-size:.82rem;color:var(--text3)">Ingen opskrifter fundet</div>';
 }
+let slotPickerWeek = null;
+
 function renderSlotList(){
-  const weekDates=Array.from({length:7},(_,i)=>addDays(selWeekStart,i));
-  const DAY_NAMES=['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
-  let h='';
+  if(!slotPickerWeek) slotPickerWeek = new Date(selWeekStart);
+  const weekDates=Array.from({length:7},(_,i)=>addDays(slotPickerWeek,i));
+  const DAY_NAMES=['Man','Tir','Ons','Tor','Fre','Lør','Søn'];
+  const today=new Date();
+  const weekNum=getWeekNum(slotPickerWeek);
+  const fmt=d=>d.getDate()+'. '+MONTH_NAMES[d.getMonth()].slice(0,3);
+
+  let h=`
+    <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0">
+      <button onclick="slotPickerChangeWeek(-7)" style="background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;color:var(--text2)">←</button>
+      <div style="flex:1;text-align:center">
+        <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:300">Uge ${weekNum}</div>
+        <div style="font-size:.7rem;color:var(--text3)">${fmt(weekDates[0])} – ${fmt(weekDates[6])} ${weekDates[6].getFullYear()}</div>
+      </div>
+      <button onclick="slotPickerChangeWeek(7)" style="background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;color:var(--text2)">→</button>
+    </div>
+    <div style="overflow-y:auto;flex:1">`;
+
   weekDates.forEach((d,i)=>{
-    h+=`<div class="mlbl">${DAY_NAMES[i]} · ${d.getDate()}. ${MONTH_NAMES[d.getMonth()]}</div>`;
-    MEALS.forEach(m=>{
-      const k=planKey(d,m.key),rid=plan[k],ex=rid?allRecipes().find(r=>r.id===rid):null;
-      h+=`<div class="mr" onclick="assignDay('${dStr(d)}','${m.key}')">
-        <div class="mrc" style="background:${ex?CAT_COLORS[ex.cat]||'var(--border2)':'var(--border)'}"></div>
-        <div class="mri"><div class="mrt">${m.lbl}</div>${ex?`<div class="mrs occ">Erstat: ${ex.title}</div>`:'<div class="mrs">Ledig</div>'}</div>
-        <button class="mrb">Vælg</button>
+    const isToday=sameDay(d,today);
+    const isPast=d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const dayMeals=MEALS.filter(m=>visibleMeals.includes(m.key));
+    const hasAny=dayMeals.some(m=>planGet(planKey(d,m.key)).length>0);
+
+    h+=`<div style="border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem .3rem;background:${isToday?'var(--accent-bg)':isPast?'var(--surface2)':'var(--surface)'}">
+        <span style="font-size:.72rem;font-weight:600;color:${isToday?'var(--accent)':isPast?'var(--text3)':'var(--text2)'};width:28px">${DAY_NAMES[i]}</span>
+        <span style="font-size:.72rem;color:${isToday?'var(--accent)':isPast?'var(--text3)':'var(--text3)'}">${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}</span>
+        ${isToday?'<span style="font-size:.6rem;background:var(--accent);color:#fff;border-radius:50px;padding:.05rem .5rem;margin-left:auto">I dag</span>':''}
+      </div>`;
+
+    dayMeals.forEach(m=>{
+      const rids=planGet(planKey(d,m.key));
+      const title=rids.length>0
+        ? rids.map(rid=>allRecipes().find(r=>r.id===rid)?.title||'').filter(Boolean).join(', ')
+        : null;
+      h+=`<div class="mr" onclick="assignDay('${dStr(d)}','${m.key}')" style="padding:.38rem 1rem .38rem 1.5rem;${isPast?'opacity:.5':''}">
+        <div class="mrc" style="background:${title?CAT_COLORS[allRecipes().find(r=>planGet(planKey(d,m.key))[0]===r.id)?.cat]||'var(--accent2)':'var(--border)'}"></div>
+        <div class="mri">
+          <div class="mrt" style="font-size:.78rem">${m.lbl}</div>
+          ${title
+            ?`<div class="mrs" style="color:var(--accent);font-size:.68rem">✓ ${title.length>30?title.slice(0,30)+'…':title}</div>`
+            :`<div class="mrs" style="font-size:.68rem">Ledig</div>`}
+        </div>
+        <button class="mrb" style="font-size:.72rem;padding:.22rem .65rem">${title?'Skift':'Vælg'}</button>
       </div>`;
     });
+    h+='</div>';
   });
+
+  h+=`</div>`;
   document.getElementById('mList').innerHTML=h;
+  document.getElementById('mList').style.cssText='overflow:visible;flex:1;display:flex;flex-direction:column;padding:0';
+}
+
+function slotPickerChangeWeek(days){
+  slotPickerWeek=addDays(slotPickerWeek,days);
+  renderSlotList();
 }
 function assignSlot(rid){if(!pSlot)return;planAdd(pSlot.dateStr+'||'+pSlot.meal,rid);persist();closeModal();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
 function assignDay(ds,m){if(!pRid)return;planAdd(ds+'||'+m,pRid);persist();closeModal();closePanel();switchMenu('ugeplan');}
