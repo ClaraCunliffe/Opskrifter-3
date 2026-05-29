@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>DailyPlate</title>
+<script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" type="text/javascript"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -35,7 +39,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 /* FILTER BAR */
 .filter-bar{background:#F6FAFE;border-bottom:1px solid var(--border);padding:.55rem 0;display:none}
 .filter-bar.visible{display:block}
-.filter-bar-inner{max-width:1320px;margin:auto;padding:0 2.5rem;display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap}
+.filter-bar-inner{max-width:1320px;margin:auto;padding:0 2.5rem;display:flex;align-items:center;gap:.8rem;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
 .fb-ing{display:flex;align-items:center;gap:.5rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:50px;padding:.38rem .85rem;transition:all .2s;min-width:200px}
 .fb-ing:focus-within{background:var(--surface);border-color:var(--accent2);box-shadow:0 0 0 3px rgba(123,94,167,.08)}
 .fb-ing svg{color:var(--text3);flex-shrink:0}
@@ -643,12 +647,13 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 
 /* ── LOGIN SCREEN ── */
-.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#C8E8FF 0%,#DCF0FF 30%,#E8EAFF 60%,#EDE6FA 100%);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem}
+.login-screen{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#C8E8FF 0%,#DCF0FF 30%,#E8EAFF 60%,#EDE6FA 100%);z-index:1000;align-items:center;justify-content:center;padding:1rem}
 .login-screen.hidden{display:none}
 .login-card{background:#fff;border-radius:20px;padding:2.4rem 2.6rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(100,60,160,.16);border:1px solid var(--border)}
 .login-logo{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:300;color:var(--text);margin-bottom:.2rem;letter-spacing:-.02em}
 .login-logo strong{font-weight:400;color:var(--accent)}
-.login-tagline{font-size:.78rem;color:var(--text3);margin-bottom:1.6rem}
+.login-tagline{font-size:.78rem;color:var(--text3);margin-bottom:.6rem}
+.login-hint{font-size:.78rem;color:var(--accent);background:var(--accent-bg);border-radius:8px;padding:.5rem .8rem;margin-bottom:1rem;text-align:center}
 .login-tabs{display:flex;background:var(--surface2);border-radius:8px;padding:3px;gap:2px;margin-bottom:1.5rem}
 .ltab{flex:1;padding:.45rem;border:none;background:transparent;border-radius:6px;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--text2);cursor:pointer;transition:all .18s;font-weight:400}
 .ltab.active{background:#fff;color:var(--text);font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.08)}
@@ -673,8 +678,22 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .l-acc-name{font-size:.83rem;font-weight:500;color:var(--text)}
 .l-acc-user{font-size:.7rem;color:var(--text3)}
 /* User button in nav */
-.nav-user-btn{display:flex;align-items:center;gap:.45rem;padding:.35rem .7rem .35rem .35rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text2)}
-.nav-user-btn:hover{border-color:var(--accent2);background:var(--accent-bg);color:var(--accent)}
+.ntop{max-width:1320px;margin:auto;padding:.6rem 2.5rem;display:flex;align-items:center;gap:1rem}
+.nlogo{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;cursor:pointer;flex-shrink:0;letter-spacing:-.01em;display:flex;align-items:center}
+.nl1{color:var(--accent);font-weight:600}
+.nl2{color:var(--text)}
+header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.nav-user{position:relative}
+.nav-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.nav-initials{font-size:.72rem;font-weight:600;color:var(--accent);letter-spacing:.02em}
+.user-drop{position:absolute;right:0;top:calc(100% + 6px);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.35rem;min-width:180px;box-shadow:0 8px 32px rgba(80,50,120,.13);z-index:500;display:none}
+.user-drop.open{display:block}
+.ud-name{font-size:.82rem;font-weight:500;color:var(--text);padding:.4rem .7rem .1rem}
+.ud-user{font-size:.72rem;color:var(--text3);padding:0 .7rem .5rem}
+.ud-sep{height:1px;background:var(--border);margin:.2rem 0}
+.ud-item{display:block;width:100%;text-align:left;padding:.45rem .7rem;background:none;border:none;font-family:'Inter',sans-serif;font-size:.8rem;color:var(--text2);cursor:pointer;border-radius:7px;transition:background .15s}
+.ud-item:hover{background:var(--surface2)}
+.ud-logout{color:var(--rose)}
 .nav-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:600;flex-shrink:0}
 /* User dropdown */
 .user-drop{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.4rem;z-index:500;box-shadow:0 8px 32px rgba(80,50,120,.15);min-width:200px;display:none}
@@ -782,6 +801,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .si-home-btn:hover{border-color:var(--border2);background:var(--surface2)}
 .si.si-home .si-home-btn{border-color:rgba(74,154,111,.3);color:#3A7A50;background:rgba(74,154,111,.08)}
 
+
+.clerk-google-btn{display:flex;align-items:center;justify-content:center;gap:.75rem;width:100%;padding:.75rem;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .2s;margin-bottom:.75rem}
+.clerk-google-btn:hover{background:var(--surface2);border-color:var(--border2)}
+.login-divider{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;color:var(--text3);font-size:.8rem}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
 </style>
 </head>
 <body>
@@ -789,126 +814,142 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
-    <div class="login-logo"><strong>Daily</strong>Plate</div>
+    <div class="login-logo"><span class="llog1">Daily</span><span class="llog2">Plate</span></div>
     <div class="login-tagline">Din daglige inspiration</div>
-    <div class="login-tabs">
-      <button class="ltab active" id="ltab-login" onclick="showLoginTab('login')">Log ind</button>
-      <button class="ltab" id="ltab-reg" onclick="showLoginTab('reg')">Opret konto</button>
-    </div>
-    <!-- LOGIN -->
-    <div id="login-form">
-      <div class="lfield">
-        <label class="lfl">Brugernavn</label>
-        <input class="lfi" id="l-user" placeholder="Dit brugernavn" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()">
-      </div>
-      <div class="lfield">
-        <label class="lfl">Adgangskode</label>
-        <div class="lpass-wrap">
-          <input class="lfi" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-          <button class="lpass-eye" onclick="togglePass('l-pass',this)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="lerr" id="l-err"></div>
-      <label style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--text2);cursor:pointer;margin-bottom:.8rem">
-        <input type="checkbox" id="rememberMe" checked style="accent-color:var(--accent);width:14px;height:14px"> Husk mig på denne enhed
-      </label>
-      <button class="l-btn" onclick="doLogin()">Log ind</button>
-      <div class="l-accounts" id="l-accounts"></div>
-    </div>
-    <!-- REGISTER -->
-    <div id="reg-form" style="display:none">
-      <div class="lfield">
-        <label class="lfl">Navn</label>
-        <input class="lfi" id="r-name" placeholder="Dit navn" onkeydown="if(event.key==='Enter')document.getElementById('r-user').focus()">
-      </div>
-      <div class="lfield">
-        <label class="lfl">Brugernavn</label>
-        <input class="lfi" id="r-user" placeholder="Vælg et brugernavn" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('r-pass').focus()">
-      </div>
-      <div class="lfield">
-        <label class="lfl">Adgangskode</label>
-        <div class="lpass-wrap">
-          <input class="lfi" id="r-pass" type="password" placeholder="Mindst 4 tegn" autocomplete="new-password" onkeydown="if(event.key==='Enter')document.getElementById('r-pass2').focus()">
-          <button class="lpass-eye" onclick="togglePass('r-pass',this)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="lfield">
-        <label class="lfl">Gentag adgangskode</label>
-        <input class="lfi" id="r-pass2" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()">
-      </div>
-      <div class="lerr" id="r-err"></div>
-      <button class="l-btn" onclick="doRegister()">Opret konto</button>
-    </div>
-  </div>
-</div>
+    <div id="loginHint" class="login-hint" style="display:none">Log ind for at bruge favoritter, kalender, mine opskrifter og køleskab</div>
 
-<header>
-  <div class="nw">
-    <div class="nt">
-      <a class="logo" href="#"><strong>Daily</strong>Plate</a>
-      <div class="ndiv"></div>
-      <div class="nsearch">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" id="gSearch" placeholder="Søg opskrifter…" oninput="onSearch()">
+    <!-- Custom login form -->
+    <div id="customLoginForm">
+      <div class="login-tabs">
+        <button class="ltab active" id="ltab-login" onclick="showLoginTab('login')">Log ind</button>
+        <button class="ltab" id="ltab-reg" onclick="showLoginTab('register')">Opret konto</button>
       </div>
-      <div class="nright">
-        <div style="position:relative">
-          <button class="nav-user-btn" id="navUserBtn" onclick="toggleUserDrop()">
-            <div class="nav-avatar" id="navAvatar">?</div>
-            <span id="navUserName">Ikke logget ind</span>
-          </button>
-          <div class="user-drop" id="userDrop">
-            <div class="ud-header">
-              <div class="ud-name" id="udName">—</div>
-              <div class="ud-user" id="udUser">—</div>
-            </div>
-            <button class="ud-item" onclick="openProfileSettings()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              Min profil
-            </button>
 
-            <button class="ud-item ud-logout" onclick="doLogout()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              Log ud
+      <!-- Google button -->
+      <button class="clerk-google-btn" onclick="clerkSignInWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.96 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Fortsæt med Google
+      </button>
+
+      <div class="login-divider"><span>eller</span></div>
+
+      <!-- Login form -->
+      <div id="login-form">
+        <div class="lfield">
+          <label class="lfl">E-mail</label>
+          <input class="lfi" id="l-user" type="email" placeholder="din@email.dk" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()">
+        </div>
+        <div class="lfield">
+          <label class="lfl">Adgangskode</label>
+          <div class="lpass-wrap">
+            <input class="lfi" id="l-pass" type="password" placeholder="Din adgangskode" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+            <button class="lpass-eye" onclick="togglePass('l-pass',this)" type="button">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
-        <button class="bsm" onclick="switchMenu('favoritter')">Favoritter <span id="fBadge" class="mbadge" style="display:none">0</span></button>
-        <button class="bsm" onclick="openFamilySettings()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span id="familyBtnLbl">Familie</span>
-        </button>
-        <button class="bsm bacc bsm-mine" id="btn-mine" onclick="switchMenu('mine')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          Mine
-        </button>
-        <button class="bsm bsm-cal" onclick="switchMenu('ugeplan')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          Kalender <span id="pBadge" class="mbadge" style="display:none">0</span>
-        </button>
-        <button class="bsm bsm-fridge" id="btn-fridge" onclick="switchMenu('fridge')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14"/><path d="M9 6v2M9 14v3"/></svg>
-          Køleskab
-        </button>
+        <label style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--text2);cursor:pointer;margin-bottom:.8rem">
+          <input type="checkbox" id="rememberMe" checked style="accent-color:var(--accent);width:14px;height:14px"> Husk mig på denne enhed
+        </label>
+        <div class="lerr" id="l-err"></div>
+        <button class="l-btn" onclick="doLogin()">Log ind</button>
+        <div style="text-align:center;margin-top:.5rem">
+          <button onclick="doForgotPassword()" style="background:none;border:none;font-size:.78rem;color:var(--accent);cursor:pointer;text-decoration:underline">Glemt adgangskode?</button>
+        </div>
+      </div>
+
+      <!-- Register form -->
+      <div id="register-form" style="display:none">
+        <div class="lfield">
+          <label class="lfl">Navn</label>
+          <input class="lfi" id="r-name" placeholder="Dit navn" autocomplete="name" onkeydown="if(event.key==='Enter')document.getElementById('r-user').focus()">
+        </div>
+        <div class="lfield">
+          <label class="lfl">E-mail</label>
+          <input class="lfi" id="r-user" type="email" placeholder="din@email.dk" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('r-pass').focus()">
+        </div>
+        <div class="lfield">
+          <label class="lfl">Adgangskode</label>
+          <div class="lpass-wrap">
+            <input class="lfi" id="r-pass" type="password" placeholder="Mindst 8 tegn" autocomplete="new-password" onkeydown="if(event.key==='Enter')document.getElementById('r-pass2').focus()" oninput="checkPassStrength(this.value)">
+            <button class="lpass-eye" onclick="togglePass('r-pass',this)" type="button">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div id="passStrength" style="display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap"></div>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:.2rem">Mindst 8 tegn · stort bogstav · lille bogstav · tal</div>
+        </div>
+        <div class="lfield">
+          <label class="lfl">Gentag adgangskode</label>
+          <div class="lpass-wrap">
+            <input class="lfi" id="r-pass2" type="password" placeholder="Gentag adgangskode" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+            <button class="lpass-eye" onclick="togglePass('r-pass2',this)" type="button">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="lerr" id="r-err"></div>
+        <button class="l-btn" onclick="doRegister()">Opret konto</button>
       </div>
     </div>
-    <nav class="nmenu">
-      <div class="nmenu-inner">
+
+    <!-- Clerk mount point (hidden, used for Google OAuth) -->
+    <div id="clerk-mount" style="display:none"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="ntop">
+    <div class="nlogo" onclick="switchMenu('alle')"><span class="nl1">Daily</span><span class="nl2">Plate</span></div>
+    <div class="nright">
+      <button class="bsm" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter <span id="fBadge" class="mbadge" style="display:none">0</span></button>
+      <button class="bsm" onclick="requireLogin(()=>openFamilySettings())">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span id="familyBtnLbl">Familie</span>
+      </button>
+      <button class="bsm bacc bsm-mine" id="btn-mine" onclick="requireLogin(()=>switchMenu('mine'))">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Mine
+      </button>
+      <button class="bsm bsm-cal" onclick="requireLogin(()=>switchMenu('ugeplan'))">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Kalender <span id="pBadge" class="mbadge" style="display:none">0</span>
+      </button>
+      <button class="bsm bsm-fridge" id="btn-fridge" onclick="requireLogin(()=>switchMenu('fridge'))">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14"/><path d="M9 6v2M9 14v3"/></svg>
+        Køleskab
+      </button>
+      <button id="navLoginBtn" onclick="requireLogin(()=>{})" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:50px;padding:.35rem 1rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer">Log ind</button>
+      <div class="nav-user" id="navUserWrap" style="display:none">
+        <button class="nav-user-btn" id="navUserBtn" onclick="toggleUserDrop()">
+          <div class="nav-avatar" id="navAvatar"><span class="nav-initials" id="navInitials">?</span></div>
+          <span id="navUserName"></span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="user-drop" id="userDrop">
+          <div class="ud-name" id="udName"></div>
+          <div class="ud-user" id="udUser"></div>
+          <div class="ud-sep"></div>
+          <button class="ud-item" onclick="switchMenu('favoritter');closeUserDrop()">Favoritter</button>
+          <div class="ud-sep"></div>
+          <button class="ud-item ud-logout" onclick="doLogout()">Log ud</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="nmenu">
+    <div class="nmenu-inner">
       <div class="mig">
         <button class="mi active" id="mi-alle" onclick="switchMenu('alle',this)">Alle opskrifter</button>
       </div>
       <div class="mi-sep"></div>
       <div class="mig">
         <button class="mi mi-discover" id="mi-discover" onclick="switchMenu('discover',this)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           Ugens opdagelse
         </button>
       </div>
-      <div class="mi-sep"></div>
       <div class="mig">
         <button class="mi" id="mi-morgenmad" onclick="switchMenu('morgenmad',this)">Morgenmad<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="mdrop">
@@ -942,18 +983,18 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('aftensmad','hverdagsret')">Hverdagsretter</button>
           <button class="mdi" onclick="switchSub('aftensmad','kød')">Kødretter</button>
-          <button class="mdi" onclick="switchSub('aftensmad','fisk')">Fisk & skaldyr</button>
+          <button class="mdi" onclick="switchSub('aftensmad','fisk')">Fisk &amp; skaldyr</button>
           <button class="mdi" onclick="switchSub('aftensmad','vegetar')">Vegetarisk</button>
-          <button class="mdi" onclick="switchSub('aftensmad','pasta')">Pasta, ris & nudler</button>
+          <button class="mdi" onclick="switchSub('aftensmad','pasta')">Pasta, ris &amp; nudler</button>
           <button class="mdi" onclick="switchSub('aftensmad','kartofler')">Kartofler</button>
           <button class="mdi" onclick="switchSub('aftensmad','ovn')">Ovnbagte retter</button>
           <button class="mdi" onclick="switchSub('aftensmad','gryde')">Gryderetter</button>
           <button class="mdi" onclick="switchSub('aftensmad','suppe-aften')">Supper</button>
-          <button class="mdi" onclick="switchSub('aftensmad','salat-aften')">Salater & bowls</button>
-          <button class="mdi" onclick="switchSub('aftensmad','sides')">Sides & tilbehør</button>
+          <button class="mdi" onclick="switchSub('aftensmad','salat-aften')">Salater &amp; bowls</button>
+          <button class="mdi" onclick="switchSub('aftensmad','sides')">Sides &amp; tilbehør</button>
           <button class="mdi" onclick="switchSub('aftensmad','familie')">Familievenlig</button>
           <button class="mdi" onclick="switchSub('aftensmad','verden')">Verdenskøkken</button>
-          <button class="mdi" onclick="switchSub('aftensmad','weekend-aften')">Weekend & gæstemad</button>
+          <button class="mdi" onclick="switchSub('aftensmad','weekend-aften')">Weekend &amp; gæstemad</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('aftensmad',document.getElementById('mi-aftensmad'))">Al aftensmad</button>
         </div>
@@ -1003,10 +1044,10 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <button class="mi" id="mi-drikkevarer" onclick="switchMenu('drikkevarer',this)">Drikkevarer<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('drikkevarer','smoothie')">Smoothies</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','juice')">Juice & shots</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','juice')">Juice &amp; shots</button>
           <button class="mdi" onclick="switchSub('drikkevarer','kaffe')">Kaffe</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','te')">Te & varme drikke</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','lemonade')">Lemonade & iste</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','te')">Te &amp; varme drikke</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','lemonade')">Lemonade &amp; iste</button>
           <button class="mdi" onclick="switchSub('drikkevarer','milkshake')">Milkshakes</button>
           <button class="mdi" onclick="switchSub('drikkevarer','mocktail')">Mocktails</button>
           <button class="mdi" onclick="switchSub('drikkevarer','cocktail')">Cocktails</button>
@@ -1016,28 +1057,11 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchMenu('drikkevarer',document.getElementById('mi-drikkevarer'))">Alle drikkevarer</button>
         </div>
       </div>
-      <!-- Hidden anchors for switchMenu references -->
       <span id="mi-suppe" style="display:none"></span>
       <span id="mi-bagværk" style="display:none"></span>
       </div><!-- nmenu-inner -->
     </nav>
-  </div>
 </header>
-
-
-<!-- IMPORT OPSKRIFTER BANNER -->
-<div id="importBanner" style="display:none;background:linear-gradient(135deg,#ECE8F8,#E8F4FF);border-bottom:1px solid var(--border2);padding:.75rem 0">
-  <div class="page" style="padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:space-between;gap:1rem">
-    <div>
-      <div style="font-size:.85rem;font-weight:500;color:var(--text)">📨 Du har modtaget <span id="importCount">0</span> opskrifter fra en ven</div>
-      <div style="font-size:.75rem;color:var(--text3);margin-top:.1rem" id="importFrom"></div>
-    </div>
-    <div style="display:flex;gap:.5rem">
-      <button class="smb-save" style="padding:.4rem 1rem" onclick="confirmImportRecipes()">Importer</button>
-      <button class="smb-cancel" onclick="dismissImport()">Afvis</button>
-    </div>
-  </div>
-</div>
 
 <!-- HERO -->
 <div id="heroSec" class="hero">
@@ -1807,6 +1831,180 @@ function rx(id){return RECIPE_EXTRA[id]||{kcal:0,protein:0,carbs:0,fat:0,cost:0,
 const MONTH_NAMES=['Januar','Februar','Marts','April','Maj','Juni','Juli','August','September','Oktober','November','December'];
 const DAY_SHORT=['Ma','Ti','On','To','Fr','Lø','Sø'];
 
+
+// ── SUPABASE ──────────────────────────────────────────
+
+// ── CLERK AUTH ──────────────────────────────────────────
+const CLERK_PK = 'pk_test_ZWFzeS1idWxsZG9nLTgyLmNsZXJrLmFjY291bnRzLmRldiQ';
+let clerk = null;
+
+async function initClerk() {
+  try {
+  clerk = new window.Clerk(CLERK_PK);
+  await clerk.load();
+
+  // Listen for auth changes
+  clerk.addListener(async ({ user }) => {
+    if(user && !currentUser) {
+      currentUser = {
+        username: (user.primaryEmailAddress?.emailAddress || user.id).split('@')[0],
+        name: user.fullName || user.firstName || user.primaryEmailAddress?.emailAddress?.split('@')[0] || '',
+        email: user.primaryEmailAddress?.emailAddress || '',
+        sbId: user.id
+      };
+      loadUserData();
+      updateNavUser();
+      initDietButtons();
+      renderAllergyTags();
+      initFamilyBtn();
+      initMealToggles();
+      renderFavCats();
+      updateBadges();
+      updateHero();
+      if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
+    } else if(!user && currentUser) {
+      currentUser = null;
+      updateNavUser();
+      updateBadges();
+      updateHero();
+      if(activeView==='favoritter'||activeView==='mine'||activeView==='ugeplan'||activeView==='fridge'){
+        switchMenu('alle');
+      }
+    }
+  });
+
+  // Check if already logged in
+  if(clerk.user) {
+    const user = clerk.user;
+    currentUser = {
+      username: (user.primaryEmailAddress?.emailAddress || user.id).split('@')[0],
+      name: user.fullName || user.firstName || user.primaryEmailAddress?.emailAddress?.split('@')[0] || '',
+      email: user.primaryEmailAddress?.emailAddress || '',
+      sbId: user.id
+    };
+  }
+  } catch(e) { console.warn('Clerk not available:', e.message); }
+}
+
+async function doClerkLogout() {
+  await clerk.signOut();
+  currentUser = null;
+  updateNavUser();
+  updateBadges();
+  updateHero();
+  switchMenu('alle');
+}
+
+// ── SUPABASE DATA (beholder til opskrifter/favoritter) ──
+const SB_URL = 'https://dwvlhzvjaxojexufuagd.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3dmxoenZqYXhvamV4dWZ1YWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzYwNjQsImV4cCI6MjA5NTU1MjA2NH0.ibx0CrO-q1cUjh4CJYHhy0BKCf0kG98WMwut0L58QcQ';
+let sbToken = null;
+let sbUserId = null;
+
+async function sbFetch(path, opts={}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SB_KEY,
+    'Authorization': `Bearer ${sbToken || SB_KEY}`,
+    ...opts.headers
+  };
+  const res = await fetch(SB_URL + path, {...opts, headers});
+  const text = await res.text();
+  try { return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null }; }
+  catch { return { ok: res.ok, status: res.status, data: text }; }
+}
+
+async function sbSelect(table, filters='') {
+  const r = await sbFetch(`/rest/v1/${table}?${filters}`, {
+    headers: { 'Prefer': 'return=representation' }
+  });
+  return r.ok ? (r.data || []) : [];
+}
+async function sbInsert(table, body) {
+  const r = await sbFetch(`/rest/v1/${table}`, {
+    method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(body)
+  });
+  return r.ok ? r.data : null;
+}
+async function sbUpsert(table, body, onConflict='') {
+  const r = await sbFetch(`/rest/v1/${table}${onConflict?'?on_conflict='+onConflict:''}`, {
+    method:'POST', headers:{'Prefer':'return=representation,resolution=merge-duplicates'}, body:JSON.stringify(body)
+  });
+  return r.ok ? r.data : null;
+}
+async function sbDelete(table, filters) {
+  await sbFetch(`/rest/v1/${table}?${filters}`, {method:'DELETE'});
+}
+async function sbUpdate(table, body, filters) {
+  const r = await sbFetch(`/rest/v1/${table}?${filters}`, {
+    method:'PATCH', headers:{'Prefer':'return=representation'}, body:JSON.stringify(body)
+  });
+  return r.ok ? r.data : null;
+}
+
+// ── SUPABASE DATA SYNC ────────────────────────────────
+async function syncFavorites() {
+  if(!currentUser?.sbId) return;
+  try {
+    const data = await sbSelect('favoritter', `user_id=eq.${currentUser.sbId}&select=recipe_id`);
+    if(data && data.length >= 0) {
+      saved = new Set(data.map(r => r.recipe_id));
+      localStorage.setItem(userKey('sv_saved'), JSON.stringify([...saved]));
+    }
+  } catch(e) {}
+}
+
+async function saveFavoriteToCloud(recipeId, isSaved) {
+  if(!currentUser?.sbId) return;
+  try {
+    if(isSaved) {
+      await sbUpsert('favoritter', { user_id: currentUser.sbId, recipe_id: String(recipeId) }, 'user_id,recipe_id');
+    } else {
+      await sbDelete('favoritter', `user_id=eq.${currentUser.sbId}&recipe_id=eq.${encodeURIComponent(String(recipeId))}`);
+    }
+  } catch(e) {}
+}
+
+async function syncUserRecipes() {
+  if(!currentUser?.sbId) return;
+  try {
+  const data = await sbSelect('opskrifter', `user_id=eq.${currentUser.sbId}&order=created_at.desc`);
+  if(data) {
+    userRecipes = data.map(r => ({
+      id: r.id, title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
+      time: r.tid, pers: r.pers, desc: r.beskrivelse, bg: r.bg || 'linear-gradient(160deg,#EEF0FF,#D8DCFF)',
+      ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
+      sbId: r.id, cloudSaved: true
+    }));
+    persistUser(); // also keep local copy
+  }
+  } catch(e) {}
+}
+
+async function saveRecipeToCloud(r) {
+  if(!currentUser?.sbId) return null;
+  try {
+  const payload = {
+    user_id: currentUser.sbId,
+    title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
+    tid: r.time, pers: r.pers, beskrivelse: r.desc, bg: r.bg,
+    ing: r.ing || [], steps: r.steps || [], tags: r.tags || []
+  };
+  if(r.sbId && typeof r.sbId === 'string' && r.sbId.includes('-')) {
+    await sbUpdate('opskrifter', payload, `id=eq.${r.sbId}`);
+    return r.sbId;
+  } else {
+    const data = await sbInsert('opskrifter', payload);
+    return Array.isArray(data) ? data[0]?.id : data?.id;
+  }
+  } catch(e) { return null; }
+}
+
+async function deleteRecipeFromCloud(sbId) {
+  if(!currentUser?.sbId || !sbId) return;
+  try { await sbDelete('opskrifter', `id=eq.${sbId}`); } catch(e) {}
+}
+
 let currentUser=null;
 function userKey(k){return currentUser?'dp_'+currentUser.username+'_'+k:k;}
 
@@ -2203,7 +2401,8 @@ function renderFav(){
 }
 
 function toggleSave(id,e){
-  e.stopPropagation();saved.has(id)?saved.delete(id):saved.add(id);persist();
+  e.stopPropagation();
+  if(!currentUser){requireLogin(()=>toggleSave(id,{stopPropagation:()=>{}}));return;}saved.has(id)?saved.delete(id):saved.add(id);persist();
   if(activeView==='favoritter')renderFav();else renderGrid();
   updateBadges();updateHero();if(panelRid===id)renderPanelActions(id);
 }
@@ -2737,7 +2936,7 @@ function renderPanelActions(id){
         Lav min version
       </button>`;
   document.getElementById('pAct').innerHTML=`
-    <button class="pbmain" onclick="startPickSlot(${id},null)">
+    <button class="pbmain" onclick="requireLogin(()=>startPickSlot(${id},null))">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       Tilføj til kalender
     </button>
@@ -4101,6 +4300,30 @@ function removeDietTag(val){
   reRender();
 }
 
+
+async function clerkSignInWithGoogle(){
+  // Direct OAuth redirect to Google via Clerk's OAuth endpoint
+  const frontendApi = 'easy-bulldog-82.clerk.accounts.dev';
+  const redirectUrl = encodeURIComponent(window.location.href);
+  window.location.href = `https://${frontendApi}/v1/oauth/authorize?provider=oauth_google&redirect_url=${redirectUrl}&client_id=${CLERK_PK}`;
+}
+
+async function doForgotPassword(){
+  const email = document.getElementById('l-user').value.trim();
+  if(!email || !email.includes('@')){
+    document.getElementById('l-err').textContent = 'Indtast din e-mail øverst for at nulstille kodeord.';
+    return;
+  }
+  document.getElementById('l-err').textContent = 'Sender nulstillingsmail…';
+  try {
+    await clerk.client.signIn.create({
+      strategy: 'reset_password_email_code',
+      identifier: email
+    });
+    document.getElementById('l-err').textContent = '✓ Tjek din e-mail for en nulstillingskode.';
+  } catch(e) { document.getElementById('l-err').textContent = e.errors?.[0]?.message||e.message; }
+}
+
 // ── RATINGS ────────────────────────────────────────
 function setRating(id,n){
   ratings[id]=n;localStorage.setItem(userKey('dp_ratings'),JSON.stringify(ratings));
@@ -4210,6 +4433,18 @@ allergyPrefs.forEach(a=>{const el=document.getElementById(allergyMap[a]);if(el)e
 document.getElementById('shopModeAlpha')?.classList.add('bsm-active');
 checkSharedPlan();
 
+
+// ── KRÆV LOGIN til personlige funktioner ─────────────
+function requireLogin(action) {
+  if(currentUser) { action(); return; }
+  window.__pendingAction = action;
+  const ls = document.getElementById('loginScreen');
+  const hint = document.getElementById('loginHint');
+  if(ls) ls.style.display = 'flex';
+  if(hint) hint.style.display = '';
+  showLoginTab('login');
+}
+
 // ── AUTH ─────────────────────────────────────────────
 const USERS_KEY='dp_users';
 
@@ -4243,7 +4478,8 @@ function loadUserData(){
 }
 
 function showApp(){
-  document.getElementById('loginScreen').classList.add('hidden');
+  const ls = document.getElementById('loginScreen');
+  if(ls) ls.style.display='none';
   loadUserData();
   updateNavUser();
   initDietButtons();
@@ -4251,11 +4487,27 @@ function showApp(){
   initFamilyBtn();
   initMealToggles();
   renderFavCats();
-  renderGrid();updateBadges();updateHero();
+  renderGrid();
+  updateBadges();
+  updateHero();
   document.getElementById('filterBar').classList.add('visible');
 }
 
 function updateNavUser(){
+  // Show/hide login button
+  const loginBtn = document.getElementById('navLoginBtn');
+  const userWrap = document.getElementById('navUserWrap');
+  if(loginBtn) loginBtn.style.display = currentUser ? 'none' : '';
+  if(userWrap) userWrap.style.display = currentUser ? '' : 'none';
+  // Update Clerk avatar if available
+  try {
+    const avatarEl = document.getElementById('navAvatar');
+    if(avatarEl && clerk?.user?.imageUrl) {
+      avatarEl.style.backgroundImage = `url(${clerk.user.imageUrl})`;
+      avatarEl.style.backgroundSize = 'cover';
+      avatarEl.querySelector('.nav-initials') && (avatarEl.querySelector('.nav-initials').style.opacity='0');
+    }
+  } catch(e) {}
   if(!currentUser)return;
   const initials=currentUser.name?currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2):currentUser.username[0].toUpperCase();
   document.getElementById('navAvatar').textContent=initials;
@@ -4265,85 +4517,138 @@ function updateNavUser(){
 }
 
 function showLoginTab(tab){
-  document.getElementById('login-form').style.display=tab==='login'?'':'none';
-  document.getElementById('reg-form').style.display=tab==='reg'?'':'none';
-  document.getElementById('ltab-login').classList.toggle('active',tab==='login');
-  document.getElementById('ltab-reg').classList.toggle('active',tab==='reg');
-  document.getElementById('l-err').textContent='';
-  document.getElementById('r-err').textContent='';
-  renderAccountList();
+  const loginF=document.getElementById('login-form');
+  const regF=document.getElementById('register-form');
+  if(loginF) loginF.style.display=tab==='login'?'':'none';
+  if(regF) regF.style.display=tab==='register'?'':'none';
+  const ltabL=document.getElementById('ltab-login');
+  const ltabR=document.getElementById('ltab-reg');
+  if(ltabL) ltabL.classList.toggle('active',tab==='login');
+  if(ltabR) ltabR.classList.toggle('active',tab==='register');
+  const lerr=document.getElementById('l-err');
+  const rerr=document.getElementById('r-err');
+  if(lerr) lerr.textContent='';
+  if(rerr) rerr.textContent='';
 }
 
-function renderAccountList(){
-  const users=getUsers();
-  const keys=Object.keys(users);
-  const wrap=document.getElementById('l-accounts');
-  if(!keys.length){wrap.innerHTML='';return;}
-  wrap.innerHTML='<div class="l-acc-lbl">Vælg konto</div>'+keys.map(u=>{
-    const user=users[u];
-    const initials=user.name?user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2):u[0].toUpperCase();
-    return `<div class="l-acc-item" onclick="quickLogin('${u}')">
-      <div class="l-acc-avatar">${initials}</div>
-      <div class="l-acc-info">
-        <div class="l-acc-name">${user.name||u}</div>
-        <div class="l-acc-user">@${u}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
+function renderAccountList(){ /* Managed by Supabase */ }
 
-function quickLogin(username){
-  document.getElementById('l-user').value=username;
-  document.getElementById('l-pass').focus();
-}
+function quickLogin(email){ document.getElementById('l-user').value=email; document.getElementById('l-pass').focus(); }
 
-function doLogin(){
-  const username=document.getElementById('l-user').value.trim().toLowerCase();
+async function doLogin(){
+  const email=document.getElementById('l-user').value.trim();
   const pass=document.getElementById('l-pass').value;
   const err=document.getElementById('l-err');
-  if(!username||!pass){err.textContent='Udfyld begge felter.';return;}
-  const users=getUsers();
-  if(!users[username]){err.textContent='Brugernavn ikke fundet.';return;}
-  if(users[username].hash!==hashPass(pass)){err.textContent='Forkert adgangskode.';return;}
-  currentUser={username,...users[username]};
-  const remember=document.getElementById('rememberMe')?.checked!==false;
-  if(remember)localStorage.setItem('dp_current_user',username);
-  else sessionStorage.setItem('dp_current_user',username);
-  showApp();
+  if(!email||!pass){err.textContent='Udfyld begge felter.';return;}
+  err.textContent='Logger ind…';
+  try {
+    const res = await clerk.client.signIn.create({
+      identifier: email,
+      password: pass
+    });
+    await clerk.setActive({ session: res.createdSessionId });
+    const user = clerk.user;
+    currentUser={
+      username: (user.primaryEmailAddress?.emailAddress||user.id).split('@')[0],
+      name: user.fullName||user.firstName||'',
+      email: user.primaryEmailAddress?.emailAddress||'',
+      sbId: user.id
+    };
+    document.getElementById('loginScreen').style.display='none';
+    loadUserData();
+    await Promise.all([syncFavorites(), syncUserRecipes()]);
+    updateNavUser();initDietButtons();renderAllergyTags();
+    initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
+    if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
+  } catch(e){
+    err.textContent=e.errors?.[0]?.message||e.message||'Forkert e-mail eller adgangskode.';
+  }
 }
 
-function doRegister(){
+
+async function doRegister(){
   const name=document.getElementById('r-name').value.trim();
-  const username=document.getElementById('r-user').value.trim().toLowerCase();
+  const email=document.getElementById('r-user').value.trim();
   const pass=document.getElementById('r-pass').value;
   const pass2=document.getElementById('r-pass2').value;
   const err=document.getElementById('r-err');
-  if(!username){err.textContent='Vælg et brugernavn.';return;}
-  if(!/^[a-z0-9_]+$/.test(username)){err.textContent='Kun bogstaver, tal og _ tilladt.';return;}
-  if(pass.length<4){err.textContent='Adgangskoden skal være mindst 4 tegn.';return;}
+  if(!email||!email.includes('@')){err.textContent='Indtast en gyldig e-mail.';return;}
+  if(pass.length<8){err.textContent='Adgangskoden skal være mindst 8 tegn.';return;}
+  if(!/[A-Z]/.test(pass)){err.textContent='Adgangskoden skal indeholde mindst ét stort bogstav.';return;}
+  if(!/[a-z]/.test(pass)){err.textContent='Adgangskoden skal indeholde mindst ét lille bogstav.';return;}
+  if(!/[0-9]/.test(pass)){err.textContent='Adgangskoden skal indeholde mindst ét tal.';return;}
   if(pass!==pass2){err.textContent='Adgangskoderne matcher ikke.';return;}
-  const users=getUsers();
-  if(users[username]){err.textContent='Brugernavnet er allerede taget.';return;}
-  users[username]={name,hash:hashPass(pass),created:new Date().toISOString()};
-  saveUsers(users);
-  currentUser={username,name,hash:hashPass(pass)};
-  localStorage.setItem('dp_current_user',username);
-  showApp();
+  err.textContent='Opretter konto…';
+  try {
+    const res = await clerk.client.signUp.create({
+      emailAddress: email,
+      password: pass,
+      firstName: name.split(' ')[0]||name,
+      lastName: name.split(' ').slice(1).join(' ')||''
+    });
+    // Prepare verification
+    await res.prepareEmailAddressVerification({ strategy: 'email_code' });
+    // Show verification input
+    err.style.color='var(--accent)';
+    err.textContent='Tjek din e-mail for en bekræftelseskode.';
+    showVerificationForm(res);
+  } catch(e){
+    err.style.color='';
+    err.textContent=e.errors?.[0]?.message||e.message||'Oprettelse fejlede.';
+  }
 }
 
-function doLogout(){
+function showVerificationForm(signUpRes){
+  const regForm = document.getElementById('register-form');
+  regForm.innerHTML += `<div id="verifyBlock" style="margin-top:1rem">
+    <div class="lfield">
+      <label class="lfl">Bekræftelseskode</label>
+      <input class="lfi" id="verifyCode" placeholder="6-cifret kode fra din e-mail" maxlength="6" style="letter-spacing:.2em;text-align:center">
+    </div>
+    <div class="lerr" id="verify-err"></div>
+    <button class="l-btn" onclick="doVerify()">Bekræft e-mail</button>
+  </div>`;
+  window.__signUpRes = signUpRes;
+}
+
+async function doVerify(){
+  const code = document.getElementById('verifyCode')?.value.trim();
+  const err = document.getElementById('verify-err');
+  if(!code){err.textContent='Indtast koden fra din e-mail.';return;}
+  err.textContent='Bekræfter…';
+  try {
+    const res = await window.__signUpRes.attemptEmailAddressVerification({ code });
+    await clerk.setActive({ session: res.createdSessionId });
+    const user = clerk.user;
+    currentUser={
+      username: (user.primaryEmailAddress?.emailAddress||user.id).split('@')[0],
+      name: user.fullName||user.firstName||'',
+      email: user.primaryEmailAddress?.emailAddress||'',
+      sbId: user.id
+    };
+    document.getElementById('loginScreen').style.display='none';
+    loadUserData();
+    await Promise.all([syncFavorites(), syncUserRecipes()]);
+    updateNavUser();initDietButtons();renderAllergyTags();
+    initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
+    if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
+  } catch(e){
+    err.textContent=e.errors?.[0]?.message||e.message||'Forkert kode.';
+  }
+}
+
+
+async function doLogout(){
+  await doClerkLogout();
   currentUser=null;
   localStorage.removeItem('dp_current_user');
   closeUserDrop();
-  // Reset state
   saved=new Set();plan={};userRecipes=[];fridgeItems=[];savedPlans=[];
   ratings={};notes={};dietPrefs=[];allergyPrefs=[];
-  document.getElementById('loginScreen').classList.remove('hidden');
-  document.getElementById('l-user').value='';
-  document.getElementById('l-pass').value='';
-  document.getElementById('l-err').textContent='';
-  renderAccountList();
-  showLoginTab('login');
+  switchMenu('alle');
+  updateNavUser();
+  updateBadges();
+  updateHero();
 }
 
 function toggleUserDrop(){
@@ -4363,6 +4668,18 @@ function openProfileSettings(){
   openFamilySettings();
 }
 
+function checkPassStrength(pass){
+  const el=document.getElementById('passStrength');
+  if(!el)return;
+  const checks=[
+    {label:'8+ tegn', ok:pass.length>=8},
+    {label:'Stort bogstav', ok:/[A-Z]/.test(pass)},
+    {label:'Lille bogstav', ok:/[a-z]/.test(pass)},
+    {label:'Tal', ok:/[0-9]/.test(pass)},
+  ];
+  el.innerHTML=checks.map(c=>`<span style="font-size:.65rem;padding:.1rem .5rem;border-radius:50px;background:${c.ok?'rgba(74,154,111,.15)':'var(--surface2)'};color:${c.ok?'#3A7A50':'var(--text3)'};border:1px solid ${c.ok?'rgba(74,154,111,.3)':'var(--border)'}">${c.ok?'✓':'○'} ${c.label}</span>`).join('');
+}
+
 function togglePass(id,btn){
   const inp=document.getElementById(id);
   if(!inp)return;
@@ -4370,23 +4687,19 @@ function togglePass(id,btn){
 }
 
 // ── INIT: check if already logged in ─────────────────
-function initAuth(){
-  const savedUser=localStorage.getItem('dp_current_user')||sessionStorage.getItem('dp_current_user');
-  if(savedUser){
-    const users=getUsers();
-    if(users[savedUser]){
-      currentUser={username:savedUser,...users[savedUser]};
-      showApp();
-      return;
-    }
+async function initAuth(){
+  try { await initClerk(); } catch(e) { console.warn('Clerk:', e.message); }
+  try { showApp(); } catch(e) { console.warn('showApp:', e.message); }
+  if(currentUser) {
+    try { syncFavorites().then(()=>updateBadges()); } catch(e) {}
+    try { syncUserRecipes().then(()=>{if(activeView==='mine')renderMine();}); } catch(e) {}
   }
-  // Show login screen
-  renderAccountList();
-  document.getElementById('loginScreen').classList.remove('hidden');
 }
 
-initAuth();
-document.getElementById('filterBar').classList.add('visible');
+document.addEventListener('DOMContentLoaded', async function() {
+  try { await initAuth(); } catch(e) { console.warn('initAuth:', e.message); try { showApp(); } catch(e2) {} }
+  try { document.getElementById('filterBar').classList.add('visible'); } catch(e) {}
+});
 </script>
 </body>
 </html>
