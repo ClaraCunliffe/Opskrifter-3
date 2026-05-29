@@ -4320,12 +4320,12 @@ async function doForgotPassword(){
   }
   document.getElementById('l-err').textContent = 'Sender nulstillingsmail…';
   try {
-    await clerk.signIn.create({
-      strategy: 'reset_password_email_code',
-      identifier: email
+    const r = await sbFetch('/auth/v1/recover', {
+      method:'POST', body:JSON.stringify({email})
     });
-    document.getElementById('l-err').textContent = '✓ Tjek din e-mail for en nulstillingskode.';
-  } catch(e) { document.getElementById('l-err').textContent = e.errors?.[0]?.message||e.message; }
+    if(!r.ok) throw new Error(r.data?.msg||'Fejl');
+    document.getElementById('l-err').textContent = '✓ Tjek din e-mail for et nulstillingslink.';
+  } catch(e) { document.getElementById('l-err').textContent = e.message; }
 }
 
 // ── RATINGS ────────────────────────────────────────
@@ -4544,20 +4544,21 @@ async function doLogin(){
   const pass=document.getElementById('l-pass').value;
   const err=document.getElementById('l-err');
   if(!email||!pass){err.textContent='Udfyld begge felter.';return;}
-  if(!clerk){err.textContent='Login-system loader stadig. Prøv igen om et sekund.';return;}
   err.textContent='Logger ind…';
   try {
-    const res = await clerk.signIn.create({
-      identifier: email,
-      password: pass
+    const r = await sbFetch('/auth/v1/token?grant_type=password', {
+      method:'POST', body:JSON.stringify({email, password:pass})
     });
-    await clerk.setActive({ session: res.createdSessionId });
-    const user = clerk.user;
+    if(!r.ok) throw new Error(r.data?.error_description||r.data?.msg||'Forkert e-mail eller adgangskode.');
+    sbToken = r.data.access_token;
+    sbUserId = r.data.user.id;
+    localStorage.setItem('sb_token', sbToken);
+    localStorage.setItem('sb_uid', sbUserId);
+    localStorage.setItem('sb_email', email);
     currentUser={
-      username: (user.primaryEmailAddress?.emailAddress||user.id).split('@')[0],
-      name: user.fullName||user.firstName||'',
-      email: user.primaryEmailAddress?.emailAddress||'',
-      sbId: user.id
+      username: email.split('@')[0],
+      name: r.data.user.user_metadata?.name||email.split('@')[0],
+      email, sbId: r.data.user.id
     };
     document.getElementById('loginScreen').style.display='none';
     loadUserData();
@@ -4566,7 +4567,7 @@ async function doLogin(){
     initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
     if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
   } catch(e){
-    err.textContent=e.errors?.[0]?.message||e.message||'Forkert e-mail eller adgangskode.';
+    err.textContent=e.message||'Forkert e-mail eller adgangskode.';
   }
 }
 
@@ -4577,7 +4578,6 @@ async function doRegister(){
   const pass=document.getElementById('r-pass').value;
   const pass2=document.getElementById('r-pass2').value;
   const err=document.getElementById('r-err');
-  if(!clerk){err.textContent='Login-system loader stadig. Prøv igen om et sekund.';return;}
   if(!email||!email.includes('@')){err.textContent='Indtast en gyldig e-mail.';return;}
   if(pass.length<8){err.textContent='Adgangskoden skal være mindst 8 tegn.';return;}
   if(!/[A-Z]/.test(pass)){err.textContent='Adgangskoden skal indeholde mindst ét stort bogstav.';return;}
@@ -4586,21 +4586,30 @@ async function doRegister(){
   if(pass!==pass2){err.textContent='Adgangskoderne matcher ikke.';return;}
   err.textContent='Opretter konto…';
   try {
-    const res = await clerk.signUp.create({
-      emailAddress: email,
-      password: pass,
-      firstName: name.split(' ')[0]||name,
-      lastName: name.split(' ').slice(1).join(' ')||''
+    const r = await sbFetch('/auth/v1/signup', {
+      method:'POST',
+      body:JSON.stringify({email, password:pass, data:{name}})
     });
-    // Prepare verification
-    await res.prepareEmailAddressVerification({ strategy: 'email_code' });
-    // Show verification input
-    err.style.color='var(--accent)';
-    err.textContent='Tjek din e-mail for en bekræftelseskode.';
-    showVerificationForm(res);
+    if(!r.ok) throw new Error(r.data?.msg||r.data?.error_description||'Oprettelse fejlede.');
+    if(r.data?.access_token) {
+      sbToken = r.data.access_token;
+      sbUserId = r.data.user?.id;
+      localStorage.setItem('sb_token', sbToken);
+      localStorage.setItem('sb_uid', sbUserId||'');
+      localStorage.setItem('sb_email', email);
+      currentUser={username:email.split('@')[0], name:name||email.split('@')[0], email, sbId:r.data.user?.id};
+      document.getElementById('loginScreen').style.display='none';
+      loadUserData();
+      updateNavUser();initDietButtons();renderAllergyTags();
+      initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
+      if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
+    } else {
+      err.style.color='var(--accent)';
+      err.textContent='✓ Tjek din e-mail og bekræft din konto, og log derefter ind.';
+    }
   } catch(e){
     err.style.color='';
-    err.textContent=e.errors?.[0]?.message||e.message||'Oprettelse fejlede.';
+    err.textContent=e.message||'Oprettelse fejlede.';
   }
 }
 
@@ -4645,9 +4654,10 @@ async function doVerify(){
 
 
 async function doLogout(){
-  await doClerkLogout();
+  try { await doClerkLogout(); } catch(e) {}
+  sbToken=null; sbUserId=null;
+  ['sb_token','sb_uid','sb_email'].forEach(k=>localStorage.removeItem(k));
   currentUser=null;
-  localStorage.removeItem('dp_current_user');
   closeUserDrop();
   saved=new Set();plan={};userRecipes=[];fridgeItems=[];savedPlans=[];
   ratings={};notes={};dietPrefs=[];allergyPrefs=[];
@@ -4694,6 +4704,20 @@ function togglePass(id,btn){
 
 // ── INIT: check if already logged in ─────────────────
 async function initAuth(){
+  // Restore Supabase session from localStorage
+  const token = localStorage.getItem('sb_token');
+  const uid = localStorage.getItem('sb_uid');
+  const email = localStorage.getItem('sb_email');
+  if(token && uid && email) {
+    sbToken = token;
+    sbUserId = uid;
+    currentUser = {
+      username: email.split('@')[0],
+      name: email.split('@')[0],
+      email, sbId: uid
+    };
+  }
+  // Also try Clerk for Google login session
   try { await initClerk(); } catch(e) { console.warn('Clerk:', e.message); }
   try { showApp(); } catch(e) { console.warn('showApp:', e.message); }
   if(currentUser) {
