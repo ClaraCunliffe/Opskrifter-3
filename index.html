@@ -4717,13 +4717,14 @@ async function initAuth(){
       email, sbId: uid
     };
   }
-  // Also try Clerk for Google login session
-  try { await initClerk(); } catch(e) { console.warn('Clerk:', e.message); }
+  // Show app immediately — don't wait for Clerk
   try { showApp(); } catch(e) { console.warn('showApp:', e.message); }
   if(currentUser) {
     try { syncFavorites().then(()=>updateBadges()); } catch(e) {}
     try { syncUserRecipes().then(()=>{if(activeView==='mine')renderMine();}); } catch(e) {}
   }
+  // Load Clerk in background for Google login
+  try { await initClerk(); } catch(e) { console.warn('Clerk:', e.message); }
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
