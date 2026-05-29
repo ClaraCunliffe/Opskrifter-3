@@ -451,7 +451,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 /* PLAN MODAL */
 .mo{position:fixed;inset:0;background:rgba(10,5,20,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s}
 .mo.open{opacity:1;pointer-events:all}
-.modal{background:var(--surface);border-radius:16px;width:100%;max-width:520px;max-height:82vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(60,30,100,.18);transform:translateY(12px);transition:transform .22s;border:1px solid var(--border)}
+.modal{background:var(--surface);border-radius:16px;width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(60,30,100,.18);transform:translateY(12px);transition:transform .22s;border:1px solid var(--border);overflow:hidden}
 .mo.open .modal{transform:translateY(0)}
 .mh{padding:1.3rem 1.4rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem}
 .mh h3{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:300}
@@ -461,7 +461,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .msearch{padding:.75rem 1.4rem;border-bottom:1px solid var(--border)}
 .msearch input{width:100%;background:var(--surface2);border:1px solid transparent;border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;outline:none;transition:all .2s;color:var(--text)}
 .msearch input:focus{background:var(--surface);border-color:var(--accent2);box-shadow:0 0 0 3px rgba(123,94,167,.1)}
-.mlist{overflow-y:auto;flex:1;padding:.4rem}
+.mlist{overflow-y:auto;flex:1;padding:.4rem;min-height:0}
 .mlbl{font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:.5rem .9rem .18rem}
 .mr{display:flex;align-items:center;gap:.85rem;padding:.6rem .9rem;border-radius:8px;cursor:pointer;transition:background .15s}
 .mr:hover{background:var(--surface2)}
@@ -3057,7 +3057,7 @@ function renderSlotList(){
   weekDates.forEach((d,i)=>{
     const isToday=sameDay(d,today);
     const isPast=d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
-    const dayMeals=MEALS.filter(m=>visibleMeals.includes(m.key));
+    const dayMeals=MEALS;
     const hasAny=dayMeals.some(m=>planGet(planKey(d,m.key)).length>0);
 
     h+=`<div style="border-bottom:1px solid var(--border)">
@@ -3088,7 +3088,7 @@ function renderSlotList(){
 
   h+=`</div>`;
   document.getElementById('mList').innerHTML=h;
-  document.getElementById('mList').style.cssText='overflow:visible;flex:1;display:flex;flex-direction:column;padding:0';
+  document.getElementById('mList').style.cssText='overflow-y:auto;flex:1;display:flex;flex-direction:column;padding:0;min-height:0';
 }
 
 function slotPickerChangeWeek(days){
