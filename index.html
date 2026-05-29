@@ -4316,7 +4316,7 @@ async function doForgotPassword(){
   }
   document.getElementById('l-err').textContent = 'Sender nulstillingsmail…';
   try {
-    await clerk.client.signIn.create({
+    await clerk.signIn.create({
       strategy: 'reset_password_email_code',
       identifier: email
     });
@@ -4542,7 +4542,7 @@ async function doLogin(){
   if(!email||!pass){err.textContent='Udfyld begge felter.';return;}
   err.textContent='Logger ind…';
   try {
-    const res = await clerk.client.signIn.create({
+    const res = await clerk.signIn.create({
       identifier: email,
       password: pass
     });
@@ -4580,7 +4580,7 @@ async function doRegister(){
   if(pass!==pass2){err.textContent='Adgangskoderne matcher ikke.';return;}
   err.textContent='Opretter konto…';
   try {
-    const res = await clerk.client.signUp.create({
+    const res = await clerk.signUp.create({
       emailAddress: email,
       password: pass,
       firstName: name.split(' ')[0]||name,
