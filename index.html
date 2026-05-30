@@ -807,6 +807,73 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .login-divider{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;color:var(--text3);font-size:.8rem}
 .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
+
+/* ── MOBIL ─────────────────────────────────────── */
+@media(max-width:600px){
+  .ntop{padding:.5rem 1rem;gap:.5rem}
+  .nlogo{font-size:1.1rem}
+  .nsearch{display:none}
+  .nright{gap:.3rem}
+  .bsm{padding:.35rem .65rem;font-size:.72rem}
+  .mbadge{min-width:14px;height:14px;font-size:.55rem}
+  .nmenu{padding:0 .25rem}
+  .mi{padding:.55rem .7rem;font-size:.75rem}
+  .hero-inner{padding:2rem 1rem;gap:1.5rem}
+  .hero h1{font-size:2rem;line-height:1.15}
+  .hero p{font-size:.82rem}
+  .hstats{gap:.5rem}
+  .hstat-item{padding:.5rem .75rem}
+  .hsn{font-size:1.4rem}
+  .hsl{font-size:.58rem}
+  .filter-bar-inner{padding:0 .75rem;gap:.5rem}
+  .fb-label{display:none}
+  .fb-divider{display:none}
+  .fb-ing{min-width:130px}
+  .allergy-search-wrap{min-width:130px;max-width:200px}
+  .diet-select-wrap{min-width:130px;max-width:200px}
+  .rgrid{grid-template-columns:1fr}
+  .cimg{height:180px}
+  .panel{width:100vw}
+  .pbody{padding:1.2rem 1.2rem 2rem}
+  .ptitle{font-size:1.4rem}
+  .pactions{flex-wrap:wrap;gap:.4rem;padding:.85rem 1rem}
+  .pbmain{flex:1 1 100%}
+  .pbsec,.pbedit,.pbprint{flex:1;font-size:.72rem;padding:.5rem .6rem}
+  .ing-grid{grid-template-columns:1fr}
+  .nutr-row{grid-template-columns:repeat(2,1fr)}
+  .page{padding:1rem}
+  .shead{flex-wrap:wrap;gap:.5rem}
+  .week-grid{min-width:600px}
+  .cal-dow{font-size:.58rem;padding:.4rem 0}
+  .cal-day{min-height:44px;padding:.4rem .2rem}
+  .cal-dn{font-size:.72rem}
+  .week-head{flex-wrap:wrap;gap:.5rem}
+  .week-btns{flex-wrap:wrap;gap:.3rem}
+  .week-btns .bsm{font-size:.72rem;padding:.32rem .65rem}
+  .shop-grid{grid-template-columns:1fr}
+  .shop-top{flex-wrap:wrap;gap:.5rem}
+  .mine-hero{flex-direction:column;padding:1.5rem 0}
+  .mine-add-hero-btn{margin-right:1rem;margin-top:.5rem}
+  .mine-controls{padding:.75rem}
+  .mine-filters{flex-direction:column;align-items:flex-start}
+  .modal{max-width:100%;border-radius:12px 12px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh}
+  .mo{align-items:flex-end;padding:0}
+  .save-modal{border-radius:12px 12px 0 0}
+  .save-mo{align-items:flex-end;padding:0}
+  .rform-modal{border-radius:12px 12px 0 0;max-height:95vh}
+  .rform-overlay{align-items:flex-end;padding:0}
+  .fridge-hero{padding:1.5rem 0}
+  .fridge-title{font-size:1.8rem}
+  .fridge-page{padding-top:1rem}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .user-drop{right:0;min-width:160px}
+  .nav-user-btn span{display:none}
+}
+@media(max-width:400px){
+  .hero h1{font-size:1.7rem}
+  .bsm{padding:.3rem .5rem;font-size:.68rem}
+  .nright{gap:.2rem}
+}
 </style>
 </head>
 <body>
@@ -902,6 +969,10 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <header>
   <div class="ntop">
     <div class="nlogo" onclick="switchMenu('alle')"><span class="nl1">Daily</span><span class="nl2">Plate</span></div>
+    <div class="nsearch" style="flex:1;max-width:340px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Søg opskrifter…" oninput="globalQ=this.value.toLowerCase();renderGrid()" id="headerSearch">
+    </div>
     <div class="nright">
       <button class="bsm" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter <span id="fBadge" class="mbadge" style="display:none">0</span></button>
       <button class="bsm" onclick="requireLogin(()=>openFamilySettings())">
@@ -2028,7 +2099,7 @@ async function deleteRecipeFromCloud(sbId) {
 
 let currentUser=null;
 let publicRecipes=[];
-function userKey(k){return currentUser?'dp_'+currentUser.username+'_'+k:k;}
+function userKey(k){return currentUser?.sbId?'dp_'+currentUser.sbId+'_'+k:k;}
 
 let saved=new Set(JSON.parse(localStorage.getItem(userKey('sv_saved'))||'[]'));
 let plan=loadPlan();
@@ -2058,7 +2129,34 @@ function persistUser(){localStorage.setItem(userKey('sv_userrecipes'),JSON.strin
 function loadPlan(){
   try{const d=JSON.parse(localStorage.getItem(userKey('sv_plan2'))||'{}');return d;}catch(e){return {};}
 }
-function persist(){localStorage.setItem(userKey('sv_saved'),JSON.stringify([...saved]));localStorage.setItem(userKey('sv_plan2'),JSON.stringify(plan));}
+function persist(){
+  localStorage.setItem(userKey('sv_saved'),JSON.stringify([...saved]));
+  localStorage.setItem(userKey('sv_plan2'),JSON.stringify(plan));
+  if(currentUser?.sbId) savePlanToCloud();
+}
+
+async function savePlanToCloud(){
+  if(!currentUser?.sbId) return;
+  try {
+    await sbUpsert('ugeplaner', {
+      user_id: currentUser.sbId,
+      dato: 'plan',
+      meal: 'all',
+      recipe_ids: plan
+    }, 'user_id,dato,meal');
+  } catch(e) {}
+}
+
+async function loadPlanFromCloud(){
+  if(!currentUser?.sbId) return;
+  try {
+    const data = await sbSelect('ugeplaner', `user_id=eq.${currentUser.sbId}&dato=eq.plan&meal=eq.all`);
+    if(data && data.length > 0 && data[0].recipe_ids) {
+      plan = data[0].recipe_ids;
+      localStorage.setItem(userKey('sv_plan2'), JSON.stringify(plan));
+    }
+  } catch(e) {}
+}
 // Multi-recipe slot helpers — values are arrays; legacy single ints auto-upgraded
 function planGet(key){const v=plan[key];if(!v)return[];if(Array.isArray(v))return v;return[v];}
 function planSet(key,arr){if(!arr||!arr.length){delete plan[key];}else{plan[key]=arr;}}
@@ -2252,7 +2350,7 @@ function updateBadges(){
 }
 
 const heroRids={};
-const MEAL_LABELS_HERO={morgenmad:'Morgen i dag',frokost:'Frokost i dag',aftensmad:'Aftensmad i dag',snacks:'Snack i dag',dessert:'Dessert i dag',drikkevarer:'Drik i dag'};
+const MEAL_LABELS_HERO={morgenmad:'Morgenmad i dag',frokost:'Frokost i dag',aftensmad:'Aftensmad i dag',snacks:'Snack i dag',dessert:'Dessert i dag',drikkevarer:'Drik i dag'};
 
 function updateHero(){
   document.getElementById('hF').textContent=saved.size;
@@ -2426,7 +2524,11 @@ function renderFav(){
 
 function toggleSave(id,e){
   e.stopPropagation();
-  if(!currentUser){requireLogin(()=>toggleSave(id,{stopPropagation:()=>{}}));return;}saved.has(id)?saved.delete(id):saved.add(id);persist();
+  if(!currentUser){requireLogin(()=>toggleSave(id,{stopPropagation:()=>{}}));return;}
+  const isSaved=!saved.has(id);
+  isSaved?saved.add(id):saved.delete(id);
+  persist();
+  if(currentUser?.sbId) saveFavoriteToCloud(id, isSaved);
   if(activeView==='favoritter')renderFav();else renderGrid();
   updateBadges();updateHero();if(panelRid===id)renderPanelActions(id);
 }
@@ -3328,7 +3430,31 @@ function deleteUserRecipe(id,e){
 }
 
 // ── FRIDGE ──────────────────────────────────────────
-function persistFridge(){localStorage.setItem(userKey('sv_fridge'),JSON.stringify(fridgeItems));}
+function persistFridge(){
+  localStorage.setItem(userKey('sv_fridge'),JSON.stringify(fridgeItems));
+  if(currentUser?.sbId) saveFridgeToCloud();
+}
+
+async function saveFridgeToCloud(){
+  if(!currentUser?.sbId) return;
+  try {
+    await sbUpsert('ugeplaner',{
+      user_id:currentUser.sbId, dato:'fridge', meal:'items',
+      recipe_ids:fridgeItems
+    },'user_id,dato,meal');
+  } catch(e){}
+}
+
+async function loadFridgeFromCloud(){
+  if(!currentUser?.sbId) return;
+  try {
+    const data=await sbSelect('ugeplaner',`user_id=eq.${currentUser.sbId}&dato=eq.fridge&meal=eq.items`);
+    if(data&&data.length>0&&data[0].recipe_ids){
+      fridgeItems=Array.isArray(data[0].recipe_ids)?data[0].recipe_ids:[];
+      localStorage.setItem(userKey('sv_fridge'),JSON.stringify(fridgeItems));
+    }
+  } catch(e){}
+}
 
 // Collect all unique base ingredient names from recipes
 function getAllIngNames(){
@@ -3469,7 +3595,31 @@ function renderFridgeRecipes(){
 // SAVED PLANS
 let savedPlans=JSON.parse(localStorage.getItem(userKey('sv_savedplans'))||'[]');
 
-function persistSavedPlans(){localStorage.setItem(userKey('sv_savedplans'),JSON.stringify(savedPlans));}
+function persistSavedPlans(){
+  localStorage.setItem(userKey('sv_savedplans'),JSON.stringify(savedPlans));
+  if(currentUser?.sbId) saveSavedPlansToCloud();
+}
+
+async function saveSavedPlansToCloud(){
+  if(!currentUser?.sbId) return;
+  try {
+    await sbUpsert('ugeplaner',{
+      user_id:currentUser.sbId, dato:'savedplans', meal:'all',
+      recipe_ids:savedPlans
+    },'user_id,dato,meal');
+  } catch(e){}
+}
+
+async function loadSavedPlansFromCloud(){
+  if(!currentUser?.sbId) return;
+  try {
+    const data=await sbSelect('ugeplaner',`user_id=eq.${currentUser.sbId}&dato=eq.savedplans&meal=eq.all`);
+    if(data&&data.length>0&&data[0].recipe_ids){
+      savedPlans=Array.isArray(data[0].recipe_ids)?data[0].recipe_ids:[];
+      localStorage.setItem(userKey('sv_savedplans'),JSON.stringify(savedPlans));
+    }
+  } catch(e){}
+}
 
 function renderSavedPlans(){
   const el=document.getElementById('savedPlansList');
@@ -4601,11 +4751,15 @@ function updateNavUser(){
     }
   } catch(e) {}
   if(!currentUser)return;
-  const initials=currentUser.name?currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2):currentUser.username[0].toUpperCase();
-  document.getElementById('navAvatar').textContent=initials;
-  document.getElementById('navUserName').textContent=currentUser.name||currentUser.username;
-  document.getElementById('udName').textContent=currentUser.name||currentUser.username;
-  document.getElementById('udUser').textContent='@'+currentUser.username;
+  const initials=(currentUser.name||currentUser.username||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  const avatarEl=document.getElementById('navAvatar');
+  if(avatarEl){avatarEl.innerHTML=`<span class="nav-initials" style="opacity:1">${initials}</span>`;}
+  const nameEl=document.getElementById('navUserName');
+  if(nameEl)nameEl.textContent=currentUser.name||currentUser.username;
+  const udName=document.getElementById('udName');
+  if(udName)udName.textContent=currentUser.name||currentUser.username;
+  const udUser=document.getElementById('udUser');
+  if(udUser)udUser.textContent=currentUser.email||'';
 }
 
 function showLoginTab(tab){
@@ -4650,7 +4804,13 @@ async function doLogin(){
     };
     document.getElementById('loginScreen').style.display='none';
     loadUserData();
-    await Promise.all([syncFavorites(), syncUserRecipes()]);
+    await Promise.all([
+      syncFavorites(),
+      syncUserRecipes(),
+      loadPlanFromCloud(),
+      loadFridgeFromCloud(),
+      loadSavedPlansFromCloud()
+    ]);
     updateNavUser();initDietButtons();renderAllergyTags();
     initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
     if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
@@ -4731,7 +4891,7 @@ async function doVerify(){
     };
     document.getElementById('loginScreen').style.display='none';
     loadUserData();
-    await Promise.all([syncFavorites(), syncUserRecipes()]);
+    await Promise.all([syncFavorites(), syncUserRecipes(), loadPlanFromCloud(), loadFridgeFromCloud(), loadSavedPlansFromCloud()]);
     updateNavUser();initDietButtons();renderAllergyTags();
     initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
     if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
@@ -4810,6 +4970,9 @@ async function initAuth(){
   if(currentUser) {
     try { syncFavorites().then(()=>updateBadges()); } catch(e) {}
     try { syncUserRecipes().then(()=>{if(activeView==='mine')renderMine();}); } catch(e) {}
+    try { loadPlanFromCloud().then(()=>{renderWeekGrid();renderStats();renderShopping();updateHero();}); } catch(e) {}
+    try { loadFridgeFromCloud(); } catch(e) {}
+    try { loadSavedPlansFromCloud().then(()=>{if(activeView==='ugeplan')renderSavedPlans();}); } catch(e) {}
   }
   // Load Clerk in background for Google login
   try { await initClerk(); } catch(e) { console.warn('Clerk:', e.message); }
