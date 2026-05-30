@@ -394,17 +394,38 @@ document.getElementById('modal').addEventListener('click',e=>{
 // IMAGE
 function handleImg(inp){
   const file=inp.files[0];if(!file)return;
-  if(file.size>5*1024*1024){toast('Billedet er for stort (max 5MB)','err');return;}
+  if(file.size>10*1024*1024){toast('Billedet er for stort (max 10MB)','err');return;}
+  toast('Behandler billede…','ok');
   const reader=new FileReader();
   reader.onload=e=>{
-    const b64=e.target.result;
-    document.getElementById('img-prev').src=b64;
-    document.getElementById('img-prev').style.display='block';
-    document.getElementById('img-lbl').style.display='none';
-    document.getElementById('img-area').classList.add('has-img');
-    uploadedImg=b64;
-    document.getElementById('ef-imgurl').value='(billede valgt — gemmes ved opret/opdater)';
+    const img=new Image();
+    img.onload=()=>{
+      // Compress: resize to max 1200px width and convert to JPEG at 80% quality
+      const maxW=1200;
+      const scale=Math.min(1,maxW/img.width);
+      const w=Math.round(img.width*scale);
+      const h=Math.round(img.height*scale);
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff';
+      ctx.fillRect(0,0,w,h);
+      ctx.drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/jpeg',0.82);
+      // Show preview
+      document.getElementById('img-prev').src=compressed;
+      document.getElementById('img-prev').style.display='block';
+      document.getElementById('img-lbl').style.display='none';
+      document.getElementById('img-area').classList.add('has-img');
+      uploadedImg=compressed;
+      const sizeKB=Math.round(compressed.length/1024);
+      document.getElementById('ef-imgurl').value=`(billede valgt — ${sizeKB} KB)`;
+      toast('Billede klar ✓','ok');
+    };
+    img.onerror=()=>toast('Kunne ikke læse billedet','err');
+    img.src=e.target.result;
   };
+  reader.onerror=()=>toast('Kunne ikke læse fil','err');
   reader.readAsDataURL(file);
 }
 
