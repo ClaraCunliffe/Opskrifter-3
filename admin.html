@@ -201,7 +201,7 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
       <div class="field-row">
         <div class="field">
           <label>Kategori</label>
-          <select id="ef-cat">
+          <select id="ef-cat" onchange="updateSubcats()">
             <option value="morgenmad">Morgenmad</option>
             <option value="frokost">Frokost</option>
             <option value="aftensmad">Aftensmad</option>
@@ -210,6 +210,12 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
             <option value="drikkevarer">Drikkevarer</option>
             <option value="suppe">Suppe</option>
             <option value="bagværk">Bagværk</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Underkategori</label>
+          <select id="ef-subcat">
+            <option value="">Ingen</option>
           </select>
         </div>
         <div class="field">
@@ -267,6 +273,98 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
 <div class="toast" id="toast"></div>
 
 <script>
+const SUBCATS = {
+  morgenmad: [
+    {val:'grød', lbl:'Grød & bowls'},
+    {val:'æg', lbl:'Æg'},
+    {val:'brød-morgen', lbl:'Brød & bagværk'},
+    {val:'sund-morgen', lbl:'Sund morgenmad'},
+    {val:'hurtig-morgen', lbl:'Hurtig morgenmad'},
+  ],
+  frokost: [
+    {val:'sandwich', lbl:'Sandwiches & wraps'},
+    {val:'salat', lbl:'Salater'},
+    {val:'smørrebrød', lbl:'Rugbrød & smørrebrød'},
+    {val:'bowl', lbl:'Bowls'},
+    {val:'suppe-frokost', lbl:'Supper'},
+    {val:'varm-frokost', lbl:'Varme frokostretter'},
+    {val:'mealprep', lbl:'Meal prep'},
+    {val:'hurtig-frokost', lbl:'Hurtig frokost'},
+    {val:'sund-frokost', lbl:'Sund frokost'},
+  ],
+  aftensmad: [
+    {val:'hverdagsret', lbl:'Hverdagsretter'},
+    {val:'kød', lbl:'Kødretter'},
+    {val:'fisk', lbl:'Fisk & skaldyr'},
+    {val:'vegetar', lbl:'Vegetarisk'},
+    {val:'pasta', lbl:'Pasta, ris & nudler'},
+    {val:'kartofler', lbl:'Kartofler'},
+    {val:'ovn', lbl:'Ovnbagte retter'},
+    {val:'gryde', lbl:'Gryderetter'},
+    {val:'suppe-aften', lbl:'Supper'},
+    {val:'salat-aften', lbl:'Salater & bowls'},
+    {val:'sides', lbl:'Sides & tilbehør'},
+    {val:'familie', lbl:'Familievenlig'},
+    {val:'verden', lbl:'Verdenskøkken'},
+    {val:'weekend-aften', lbl:'Weekend & gæstemad'},
+  ],
+  dessert: [
+    {val:'kager', lbl:'Kager'},
+    {val:'tærter', lbl:'Tærter'},
+    {val:'is', lbl:'Is & kolde desserter'},
+    {val:'chokolade', lbl:'Chokolade'},
+    {val:'frugt', lbl:'Frugtdesserter'},
+    {val:'creme', lbl:'Creme & mousse'},
+    {val:'småkager', lbl:'Småkager & søde snacks'},
+    {val:'nem-dessert', lbl:'Nem dessert'},
+    {val:'fest-dessert', lbl:'Festdessert'},
+    {val:'sund-dessert', lbl:'Sundere dessert'},
+    {val:'saucer', lbl:'Saucer & toppings'},
+    {val:'klassisk', lbl:'Klassiske danske desserter'},
+  ],
+  snacks: [
+    {val:'sund', lbl:'Sunde snacks'},
+    {val:'sød-snack', lbl:'Søde snacks'},
+    {val:'salt', lbl:'Salte snacks'},
+    {val:'dip', lbl:'Dips & spreads'},
+    {val:'brød-snack', lbl:'Brød & små hapsere'},
+    {val:'grønt-snack', lbl:'Grøntsagssnacks'},
+    {val:'protein-snack', lbl:'Proteinrige snacks'},
+    {val:'børn', lbl:'Snacks til børn'},
+    {val:'fest-snack', lbl:'Snacks til gæster'},
+    {val:'hurtig-snack', lbl:'Hurtige snacks'},
+    {val:'sprød', lbl:'Sprøde snacks'},
+  ],
+  drikkevarer: [
+    {val:'smoothie', lbl:'Smoothies'},
+    {val:'juice', lbl:'Juice & shots'},
+    {val:'kaffe', lbl:'Kaffe'},
+    {val:'te', lbl:'Te & varme drikke'},
+    {val:'lemonade', lbl:'Lemonade & iste'},
+    {val:'milkshake', lbl:'Milkshakes'},
+    {val:'mocktail', lbl:'Mocktails'},
+    {val:'cocktail', lbl:'Cocktails'},
+    {val:'mad-drik', lbl:'Drinks til mad'},
+    {val:'sund-drik', lbl:'Sunde drikke'},
+  ],
+  suppe: [
+    {val:'kraftig', lbl:'Kraftige supper'},
+    {val:'let-s', lbl:'Lette supper'},
+  ],
+  bagværk: [
+    {val:'brød', lbl:'Brød'},
+    {val:'sødt', lbl:'Sødt bagværk'},
+  ],
+};
+
+function updateSubcats() {
+  const cat = document.getElementById('ef-cat').value;
+  const sel = document.getElementById('ef-subcat');
+  const subs = SUBCATS[cat] || [];
+  sel.innerHTML = '<option value="">Ingen underkategori</option>' +
+    subs.map(s => `<option value="${s.val}">${s.lbl}</option>`).join('');
+}
+
 const SB_URL = 'https://dwvlhzvjaxojexufuagd.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3dmxoenZqYXhvamV4dWZ1YWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzYwNjQsImV4cCI6MjA5NTU1MjA2NH0.ibx0CrO-q1cUjh4CJYHhy0BKCf0kG98WMwut0L58QcQ';
 const ADMIN_EMAIL = 'moegelbergclara@gmail.com';
@@ -401,6 +499,11 @@ function openEdit(id) {
 
   document.getElementById('ef-title').value = r?.title || '';
   document.getElementById('ef-cat').value = r?.cat || 'aftensmad';
+  updateSubcats();
+  // Set subcat from tags
+  const subs = SUBCATS[r?.cat || 'aftensmad'] || [];
+  const existingSubcat = (r?.tags||[]).find(t => subs.some(s => s.val === t));
+  document.getElementById('ef-subcat').value = existingSubcat || '';
   document.getElementById('ef-diff').value = r?.diff || 'Middel';
   document.getElementById('ef-time').value = r?.tid || '';
   document.getElementById('ef-pers').value = r?.pers || '';
@@ -489,8 +592,14 @@ async function saveRecipe() {
   if(!title) { showToast('Titel er påkrævet', 'error'); return; }
 
   const cat = document.getElementById('ef-cat').value;
+  const subcat = document.getElementById('ef-subcat').value;
   const CAT_LABELS_MAP = {morgenmad:'Morgenmad',frokost:'Frokost',aftensmad:'Aftensmad',dessert:'Dessert',snacks:'Snacks',drikkevarer:'Drikkevarer',suppe:'Suppe','bagværk':'Bagværk'};
   const imgUrl = uploadedImgUrl || document.getElementById('ef-img').value.trim() || null;
+  const extraTags = document.getElementById('ef-tags').value.split(',').map(s=>s.trim()).filter(Boolean);
+  // Merge subcat into tags (remove old subcats first)
+  const allSubcatVals = Object.values(SUBCATS).flat().map(s=>s.val);
+  const cleanTags = extraTags.filter(t => !allSubcatVals.includes(t));
+  if(subcat) cleanTags.unshift(subcat);
 
   const payload = {
     title,
@@ -502,7 +611,7 @@ async function saveRecipe() {
     beskrivelse: document.getElementById('ef-desc').value.trim(),
     ing: document.getElementById('ef-ing').value.split('\n').map(s=>s.trim()).filter(Boolean),
     steps: document.getElementById('ef-steps').value.split('\n').map(s=>s.trim()).filter(Boolean),
-    tags: document.getElementById('ef-tags').value.split(',').map(s=>s.trim()).filter(Boolean),
+    tags: cleanTags,
     img_url: imgUrl,
     bg: `linear-gradient(160deg,${getCatBg(cat)})`
   };
@@ -578,6 +687,7 @@ window.addEventListener('DOMContentLoaded', () => {
     sbUserId = localStorage.getItem('admin_uid');
     showAdmin(email);
   }
+  updateSubcats();
   document.addEventListener('keydown', e => {
     if(e.key === 'Escape') closeEdit();
   });
