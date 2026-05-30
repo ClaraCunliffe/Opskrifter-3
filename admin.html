@@ -202,30 +202,30 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
       <!-- Kost -->
       <div class="field">
         <label>Kostpræferencer</label>
-        <div class="pills" id="diet-pills">
-          <label class="pill"><input type="checkbox" value="vegetar"> Vegetar</label>
-          <label class="pill"><input type="checkbox" value="vegansk"> Vegansk</label>
-          <label class="pill"><input type="checkbox" value="pesketar"> Pesketar</label>
-          <label class="pill"><input type="checkbox" value="glutenfri"> Glutenfri</label>
-          <label class="pill"><input type="checkbox" value="laktosefri"> Laktosefri</label>
-          <label class="pill"><input type="checkbox" value="antiinflammatorisk"> Antiinflammatorisk</label>
-          <label class="pill"><input type="checkbox" value="keto"> Keto</label>
-          <label class="pill"><input type="checkbox" value="lavt-kulhydrat"> Lavt kulhydrat</label>
-          <label class="pill"><input type="checkbox" value="hjøt-protein"> Højt protein</label>
+        <div id="diet-pills" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem .5rem;margin-top:.3rem">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="vegetar" style="accent-color:var(--acc)"> Vegetar</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="vegansk" style="accent-color:var(--acc)"> Vegansk</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="pesketar" style="accent-color:var(--acc)"> Pesketar</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="glutenfri" style="accent-color:var(--acc)"> Glutenfri</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="laktosefri" style="accent-color:var(--acc)"> Laktosefri</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="antiinflammatorisk" style="accent-color:var(--acc)"> Antiinflammatorisk</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="keto" style="accent-color:var(--acc)"> Keto</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="lavt-kulhydrat" style="accent-color:var(--acc)"> Lavt kulhydrat</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer"><input type="checkbox" value="hjøt-protein" style="accent-color:var(--acc)"> Højt protein</label>
         </div>
       </div>
       <!-- Allergener -->
       <div class="field">
         <label>Allergener (indeholder)</label>
-        <div class="pills" id="allergy-pills">
-          <label class="pill allergy"><input type="checkbox" value="gluten"> Gluten</label>
-          <label class="pill allergy"><input type="checkbox" value="laktose"> Laktose</label>
-          <label class="pill allergy"><input type="checkbox" value="æg"> Æg</label>
-          <label class="pill allergy"><input type="checkbox" value="nødder"> Nødder</label>
-          <label class="pill allergy"><input type="checkbox" value="fisk"> Fisk</label>
-          <label class="pill allergy"><input type="checkbox" value="skaldyr"> Skaldyr</label>
-          <label class="pill allergy"><input type="checkbox" value="sesam"> Sesam</label>
-          <label class="pill allergy"><input type="checkbox" value="soja"> Soja</label>
+        <div id="allergy-pills" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem .5rem;margin-top:.3rem">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="gluten" style="accent-color:var(--rose)"> Gluten</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="laktose" style="accent-color:var(--rose)"> Laktose</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="æg" style="accent-color:var(--rose)"> Æg</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="nødder" style="accent-color:var(--rose)"> Nødder</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="fisk" style="accent-color:var(--rose)"> Fisk</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="skaldyr" style="accent-color:var(--rose)"> Skaldyr</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="sesam" style="accent-color:var(--rose)"> Sesam</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.83rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="soja" style="accent-color:var(--rose)"> Soja</label>
         </div>
       </div>
     </div>
