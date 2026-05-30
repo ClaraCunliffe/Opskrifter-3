@@ -469,25 +469,126 @@ async function toggleStats(){
 
 async function loadStats(){
   const cards=document.getElementById('stat-cards');
+  cards.innerHTML='<div class="loading">Henter statistik…</div>';
   try {
-    // Count total users from auth (via Supabase admin API needs service key)
-    // Instead count from favoritter table unique users
-    const [favR, recR, userRecR] = await Promise.all([
+    const now=new Date();
+    const today=now.toISOString().slice(0,10);
+    const weekAgo=new Date(now-7*864e5).toISOString();
+    const monthAgo=new Date(now-30*864e5).toISOString();
+
+    const [favR, recR, userRecR, anaAll, anaToday, anaWeek, anaMonth] = await Promise.all([
       sb('/rest/v1/favoritter?select=user_id'),
-      sb('/rest/v1/public_opskrifter?select=id'),
-      sb('/rest/v1/opskrifter?select=user_id')
+      sb('/rest/v1/public_opskrifter?select=id,title,cat'),
+      sb('/rest/v1/opskrifter?select=user_id'),
+      sb('/rest/v1/analytics?select=event,user_id,created_at,metadata'),
+      sb(`/rest/v1/analytics?select=event,user_id&event=eq.page_view&created_at=gte.${today}T00:00:00`),
+      sb(`/rest/v1/analytics?select=event,user_id&event=eq.page_view&created_at=gte.${weekAgo}`),
+      sb(`/rest/v1/analytics?select=event,user_id&event=eq.page_view&created_at=gte.${monthAgo}`)
     ]);
-    const uniqueUsers=new Set((favR.data||[]).map(r=>r.user_id).concat((userRecR.data||[]).map(r=>r.user_id))).size;
-    const totalRecipes=(recR.data||[]).length;
-    const totalFavs=(favR.data||[]).length;
+
+    const allEvents = anaAll.data||[];
+    const uniqueUsers=new Set([
+      ...(favR.data||[]).map(r=>r.user_id),
+      ...(userRecR.data||[]).map(r=>r.user_id)
+    ].filter(Boolean)).size;
+
+    // Page views
+    const viewsToday=(anaToday.data||[]).length;
+    const viewsWeek=(anaWeek.data||[]).length;
+    const viewsMonth=(anaMonth.data||[]).length;
+    const viewsTotal=allEvents.filter(e=>e.event==='page_view').length;
+
+    // Unique visitors this week
+    const uniqueVisitorsWeek=new Set((anaWeek.data||[]).map(e=>e.user_id).filter(Boolean)).size;
+
+    // Most viewed recipes
+    const recipeViews={};
+    allEvents.filter(e=>e.event==='recipe_view').forEach(e=>{
+      const id=e.metadata?.recipe_id;
+      const title=e.metadata?.title||id;
+      if(id){recipeViews[title]=(recipeViews[title]||0)+1;}
+    });
+    const topRecipes=Object.entries(recipeViews).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+    // Most viewed categories
+    const catViews={};
+    allEvents.filter(e=>e.event==='category_view').forEach(e=>{
+      const cat=e.metadata?.category;
+      if(cat&&!['alle','favoritter','mine','ugeplan','fridge','discover'].includes(cat)){
+        catViews[cat]=(catViews[cat]||0)+1;
+      }
+    });
+    const topCats=Object.entries(catViews).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+    // Saves
+    const totalSaves=allEvents.filter(e=>e.event==='recipe_saved').length;
+
+    // Daily views last 7 days
+    const dailyViews={};
+    for(let i=6;i>=0;i--){
+      const d=new Date(now-i*864e5).toISOString().slice(0,10);
+      dailyViews[d]=0;
+    }
+    allEvents.filter(e=>e.event==='page_view').forEach(e=>{
+      const d=e.created_at?.slice(0,10);
+      if(d&&dailyViews[d]!==undefined)dailyViews[d]++;
+    });
+    const maxViews=Math.max(...Object.values(dailyViews),1);
+
     cards.innerHTML=`
-      <div class="stat"><div class="sn">${uniqueUsers}</div><div class="sl">Aktive brugere</div></div>
-      <div class="stat"><div class="sn">${totalRecipes}</div><div class="sl">Offentlige opskrifter</div></div>
-      <div class="stat"><div class="sn">${totalFavs}</div><div class="sl">Favoritter i alt</div></div>
-      <div class="stat"><div class="sn">${(userRecR.data||[]).length}</div><div class="sl">Brugeropskrifter</div></div>
+      <div class="stat"><div class="sn">${viewsToday}</div><div class="sl">Besøg i dag</div></div>
+      <div class="stat"><div class="sn">${viewsWeek}</div><div class="sl">Besøg denne uge</div></div>
+      <div class="stat"><div class="sn">${viewsMonth}</div><div class="sl">Besøg denne måned</div></div>
+      <div class="stat"><div class="sn">${viewsTotal}</div><div class="sl">Besøg i alt</div></div>
+      <div class="stat"><div class="sn">${uniqueUsers}</div><div class="sl">Registrerede brugere</div></div>
+      <div class="stat"><div class="sn">${uniqueVisitorsWeek}</div><div class="sl">Unikke besøgende (uge)</div></div>
+      <div class="stat"><div class="sn">${totalSaves}</div><div class="sl">Opskrifter gemt som favorit</div></div>
+      <div class="stat"><div class="sn">${(recR.data||[]).length}</div><div class="sl">Offentlige opskrifter</div></div>
     `;
+
+    // Chart + top lists
+    const chartBars=Object.entries(dailyViews).map(([date,count])=>{
+      const pct=Math.round((count/maxViews)*100);
+      const day=new Date(date).toLocaleDateString('da-DK',{weekday:'short',day:'numeric'});
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;flex:1">
+        <div style="font-size:.72rem;color:var(--txt3);font-weight:500">${count}</div>
+        <div style="width:100%;background:var(--sur2);border-radius:6px 6px 0 0;overflow:hidden;height:80px;display:flex;align-items:flex-end">
+          <div style="width:100%;height:${pct}%;background:var(--acc);border-radius:4px 4px 0 0;transition:height .3s;min-height:2px"></div>
+        </div>
+        <div style="font-size:.68rem;color:var(--txt3);text-align:center">${day}</div>
+      </div>`;
+    }).join('');
+
+    const topRecipesHTML=topRecipes.length?topRecipes.map(([title,count],i)=>`
+      <div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--bor)">
+        <div style="font-family:'Fraunces',serif;font-size:1rem;font-weight:300;color:var(--txt3);width:20px">${i+1}</div>
+        <div style="flex:1;font-size:.83rem;font-weight:500">${title}</div>
+        <div style="font-size:.78rem;color:var(--acc);font-weight:600">${count} visninger</div>
+      </div>`).join(''):'<div style="color:var(--txt3);font-size:.82rem;font-style:italic">Ingen data endnu</div>';
+
+    const topCatsHTML=topCats.length?topCats.map(([cat,count])=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--bor)">
+        <div style="font-size:.83rem;font-weight:500;text-transform:capitalize">${cat}</div>
+        <div style="font-size:.78rem;color:var(--acc);font-weight:600">${count} besøg</div>
+      </div>`).join(''):'<div style="color:var(--txt3);font-size:.82rem;font-style:italic">Ingen data endnu</div>';
+
+    document.getElementById('stats-panel').innerHTML+=`
+      <div style="background:#fff;border:1px solid var(--bor);border-radius:14px;padding:1.4rem;margin-top:1.2rem">
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:1rem">Besøg de seneste 7 dage</div>
+        <div style="display:flex;gap:.4rem;align-items:flex-end;height:120px">${chartBars}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem">
+        <div style="background:#fff;border:1px solid var(--bor);border-radius:14px;padding:1.4rem">
+          <div style="font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:.9rem">🔥 Mest sete opskrifter</div>
+          ${topRecipesHTML}
+        </div>
+        <div style="background:#fff;border:1px solid var(--bor);border-radius:14px;padding:1.4rem">
+          <div style="font-size:.75rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3);margin-bottom:.9rem">📂 Mest besøgte kategorier</div>
+          ${topCatsHTML}
+        </div>
+      </div>`;
   } catch(e){
-    cards.innerHTML=`<div class="empty">Kunne ikke hente statistik: ${e.message}</div>`;
+    cards.innerHTML=`<div class="empty">Fejl: ${e.message}</div>`;
   }
 }
 
