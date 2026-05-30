@@ -2369,7 +2369,7 @@ function updateHero(){
   let cardsHtml=mealsToShow.map(meal=>{
     const rids=planGet(planKey(today,meal));
     const rid=rids[0]||null;
-    const r=rid?allRecipes().find(x=>x.id===rid):null;
+    const r=rid?allRecipes().find(x=>String(x.id)===String(rid)):null;
     heroRids[meal]=rid||null;
     const title=r?r.title.split(' ').slice(0,3).join(' ')+'…':'—';
     const sub=r?r.time:'Ingen planlagt';
@@ -2423,8 +2423,8 @@ function renderDiscover(){
 
 // CARDS
 function cardHTML(r,i){
-  const sv=saved.has(r.id);
-  return `<div class="rc" style="animation-delay:${i*25}ms" onclick="openPanel(${r.id})">
+  const sv=saved.has(String(r.id));
+  return `<div class="rc" style="animation-delay:${i*25}ms" onclick="openPanel('${r.id}')">
     <div class="cimg" style="background:${catBg(r)}">
       ${r.img
         ? `<img src="${r.img}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
@@ -2434,7 +2434,7 @@ function cardHTML(r,i){
         <span class="ccat-badge">${r.lbl}</span>
         ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:rgba(74,138,181,.15);border-color:rgba(74,138,181,.35);color:#4A8AB5">${dietMap[d]}</span>`:'';})()}
       </div>
-      <button class="cfav${sv?' saved':''}" onclick="toggleSave(${r.id},event)">
+      <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </button>
     </div>
@@ -2444,7 +2444,7 @@ function cardHTML(r,i){
       ${ratings[r.id]?`<div class="card-stars">${[1,2,3,4,5].map(n=>`<span class="cs${n<=ratings[r.id]?' on':''}">★</span>`).join('')}</div>`:''}
       <div class="cdesc">${r.desc}</div>
       <div class="cmeta"><span>${r.time}</span><span>${r.pers}</span></div>
-      <button class="cbtn" onclick="startPickSlot(${r.id},event)">
+      <button class="cbtn" onclick="startPickSlot('${r.id}',event)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
         Tilføj til kalender
       </button>
@@ -2499,7 +2499,7 @@ function setFavCat(cat,btn){
 }
 
 function renderFav(){
-  const base=allRecipes().filter(r=>saved.has(r.id));
+  const base=allRecipes().filter(r=>saved.has(String(r.id)));
   const filtered=activeFavCat?base.filter(r=>r.cat===activeFavCat):base;
   const list=getFiltered(filtered);
 
@@ -2523,10 +2523,11 @@ function renderFav(){
 }
 
 function toggleSave(id,e){
+  id=String(id);
   e.stopPropagation();
   if(!currentUser){requireLogin(()=>toggleSave(id,{stopPropagation:()=>{}}));return;}
-  const isSaved=!saved.has(id);
-  isSaved?saved.add(id):saved.delete(id);
+  const isSaved=!saved.has(String(id));
+  isSaved?saved.add(String(id)):saved.delete(String(id));
   persist();
   if(currentUser?.sbId) saveFavoriteToCloud(id, isSaved);
   if(activeView==='favoritter')renderFav();else renderGrid();
@@ -2630,7 +2631,7 @@ function renderWeekGrid(){
     weekDates.forEach(d=>{
       const k=planKey(d,m.key),rids=planGet(k);
       if(rids.length){
-        const cards=rids.map(rid=>{const r=allRecipes().find(x=>x.id===rid);if(!r)return'';return`
+        const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';return`
           <div class="cell-filled" onclick="openPanel(${rid})" style="margin-bottom:3px">
             <button class="cell-rm" onclick="rmSlotOne(event,'${dStr(d)}','${m.key}',${rid})">✕</button>
             <div class="cf-bar" style="background:${CAT_COLORS[r.cat]||'#D4C4E4'}"></div>
@@ -2656,7 +2657,7 @@ function renderStats(){
   const weekKeys=weekDates.flatMap(d=>MEALS.map(m=>planKey(d,m.key)));
   const weekVals=weekKeys.flatMap(k=>planGet(k));
   const byLbl={};
-  weekVals.forEach(id=>{const r=allRecipes().find(x=>x.id===id);if(r){byLbl[r.lbl]=(byLbl[r.lbl]||0)+1;}});
+  weekVals.forEach(id=>{const r=allRecipes().find(x=>String(x.id)===String(id));if(r){byLbl[r.lbl]=(byLbl[r.lbl]||0)+1;}});
   const cats=Object.entries(byLbl).map(([k,v])=>`<div class="sc"><div class="scn">${v}</div><div class="scl">${k}</div></div>`).join('');
   document.getElementById('planStats').innerHTML=`<div class="sc"><div class="scn">${weekVals.length}</div><div class="scl">Planlagt i uge</div></div><div class="sc"><div class="scn">${42-weekVals.length}</div><div class="scl">Tomme felter</div></div>${cats}`;
 }
@@ -2888,7 +2889,7 @@ function renderShopping(){
   const raws=[];
   weekDates.forEach(d=>MEALS.forEach(m=>{
     planGet(planKey(d,m.key)).forEach(rid=>{
-      const r=allRecipes().find(x=>x.id===rid);
+      const r=allRecipes().find(x=>String(x.id)===String(rid));
       if(r)(r.ing||[]).forEach(i=>raws.push(i));
     });
   }));
@@ -2953,7 +2954,7 @@ function clearChecked(){localStorage.removeItem('sv_ck');renderShopping();}
 
 // PANEL
 function openPanel(id){
-  const r=allRecipes().find(x=>x.id===id);if(!r)return;
+  const r=allRecipes().find(x=>String(x.id)===String(id));if(!r)return;
   panelRid=id;
   // Reset serving to base
   const baseMatch=r.pers.match(/\d+/);
@@ -2970,7 +2971,7 @@ function openPanel(id){
 }
 
 function renderPanelBody(id){
-  const r=allRecipes().find(x=>x.id===id);if(!r)return;
+  const r=allRecipes().find(x=>String(x.id)===String(id));if(!r)return;
   const ex=rx(id);
   const factor=panelServings/panelBaseServings;
   const hero=document.getElementById('pHero');
@@ -3013,7 +3014,7 @@ function renderPanelBody(id){
   const costStr='';
   // Similar
   const similar=allRecipes().filter(x=>x.id!==id&&(x.cat===r.cat||x.tags.some(t=>r.tags.includes(t)))).slice(0,3);
-  const simHTML=similar.map(x=>`<div class="sim-item" onclick="openPanel(${x.id})">
+  const simHTML=similar.map(x=>`<div class="sim-item" onclick="openPanel('${x.id}')">
     <div class="sim-dot" style="background:${CAT_COLORS[x.cat]||'var(--border2)'}"></div>
     <div class="sim-info"><div class="sim-title">${x.title}</div><div class="sim-meta">${x.lbl} · ${x.time}</div></div>
     <span class="sim-arr">›</span>
@@ -3059,7 +3060,8 @@ function renderPanelBody(id){
     ${similar.length?`<div class="similar-wrap"><div class="similar-lbl">Lignende opskrifter</div><div class="similar-list">${simHTML}</div></div>`:''}`;
 }
 function renderPanelActions(id){
-  const sv=saved.has(id);
+  id=String(id);
+  const sv=saved.has(String(id));
   const isUserRecipe=userRecipes.some(r=>r.id===id);
   const editBtn=isUserRecipe
     ?`<button class="pbedit" onclick="openRecipeForm(${id})">
@@ -3088,7 +3090,7 @@ function renderPanelActions(id){
 }
 
 function forkRecipe(id){
-  const r=allRecipes().find(x=>x.id===id);
+  const r=allRecipes().find(x=>String(x.id)===String(id));
   if(!r)return;
   editingRecipeId=null;
   document.getElementById('rformTitle').textContent='Lav din version';
@@ -3120,9 +3122,9 @@ function openSlotPicker(dateStr,meal){
   document.getElementById('mOv').classList.add('open');
 }
 function startPickSlot(rid,e){
-  if(e)e.stopPropagation();pRid=rid;pSlot=null;
+  if(e)e.stopPropagation();pRid=String(rid);pSlot=null;
   slotPickerWeek=new Date(selWeekStart);
-  const r=allRecipes().find(x=>x.id===rid);
+  const r=allRecipes().find(x=>String(x.id)===String(rid));
   document.getElementById('mTitle').textContent='Tilføj til kalender';
   document.getElementById('mSub').textContent=r.title;
   document.getElementById('mSW').style.display='none';
@@ -3132,9 +3134,9 @@ function startPickSlot(rid,e){
 function renderMList(){
   const q=document.getElementById('mSearch').value.toLowerCase();
   const all=allRecipes().filter(r=>!q||r.title.toLowerCase().includes(q)||r.lbl.toLowerCase().includes(q));
-  const favs=all.filter(r=>saved.has(r.id)&&!userRecipes.some(u=>u.id===r.id));
+  const favs=all.filter(r=>saved.has(String(r.id))&&!userRecipes.some(u=>u.id===r.id));
   const mine=all.filter(r=>userRecipes.some(u=>u.id===r.id));
-  const rest=all.filter(r=>!saved.has(r.id)&&!userRecipes.some(u=>u.id===r.id));
+  const rest=all.filter(r=>!saved.has(String(r.id))&&!userRecipes.some(u=>u.id===r.id));
 
   const row=(r)=>`
     <div class="mr" onclick="assignSlot(${r.id})">
@@ -3201,7 +3203,7 @@ function renderSlotList(){
     dayMeals.forEach(m=>{
       const rids=planGet(planKey(d,m.key));
       const title=rids.length>0
-        ? rids.map(rid=>allRecipes().find(r=>r.id===rid)?.title||'').filter(Boolean).join(', ')
+        ? rids.map(rid=>allRecipes().find(r=>String(r.id)===String(rid))?.title||'').filter(Boolean).join(', ')
         : null;
       h+=`<div class="mr" onclick="assignDay('${dStr(d)}','${m.key}')" style="padding:.38rem 1rem .38rem 1.5rem;${isPast?'opacity:.5':''}">
         <div class="mrc" style="background:${title?CAT_COLORS[allRecipes().find(r=>planGet(planKey(d,m.key))[0]===r.id)?.cat]||'var(--accent2)':'var(--border)'}"></div>
@@ -3342,8 +3344,8 @@ function renderMine(){
   }
 
   g.innerHTML=list.map((r,i)=>{
-    const sv=saved.has(r.id);
-    return `<div class="rc" style="animation-delay:${i*25}ms;position:relative" onclick="openPanel(${r.id})">
+    const sv=saved.has(String(r.id));
+    return `<div class="rc" style="animation-delay:${i*25}ms;position:relative" onclick="openPanel('${r.id}')">
       <div class="cimg" style="background:${catBg(r)}">
         <svg width="120" height="110" viewBox="0 0 120 110" style="opacity:.85">${SHAPES[r.cat]||''}</svg>
         <div class="cbadges">
@@ -3352,7 +3354,7 @@ function renderMine(){
         ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:rgba(74,138,181,.15);border-color:rgba(74,138,181,.35);color:#4A8AB5">${dietMap[d]}</span>`:'';})()}
       </div>
         ${(()=>{const s=curSeason();const ex=rx(r.id);const seas={forår:'🌱 Forår',sommer:'☀️ Sommer',efterår:'🍂 Efterår',vinter:'❄️ Vinter'};return ex.season&&!ex.season.includes('all')&&ex.season.includes(s)?`<span class="season-badge">${seas[s]||''}</span>`:''})()}
-        <button class="cfav${sv?' saved':''}" onclick="toggleSave(${r.id},event)">
+        <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
         <div class="mine-card-tag">Min opskrift</div>
@@ -3365,7 +3367,7 @@ function renderMine(){
         <div class="ctitle">${r.title}</div>
         <div class="cdesc">${r.desc}</div>
         <div class="cmeta"><span>${r.time}</span><span>${r.pers}</span></div>
-        <button class="cbtn" onclick="startPickSlot(${r.id},event)">
+        <button class="cbtn" onclick="startPickSlot('${r.id}',event)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
           Tilføj til kalender
         </button>
@@ -3424,7 +3426,7 @@ function deleteUserRecipe(id,e){
   const r=userRecipes.find(x=>x.id===id);
   if(!r||!confirm(`Slet "${r.title}"? Dette kan ikke fortrydes.`))return;
   userRecipes=userRecipes.filter(x=>x.id!==id);
-  saved.delete(id);
+  saved.delete(String(id));
   persistUser();persist();
   renderMine();
 }
@@ -3564,16 +3566,16 @@ function renderFridgeRecipes(){
   if(!scored.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="est">Ingen opskrifter matcher</div><div class="ess">Prøv at tilføje flere ingredienser</div></div>';return;}
 
   grid.innerHTML=scored.map(({r,score,matches,total},i)=>{
-    const sv=saved.has(r.id);
+    const sv=saved.has(String(r.id));
     const pct=Math.round(score*100);
     const barColor=pct>=70?'#4A9B6F':pct>=40?'#B5844A':'#A8A0B8';
     const pctClass=pct>=70?'':'pct'>=40?'mid':'low';
     const matchBadge=fridgeItems.length?`<div class="match-badge"><span class="mb-pct${pct>=70?'':pct>=40?' mid':' low'}">${matches}/${total}</span></div>`:`<span class="cdiff">${r.diff}</span>`;
-    return `<div class="rc" style="animation-delay:${i*20}ms" onclick="openPanel(${r.id})">
+    return `<div class="rc" style="animation-delay:${i*20}ms" onclick="openPanel('${r.id}')">
       <div class="cimg" style="background:${catBg(r)}">
         <svg width="120" height="110" viewBox="0 0 120 110" style="opacity:.85">${SHAPES[r.cat]||''}</svg>
         ${matchBadge}
-        <button class="cfav${sv?' saved':''}" onclick="toggleSave(${r.id},event)">
+        <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
         ${fridgeItems.length?`<div class="match-bar-wrap"><div class="match-bar" style="width:${pct}%;background:${barColor}"></div></div>`:''}
@@ -3583,7 +3585,7 @@ function renderFridgeRecipes(){
         <div class="ctitle">${r.title}</div>
         <div class="cdesc">${r.desc}</div>
         <div class="cmeta"><span>${r.time}</span><span>${r.pers}</span>${fridgeItems.length?`<span style="color:${barColor};font-weight:500">${pct}% match</span>`:''}</div>
-        <button class="cbtn" onclick="startPickSlot(${r.id},event)">
+        <button class="cbtn" onclick="startPickSlot('${r.id}',event)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
           Tilføj til kalender
         </button>
@@ -3923,7 +3925,7 @@ function shareWeekPlan(){
   // Text version
   let text=`📅 Ugeplan ${fmt(weekDates[0])} – ${fmt(weekDates[6])}\n\n`;
   weekDates.forEach((d,i)=>{
-    const dayMeals=MEALS.flatMap(m=>{const rids=planGet(planKey(d,m.key));return rids.map(rid=>`  ${MEAL_LABELS[m.key]}: ${allRecipes().find(r=>r.id===rid)?.title||''}`);}).filter(Boolean);
+    const dayMeals=MEALS.flatMap(m=>{const rids=planGet(planKey(d,m.key));return rids.map(rid=>`  ${MEAL_LABELS[m.key]}: ${allRecipes().find(r=>String(r.id)===String(rid))?.title||''}`);}).filter(Boolean);
     if(dayMeals.length)text+=`${DAY_NAMES[i]}\n${dayMeals.join('\n')}\n\n`;
   });
   // Encode as URL fragment
@@ -4053,7 +4055,7 @@ function exportPDF(){
   const raws=[];
   weekDates.forEach(d=>MEALS.forEach(m=>{
     planGet(planKey(d,m.key)).forEach(rid=>{
-      const r=allRecipes().find(x=>x.id===rid);
+      const r=allRecipes().find(x=>String(x.id)===String(rid));
       if(r)(r.ing||[]).forEach(i=>raws.push(i));
     });
   }));
@@ -4064,7 +4066,7 @@ function exportPDF(){
   const rows=weekDates.map((d,i)=>{
     const cells=MEALS.map(m=>{
       const rids=planGet(planKey(d,m.key));
-      const txt=rids.length?rids.map(rid=>allRecipes().find(r=>r.id===rid)?.title||'').filter(Boolean).join(', '):'\u2013';
+      const txt=rids.length?rids.map(rid=>allRecipes().find(r=>String(r.id)===String(rid))?.title||'').filter(Boolean).join(', '):'\u2013';
       return '<td>'+txt+'</td>';
     }).join('');
     return '<tr><td>'+DAY_NAMES[i]+'</td>'+cells+'</tr>';
@@ -4108,7 +4110,7 @@ function openHistory(){
     weekDates.forEach((d,di)=>{
       MEALS.forEach(m=>{
         planGet(planKey(d,m.key)).forEach(rid=>{
-          const r=allRecipes().find(x=>x.id===rid);if(r)meals.push({day:di,meal:m.key,r});
+          const r=allRecipes().find(x=>String(x.id)===String(rid));if(r)meals.push({day:di,meal:m.key,r});
         });
       });
     });
@@ -4129,7 +4131,7 @@ function openHistory(){
           ${meals.map(({day,meal,r})=>`<div class="hist-meal">
             <span class="hist-day">${DAY_NAMES[day]}</span>
             <span class="hist-dot" style="background:${CAT_COLORS[r.cat]||'var(--border2)'}"></span>
-            <span class="hist-title" onclick="openPanel(${r.id})" style="cursor:pointer">${r.title}</span>
+            <span class="hist-title" onclick="openPanel('${r.id}')" style="cursor:pointer">${r.title}</span>
             <span class="hist-meal-lbl">${MEAL_SHORT[meal]||meal}</span>
           </div>`).join('')}
         </div>
