@@ -3070,27 +3070,27 @@ function renderPanelBody(id){
 function renderPanelActions(id){
   id=String(id);
   const sv=saved.has(String(id));
-  const isUserRecipe=userRecipes.some(r=>r.id===id);
+  const isUserRecipe=userRecipes.some(r=>String(r.id)===id);
   const editBtn=isUserRecipe
-    ?`<button class="pbedit" onclick="openRecipeForm(${id})">
+    ?`<button class="pbedit" onclick="openRecipeForm('${id}')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         Rediger
       </button>`
-    :`<button class="pbedit" onclick="forkRecipe(${id})">
+    :`<button class="pbedit" onclick="forkRecipe('${id}')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
         Lav min version
       </button>`;
   document.getElementById('pAct').innerHTML=`
-    <button class="pbmain" onclick="requireLogin(()=>startPickSlot(${id},null))">
+    <button class="pbmain" onclick="requireLogin(()=>startPickSlot('${id}',null))">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
       Tilføj til kalender
     </button>
-    <button class="pbsec${sv?' sv':''}" onclick="toggleSave(${id},{stopPropagation:()=>{}})">
+    <button class="pbsec${sv?' sv':''}" onclick="toggleSave('${id}',{stopPropagation:()=>{}})">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       ${sv?'Fjern favorit':'Gem som favorit'}
     </button>
     ${editBtn}
-    <button class="pbsec" onclick="shareRecipe(panelRid)">
+    <button class="pbsec" onclick="shareRecipe('${id}')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
       Del opskrift
     </button>
