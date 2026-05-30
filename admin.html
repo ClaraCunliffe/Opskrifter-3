@@ -255,8 +255,41 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
       </div>
 
       <div class="field">
-        <label>Tags <span style="font-weight:400;text-transform:none;letter-spacing:0">(kommaseparerede)</span></label>
-        <input type="text" id="ef-tags" placeholder="F.eks. vegetar, hurtig, pasta">
+        <label>Kostpræferencer <span style="font-weight:400;text-transform:none;letter-spacing:0">(vælg alle der passer)</span></label>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem">
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="vegetar" class="diet-cb" style="accent-color:var(--accent)"> Vegetar
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="vegansk" class="diet-cb" style="accent-color:var(--accent)"> Vegansk
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="pesketar" class="diet-cb" style="accent-color:var(--accent)"> Pesketar
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="glutenfri" class="diet-cb" style="accent-color:var(--accent)"> Glutenfri
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="laktosefri" class="diet-cb" style="accent-color:var(--accent)"> Laktosefri
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="antiinflammatorisk" class="diet-cb" style="accent-color:var(--accent)"> Antiinflammatorisk
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="keto" class="diet-cb" style="accent-color:var(--accent)"> Keto
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="lavt-kulhydrat" class="diet-cb" style="accent-color:var(--accent)"> Lavt kulhydrat
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="hjøt-protein" class="diet-cb" style="accent-color:var(--accent)"> Højt protein
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tags <span style="font-weight:400;text-transform:none;letter-spacing:0">(kommaseparerede ekstra tags)</span></label>
+        <input type="text" id="ef-tags" placeholder="F.eks. hurtig, weekend, familie">
       </div>
 
     </div>
@@ -356,6 +389,8 @@ const SUBCATS = {
     {val:'sødt', lbl:'Sødt bagværk'},
   ],
 };
+
+const DIET_VALS = ['vegetar','vegansk','pesketar','glutenfri','laktosefri','antiinflammatorisk','keto','lavt-kulhydrat','hjøt-protein'];
 
 function updateSubcats() {
   const cat = document.getElementById('ef-cat').value;
@@ -510,7 +545,11 @@ function openEdit(id) {
   document.getElementById('ef-desc').value = r?.beskrivelse || '';
   document.getElementById('ef-ing').value = (r?.ing||[]).join('\n');
   document.getElementById('ef-steps').value = (r?.steps||[]).join('\n');
-  document.getElementById('ef-tags').value = (r?.tags||[]).join(', ');
+  document.getElementById('ef-tags').value = (r?.tags||[]).filter(t => !Object.values(SUBCATS).flat().map(s=>s.val).includes(t) && !DIET_VALS.includes(t)).join(', ');
+  // Set diet checkboxes
+  document.querySelectorAll('.diet-cb').forEach(cb => {
+    cb.checked = (r?.tags||[]).includes(cb.value);
+  });
   document.getElementById('ef-img').value = r?.img_url || '';
 
   // Image preview
@@ -598,8 +637,10 @@ async function saveRecipe() {
   const extraTags = document.getElementById('ef-tags').value.split(',').map(s=>s.trim()).filter(Boolean);
   // Merge subcat into tags (remove old subcats first)
   const allSubcatVals = Object.values(SUBCATS).flat().map(s=>s.val);
-  const cleanTags = extraTags.filter(t => !allSubcatVals.includes(t));
+  const cleanTags = extraTags.filter(t => !allSubcatVals.includes(t) && !DIET_VALS.includes(t));
   if(subcat) cleanTags.unshift(subcat);
+  // Add selected diet tags
+  document.querySelectorAll('.diet-cb:checked').forEach(cb => cleanTags.push(cb.value));
 
   const payload = {
     title,
