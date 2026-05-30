@@ -288,8 +288,37 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
       </div>
 
       <div class="field">
-        <label>Tags <span style="font-weight:400;text-transform:none;letter-spacing:0">(kommaseparerede ekstra tags)</span></label>
-        <input type="text" id="ef-tags" placeholder="F.eks. hurtig, weekend, familie">
+        <label>Allergener <span style="font-weight:400;text-transform:none;letter-spacing:0">(indeholder disse)</span></label>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.2rem">
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="gluten" class="allergy-cb" style="accent-color:#B5667A"> Gluten
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="laktose" class="allergy-cb" style="accent-color:#B5667A"> Laktose
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="æg" class="allergy-cb" style="accent-color:#B5667A"> Æg
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="nødder" class="allergy-cb" style="accent-color:#B5667A"> Nødder
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="fisk" class="allergy-cb" style="accent-color:#B5667A"> Fisk
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="skaldyr" class="allergy-cb" style="accent-color:#B5667A"> Skaldyr
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="sesam" class="allergy-cb" style="accent-color:#B5667A"> Sesam
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="soja" class="allergy-cb" style="accent-color:#B5667A"> Soja
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;padding:.35rem .75rem;background:#FFF0F0;border:1px solid rgba(181,102,122,.3);border-radius:50px;cursor:pointer;font-size:.8rem;user-select:none">
+            <input type="checkbox" value="jordnødder" class="allergy-cb" style="accent-color:#B5667A"> Jordnødder
+          </label>
+        </div>
+      </div>
       </div>
 
     </div>
@@ -550,6 +579,10 @@ function openEdit(id) {
   document.querySelectorAll('.diet-cb').forEach(cb => {
     cb.checked = (r?.tags||[]).includes(cb.value);
   });
+  // Set allergy checkboxes
+  document.querySelectorAll('.allergy-cb').forEach(cb => {
+    cb.checked = (r?.allergy||[]).includes(cb.value);
+  });
   document.getElementById('ef-img').value = r?.img_url || '';
 
   // Image preview
@@ -642,6 +675,9 @@ async function saveRecipe() {
   // Add selected diet tags
   document.querySelectorAll('.diet-cb:checked').forEach(cb => cleanTags.push(cb.value));
 
+  // Collect allergener
+  const allergens = [...document.querySelectorAll('.allergy-cb:checked')].map(cb => cb.value);
+
   const payload = {
     title,
     cat,
@@ -653,6 +689,7 @@ async function saveRecipe() {
     ing: document.getElementById('ef-ing').value.split('\n').map(s=>s.trim()).filter(Boolean),
     steps: document.getElementById('ef-steps').value.split('\n').map(s=>s.trim()).filter(Boolean),
     tags: cleanTags,
+    allergy: allergens,
     img_url: imgUrl,
     bg: `linear-gradient(160deg,${getCatBg(cat)})`
   };
