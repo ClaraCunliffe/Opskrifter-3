@@ -510,18 +510,22 @@ async function showAdmin(email) {
 // ── RECIPES ──────────────────────────────────────────
 async function loadRecipes() {
   document.getElementById('recipeList').innerHTML = '<div class="loading">Henter opskrifter…</div>';
-  const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.desc', {
-    headers: { 'Prefer': 'return=representation' }
-  });
-  if(!r.ok) {
-    document.getElementById('recipeList').innerHTML = '<div class="empty">Kunne ikke hente opskrifter. Tjek at tabellen er oprettet i Supabase.</div>';
-    return;
+  try {
+    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.desc', {
+      headers: { 'Prefer': 'return=representation' }
+    });
+    if(!r.ok) {
+      document.getElementById('recipeList').innerHTML = `<div class="empty">Fejl: ${JSON.stringify(r.data)}<br><br>Tjek at tabellen er oprettet i Supabase og at du er logget ind korrekt.</div>`;
+      return;
+    }
+    recipes = r.data || [];
+    const cats = new Set(recipes.map(r => r.cat));
+    document.getElementById('statTotal').textContent = recipes.length;
+    document.getElementById('statCats').textContent = cats.size;
+    renderList();
+  } catch(e) {
+    document.getElementById('recipeList').innerHTML = `<div class="empty">Netværksfejl: ${e.message}</div>`;
   }
-  recipes = r.data || [];
-  const cats = new Set(recipes.map(r => r.cat));
-  document.getElementById('statTotal').textContent = recipes.length;
-  document.getElementById('statCats').textContent = cats.size;
-  renderList();
 }
 
 function renderList() {
