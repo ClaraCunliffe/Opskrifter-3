@@ -976,7 +976,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <input type="text" placeholder="Søg opskrifter…" oninput="globalQ=this.value.toLowerCase();renderGrid()" id="headerSearch">
     </div>
     <div class="nright">
-      <button class="bsm" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter <span id="fBadge" class="mbadge" style="display:none">0</span></button>
+      <button class="bsm" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter</button>
       <button class="bsm" onclick="requireLogin(()=>openFamilySettings())">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span id="familyBtnLbl">Familie</span>
@@ -1237,6 +1237,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <button class="fdiff" id="ff-bagværk" onclick="setFavCat('bagværk',this)">Bagværk</button>
       <button class="fdiff" id="ff-snacks" onclick="setFavCat('snacks',this)">Snacks</button>
       <button class="fdiff" id="ff-drikkevarer" onclick="setFavCat('drikkevarer',this)">Drikkevarer</button>
+      <select id="favSubcatSel" onchange="renderFav()" style="margin-left:auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;display:none">
+        <option value="">Alle underkategorier</option>
+      </select>
     </div>
     <div class="rgrid" id="favGrid"></div>
   </div>
@@ -2279,8 +2282,8 @@ function switchMenu(id,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('heroSec').style.display=id==='alle'?'':'none';
   // Show filter bar only on recipe views
-  const recipeViews=['alle','morgenmad','frokost','aftensmad','dessert','salater','suppe','bagværk','snacks','drikkevarer','favoritter','discover','fridge'];
-  document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge'&&id!=='mine');
+  const recipeViews=['alle','morgenmad','frokost','aftensmad','dessert','salater','suppe','bagværk','snacks','drikkevarer','favoritter','discover','fridge','mine'];
+  document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge');
   // Highlight fridge button
   document.getElementById('btn-fridge').classList.toggle('active-btn',id==='fridge');
   document.getElementById('btn-mine').classList.toggle('active-btn',id==='mine');
@@ -2541,7 +2544,12 @@ function getFiltered(pool){
       const nutr=lookupNutr(name);
       if(nutr)(nutr.allergens||[]).forEach(a=>detectedAllergens.add(a));
     });
-    const okAllergy=!allergyPrefs.length||!allergyPrefs.some(a=>detectedAllergens.has(a));
+    // Also check if any allergy word appears literally in ingredients/title
+    const allText=(r.title+' '+(r.ing||[]).join(' ')+' '+(r.desc||'')).toLowerCase();
+    const okAllergy=!allergyPrefs.length||!allergyPrefs.some(a=>{
+      const aLow=a.toLowerCase();
+      return detectedAllergens.has(aLow)||allText.includes(aLow);
+    });
     return okCat&&okQ&&okDiff&&okIng&&okDiet&&okSeason&&okAllergy;
   });
   const sort=document.getElementById('mainSort')?.value||'';
@@ -2572,14 +2580,19 @@ function setFavCat(cat,btn){
 
 function renderFav(){
   const base=allRecipes().filter(r=>saved.has(String(r.id)));
-  const filtered=activeFavCat?base.filter(r=>r.cat===activeFavCat):base;
+  let filtered=activeFavCat?base.filter(r=>r.cat===activeFavCat):base;
+
+  // Subcat filter
+  const subVal=document.getElementById('favSubcatSel')?.value||'';
+  if(subVal)filtered=filtered.filter(r=>(r.tags||[]).includes(subVal));
+
   const list=getFiltered(filtered);
 
   // Show/hide filter row and count
   const filterRow=document.getElementById('favFilterRow');
   const countEl=document.getElementById('favCount');
   if(filterRow)filterRow.style.display=base.length?'flex':'none';
-  if(countEl)countEl.textContent=filtered.length+' af '+base.length+' favoritter';
+  if(countEl)countEl.textContent=list.length+' af '+base.length+' favoritter';
 
   // Only show pills for categories that exist in saved
   const cats=new Set(base.map(r=>r.cat));
@@ -2588,6 +2601,27 @@ function renderFav(){
     const cat=btn.id.replace('ff-','');
     btn.style.display=cats.has(cat)?'':'none';
   });
+
+  // Populate subcat dropdown based on selected category
+  const subSel=document.getElementById('favSubcatSel');
+  if(subSel && activeFavCat && RF_SUBCATS[activeFavCat]){
+    const recipesInCat=base.filter(r=>r.cat===activeFavCat);
+    const usedSubs=new Set();
+    recipesInCat.forEach(r=>(r.tags||[]).forEach(t=>{
+      if(RF_SUBCATS[activeFavCat].some(s=>s.v===t))usedSubs.add(t);
+    }));
+    if(usedSubs.size>0){
+      subSel.style.display='';
+      const curVal=subSel.value;
+      subSel.innerHTML='<option value="">Alle underkategorier</option>'+
+        RF_SUBCATS[activeFavCat].filter(s=>usedSubs.has(s.v))
+          .map(s=>`<option value="${s.v}">${s.l}</option>`).join('');
+      subSel.value=usedSubs.has(curVal)?curVal:'';
+    } else { subSel.style.display='none'; }
+  } else if(subSel) {
+    subSel.style.display='none';
+    subSel.value='';
+  }
 
   document.getElementById('favGrid').innerHTML=list.length
     ?list.map((r,i)=>cardHTML(r,i)).join('')
@@ -3424,6 +3458,9 @@ function renderMine(){
   const timeToMin=t=>{const m=t.match(/(\d+)t/);const mm=t.match(/(\d+)\s*min/);return(m?parseInt(m[1])*60:0)+(mm?parseInt(mm[1]):0)||999;};
 
   let list=[...userRecipes];
+
+  // Apply global filters from filter bar (ingredient, diet, allergy, difficulty)
+  list = getFiltered(list);
 
   // Filter
   if(q)list=list.filter(r=>r.title.toLowerCase().includes(q)||r.desc?.toLowerCase().includes(q)||r.lbl?.toLowerCase().includes(q));
