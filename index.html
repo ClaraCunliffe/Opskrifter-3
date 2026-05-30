@@ -1329,6 +1329,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <button class="mhc" onclick="closeRecipeForm()">&#x2715;</button>
     </div>
     <div class="rform-body">
+      <!-- Billede -->
+      <div class="rform-field">
+        <label class="rfl">Billede</label>
+        <div onclick="document.getElementById('rf-img-inp').click()" id="rf-img-area" style="border:2px dashed var(--border);border-radius:10px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .2s">
+          <img id="rf-img-prev" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;display:none;margin-bottom:.5rem">
+          <div id="rf-img-lbl" style="font-size:.8rem;color:var(--text3)">Klik for at uploade et billede<br><strong>JPG/PNG</strong> – komprimeres automatisk</div>
+          <input type="file" id="rf-img-inp" accept="image/*" style="display:none" onchange="handleRfImg(this)">
+        </div>
+        <button type="button" id="rf-img-rm" onclick="removeRfImg()" style="display:none;margin-top:.4rem;padding:.35rem .7rem;background:#FAF0F3;border:1px solid rgba(181,102,122,.3);color:var(--rose);border-radius:6px;font-size:.74rem;cursor:pointer">Fjern billede</button>
+      </div>
       <div class="rform-row">
         <div class="rform-field rform-field-lg">
           <label class="rfl">Titel</label>
@@ -1336,7 +1346,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
         <div class="rform-field">
           <label class="rfl">Kategori</label>
-          <select class="rfi rfi-sel" id="rf-cat">
+          <select class="rfi rfi-sel" id="rf-cat" onchange="loadRfSubcats()">
             <option value="morgenmad">Morgenmad</option>
             <option value="frokost">Frokost</option>
             <option value="aftensmad" selected>Aftensmad</option>
@@ -1350,7 +1360,11 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       </div>
       <div class="rform-row">
         <div class="rform-field">
-          <label class="rfl">Sævrhedsgrad</label>
+          <label class="rfl">Underkategori</label>
+          <select class="rfi rfi-sel" id="rf-subcat"><option value="">Ingen</option></select>
+        </div>
+        <div class="rform-field">
+          <label class="rfl">Sværhedsgrad</label>
           <select class="rfi rfi-sel" id="rf-diff">
             <option value="Let">Let</option>
             <option value="Middel" selected>Middel</option>
@@ -1378,6 +1392,35 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div class="rform-field">
           <label class="rfl">Fremgangsmåde <span class="rfl-hint">(ét trin per linje)</span></label>
           <textarea class="rfi rfi-ta" id="rf-steps" placeholder="Varm ovnen op til 200°C.&#10;Bland mel og æg.&#10;Bag i 25 minutter.&#10;…" rows="7"></textarea>
+        </div>
+      </div>
+      <!-- Kost -->
+      <div class="rform-field">
+        <label class="rfl">Kostpræferencer</label>
+        <div id="rf-diet" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.3rem">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="vegetar" style="accent-color:var(--accent);flex-shrink:0"> Vegetar</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="vegansk" style="accent-color:var(--accent);flex-shrink:0"> Vegansk</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="pesketar" style="accent-color:var(--accent);flex-shrink:0"> Pesketar</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="glutenfri" style="accent-color:var(--accent);flex-shrink:0"> Glutenfri</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="laktosefri" style="accent-color:var(--accent);flex-shrink:0"> Laktosefri</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="antiinflammatorisk" style="accent-color:var(--accent);flex-shrink:0"> Antiinflammatorisk</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="keto" style="accent-color:var(--accent);flex-shrink:0"> Keto</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="lavt-kulhydrat" style="accent-color:var(--accent);flex-shrink:0"> Lavt kulhydrat</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer"><input type="checkbox" value="hjøt-protein" style="accent-color:var(--accent);flex-shrink:0"> Højt protein</label>
+        </div>
+      </div>
+      <!-- Allergi -->
+      <div class="rform-field">
+        <label class="rfl">Allergener (indeholder)</label>
+        <div id="rf-allergy" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.3rem">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="gluten" style="accent-color:var(--rose);flex-shrink:0"> Gluten</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="laktose" style="accent-color:var(--rose);flex-shrink:0"> Laktose</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="æg" style="accent-color:var(--rose);flex-shrink:0"> Æg</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="nødder" style="accent-color:var(--rose);flex-shrink:0"> Nødder</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="fisk" style="accent-color:var(--rose);flex-shrink:0"> Fisk</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="skaldyr" style="accent-color:var(--rose);flex-shrink:0"> Skaldyr</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="sesam" style="accent-color:var(--rose);flex-shrink:0"> Sesam</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.82rem;cursor:pointer;color:var(--rose)"><input type="checkbox" value="soja" style="accent-color:var(--rose);flex-shrink:0"> Soja</label>
         </div>
       </div>
     </div>
@@ -2082,6 +2125,7 @@ async function syncUserRecipes() {
       id: r.id, title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
       time: r.tid, pers: r.pers, desc: r.beskrivelse, bg: r.bg || 'linear-gradient(160deg,#EEF0FF,#D8DCFF)',
       ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
+      allergy: r.allergy || [], img: r.img_url || null,
       sbId: r.id, cloudSaved: true
     }));
     persistUser(); // also keep local copy
@@ -2096,7 +2140,9 @@ async function saveRecipeToCloud(r) {
     user_id: currentUser.sbId,
     title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
     tid: r.time, pers: r.pers, beskrivelse: r.desc, bg: r.bg,
-    ing: r.ing || [], steps: r.steps || [], tags: r.tags || []
+    ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
+    allergy: r.allergy || [],
+    img_url: r.img || null
   };
   if(r.sbId && typeof r.sbId === 'string' && r.sbId.includes('-')) {
     await sbUpdate('opskrifter', payload, `id=eq.${r.sbId}`);
@@ -3432,56 +3478,156 @@ function renderMine(){
   }).join('');
 }
 
+let rfUploadedImg=null;
+
+const RF_SUBCATS={
+  morgenmad:[{v:'grød',l:'Grød & bowls'},{v:'æg',l:'Æg'},{v:'brød-morgen',l:'Brød & bagværk'},{v:'sund-morgen',l:'Sund morgenmad'},{v:'hurtig-morgen',l:'Hurtig morgenmad'}],
+  frokost:[{v:'sandwich',l:'Sandwiches & wraps'},{v:'salat',l:'Salater'},{v:'smørrebrød',l:'Rugbrød & smørrebrød'},{v:'bowl',l:'Bowls'},{v:'suppe-frokost',l:'Supper'},{v:'varm-frokost',l:'Varme frokostretter'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Hurtig frokost'}],
+  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'kød',l:'Kødretter'},{v:'fisk',l:'Fisk & skaldyr'},{v:'vegetar',l:'Vegetarisk'},{v:'pasta',l:'Pasta, ris & nudler'},{v:'kartofler',l:'Kartofler'},{v:'ovn',l:'Ovnbagte retter'},{v:'gryde',l:'Gryderetter'},{v:'suppe-aften',l:'Supper'},{v:'familie',l:'Familievenlig'},{v:'verden',l:'Verdenskøkken'}],
+  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Is & kolde desserter'},{v:'chokolade',l:'Chokolade'},{v:'frugt',l:'Frugtdesserter'},{v:'creme',l:'Creme & mousse'},{v:'småkager',l:'Småkager'}],
+  snacks:[{v:'sund',l:'Sunde snacks'},{v:'sød-snack',l:'Søde snacks'},{v:'salt',l:'Salte snacks'},{v:'dip',l:'Dips & spreads'}],
+  drikkevarer:[{v:'smoothie',l:'Smoothies'},{v:'juice',l:'Juice & shots'},{v:'kaffe',l:'Kaffe'},{v:'te',l:'Te'},{v:'mocktail',l:'Mocktails'},{v:'cocktail',l:'Cocktails'}],
+  suppe:[{v:'kraftig',l:'Kraftige supper'},{v:'let-s',l:'Lette supper'}],
+  'bagværk':[{v:'brød',l:'Brød'},{v:'sødt',l:'Sødt bagværk'}]
+};
+
+function loadRfSubcats(){
+  const cat=document.getElementById('rf-cat').value;
+  const sel=document.getElementById('rf-subcat');
+  const subs=RF_SUBCATS[cat]||[];
+  sel.innerHTML='<option value="">Ingen underkategori</option>'+subs.map(s=>`<option value="${s.v}">${s.l}</option>`).join('');
+}
+
+function handleRfImg(inp){
+  const file=inp.files[0];if(!file)return;
+  if(file.size>10*1024*1024){alert('Billedet er for stort (max 10MB)');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxW=1200, scale=Math.min(1,maxW/img.width);
+      const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+      ctx.drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/jpeg',0.82);
+      document.getElementById('rf-img-prev').src=compressed;
+      document.getElementById('rf-img-prev').style.display='block';
+      document.getElementById('rf-img-lbl').style.display='none';
+      document.getElementById('rf-img-rm').style.display='inline-block';
+      rfUploadedImg=compressed;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeRfImg(){
+  rfUploadedImg='REMOVE';
+  document.getElementById('rf-img-prev').style.display='none';
+  document.getElementById('rf-img-lbl').style.display='';
+  document.getElementById('rf-img-rm').style.display='none';
+  document.getElementById('rf-img-inp').value='';
+}
+
 function openRecipeForm(id){
   editingRecipeId=id||null;
-  const editing=id?userRecipes.find(r=>r.id===id):null;
+  const editing=id?userRecipes.find(r=>String(r.id)===String(id)):null;
+  rfUploadedImg=null;
   document.getElementById('rformTitle').textContent=editing?'Rediger opskrift':'Ny opskrift';
   document.getElementById('rformSub').textContent=editing?editing.title:'Udfyld felterne nedenfor';
   document.getElementById('rf-title').value=editing?.title||'';
   document.getElementById('rf-cat').value=editing?.cat||'aftensmad';
+  loadRfSubcats();
+  const subs=RF_SUBCATS[editing?.cat||'aftensmad']||[];
+  const existSub=(editing?.tags||[]).find(t=>subs.some(s=>s.v===t));
+  document.getElementById('rf-subcat').value=existSub||'';
   document.getElementById('rf-diff').value=editing?.diff||'Middel';
   document.getElementById('rf-time').value=editing?.time||'';
   document.getElementById('rf-pers').value=editing?.pers||'';
   document.getElementById('rf-desc').value=editing?.desc||'';
   document.getElementById('rf-ing').value=editing?.ing?.join('\n')||'';
   document.getElementById('rf-steps').value=editing?.steps?.join('\n')||'';
+  // Image
+  const prev=document.getElementById('rf-img-prev');
+  const lbl=document.getElementById('rf-img-lbl');
+  const rmBtn=document.getElementById('rf-img-rm');
+  if(editing?.img){prev.src=editing.img;prev.style.display='block';lbl.style.display='none';rmBtn.style.display='inline-block';}
+  else{prev.style.display='none';lbl.style.display='';rmBtn.style.display='none';}
+  // Diet & allergy
+  document.querySelectorAll('#rf-diet input').forEach(cb=>{cb.checked=(editing?.tags||[]).includes(cb.value);});
+  document.querySelectorAll('#rf-allergy input').forEach(cb=>{cb.checked=(editing?.allergy||[]).includes(cb.value);});
   document.getElementById('rformOverlay').classList.add('open');
   setTimeout(()=>document.getElementById('rf-title').focus(),80);
 }
 
-function closeRecipeForm(){document.getElementById('rformOverlay').classList.remove('open');editingRecipeId=null;}
+function closeRecipeForm(){document.getElementById('rformOverlay').classList.remove('open');editingRecipeId=null;rfUploadedImg=null;}
 function closeFormBg(e){if(e.target===document.getElementById('rformOverlay'))closeRecipeForm();}
 
-function saveRecipeForm(){
+async function saveRecipeForm(){
   const title=document.getElementById('rf-title').value.trim();
   const cat=document.getElementById('rf-cat').value;
+  const subcat=document.getElementById('rf-subcat').value;
   const diff=document.getElementById('rf-diff').value;
   const time=document.getElementById('rf-time').value.trim()||'–';
   const pers=document.getElementById('rf-pers').value.trim()||'–';
   const desc=document.getElementById('rf-desc').value.trim();
   const ing=document.getElementById('rf-ing').value.split('\n').map(s=>s.trim()).filter(Boolean);
   const steps=document.getElementById('rf-steps').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const diet=[...document.querySelectorAll('#rf-diet input:checked')].map(c=>c.value);
+  const allergy=[...document.querySelectorAll('#rf-allergy input:checked')].map(c=>c.value);
+  const tags=subcat?[subcat,...diet]:[...diet];
   if(!title){document.getElementById('rf-title').focus();document.getElementById('rf-title').style.borderColor='var(--rose)';return;}
   document.getElementById('rf-title').style.borderColor='';
   const lbl=CAT_LABELS[cat]||cat;
   const bg=CAT_BGS[cat]||'linear-gradient(160deg,#F2EEF6,#D8C4E8)';
+  let imgVal;
+  if(rfUploadedImg==='REMOVE')imgVal=null;
+  else if(rfUploadedImg)imgVal=rfUploadedImg;
+  else {
+    const existing=editingRecipeId?userRecipes.find(r=>String(r.id)===String(editingRecipeId)):null;
+    imgVal=existing?.img||null;
+  }
+  let recipe;
   if(editingRecipeId){
-    const idx=userRecipes.findIndex(r=>r.id===editingRecipeId);
-    if(idx>=0)userRecipes[idx]={...userRecipes[idx],title,cat,lbl,diff,time,pers,desc,ing,steps,bg};
+    const idx=userRecipes.findIndex(r=>String(r.id)===String(editingRecipeId));
+    if(idx>=0){
+      userRecipes[idx]={...userRecipes[idx],title,cat,lbl,diff,time,pers,desc,ing,steps,bg,tags,allergy,img:imgVal};
+      recipe=userRecipes[idx];
+    }
   } else {
     const newId=Date.now();
-    userRecipes.push({id:newId,title,cat,lbl,diff,time,pers,desc,ing,steps,bg,tags:[]});
+    recipe={id:newId,title,cat,lbl,diff,time,pers,desc,ing,steps,bg,tags,allergy,img:imgVal};
+    userRecipes.push(recipe);
   }
   persistUser();
+  // Save to cloud
+  if(currentUser?.sbId && recipe){
+    const cloudId=await saveRecipeToCloud(recipe);
+    if(cloudId){
+      recipe.sbId=cloudId;
+      recipe.cloudSaved=true;
+      if(!editingRecipeId){
+        // Replace local id with cloud id
+        const newIdx=userRecipes.findIndex(r=>r.id===recipe.id);
+        if(newIdx>=0)userRecipes[newIdx].id=cloudId;
+      }
+      persistUser();
+    }
+  }
   closeRecipeForm();
   renderMine();
 }
 
 function deleteUserRecipe(id,e){
   e.stopPropagation();
-  const r=userRecipes.find(x=>x.id===id);
+  const r=userRecipes.find(x=>String(x.id)===String(id));
   if(!r||!confirm(`Slet "${r.title}"? Dette kan ikke fortrydes.`))return;
-  userRecipes=userRecipes.filter(x=>x.id!==id);
+  // Delete from cloud
+  if(r.sbId && currentUser?.sbId) deleteRecipeFromCloud(r.sbId);
+  userRecipes=userRecipes.filter(x=>String(x.id)!==String(id));
   saved.delete(String(id));
   persistUser();persist();
   renderMine();
