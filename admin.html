@@ -26,7 +26,7 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
 .btn-danger:hover{background:var(--rose);color:#fff}
 
 /* Login */
-#loginWrap{display:flex;align-items:center;justify-content:center;min-height:80vh;padding:2rem}
+#loginWrap{display:flex;align-items:center;justify-content:center;min-height:80vh;padding:2rem;position:relative;z-index:1}
 .login-card{background:#fff;border-radius:16px;padding:2.5rem;width:100%;max-width:380px;border:1px solid var(--border);box-shadow:0 8px 32px rgba(80,50,120,.1)}
 .login-card h2{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:300;margin-bottom:.4rem}
 .login-card p{font-size:.82rem;color:var(--text3);margin-bottom:1.5rem}
@@ -39,7 +39,7 @@ header{background:#fff;border-bottom:1px solid var(--border);padding:.8rem 2rem;
 .l-btn:hover{background:#6a4e93}
 
 /* Main */
-#mainWrap{display:none;padding:2rem;max-width:1200px;margin:0 auto}
+#mainWrap{display:none;padding:2rem;max-width:1200px;margin:0 auto;position:relative;z-index:1}
 .page-title{font-family:'Fraunces',serif;font-size:1.8rem;font-weight:300;margin-bottom:.3rem}
 .page-sub{font-size:.85rem;color:var(--text3);margin-bottom:2rem}
 .stats-bar{display:flex;gap:1rem;margin-bottom:2rem;flex-wrap:wrap}
@@ -487,7 +487,7 @@ async function doLogin() {
     localStorage.setItem('admin_token', sbToken);
     localStorage.setItem('admin_uid', sbUserId);
     localStorage.setItem('admin_email', email);
-    showAdmin(email);
+    await showAdmin(email);
   } catch(e) {
     err.textContent = e.message;
   }
@@ -501,10 +501,18 @@ function doLogout() {
 }
 
 async function showAdmin(email) {
-  document.getElementById('loginWrap').style.display = 'none';
-  document.getElementById('mainWrap').style.display = 'block';
+  const lw = document.getElementById('loginWrap');
+  const mw = document.getElementById('mainWrap');
+  lw.style.display = 'none';
+  lw.style.pointerEvents = 'none';
+  mw.style.display = 'block';
+  mw.style.pointerEvents = 'all';
   document.getElementById('adminEmail').textContent = email;
-  await loadRecipes();
+  try {
+    await loadRecipes();
+  } catch(e) {
+    document.getElementById('recipeList').innerHTML = `<div class="empty">Fejl ved indlæsning: ${e.message}</div>`;
+  }
 }
 
 // ── RECIPES ──────────────────────────────────────────
