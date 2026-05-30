@@ -165,9 +165,10 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
         <label>Billede</label>
         <div class="img-area" id="img-area" onclick="document.getElementById('img-inp').click()">
           <img id="img-prev" class="img-preview">
-          <div id="img-lbl" class="img-lbl">Klik for at uploade billede<br><strong>JPG, PNG</strong> op til 5MB</div>
+          <div id="img-lbl" class="img-lbl">Klik for at uploade billede<br><strong>JPG, PNG</strong> op til 10MB</div>
           <input type="file" id="img-inp" accept="image/*" style="display:none" onchange="handleImg(this)">
         </div>
+        <button type="button" onclick="removeImg()" id="rm-img-btn" style="display:none;margin-top:.4rem;padding:.4rem .8rem;background:#FAF0F3;border:1px solid rgba(181,102,122,.3);color:var(--rose);border-radius:6px;font-size:.78rem;cursor:pointer">Fjern billede</button>
         <input type="text" id="ef-imgurl" placeholder="Eller indsæt billed-URL…" style="margin-top:.4rem">
       </div>
       <!-- Titel -->
@@ -372,8 +373,8 @@ function openModal(id){
   const prev=document.getElementById('img-prev');
   const lbl=document.getElementById('img-lbl');
   const area=document.getElementById('img-area');
-  if(r?.img_url){prev.src=r.img_url;prev.style.display='block';lbl.style.display='none';area.classList.add('has-img');}
-  else{prev.style.display='none';lbl.style.display='';area.classList.remove('has-img');}
+  if(r?.img_url){prev.src=r.img_url;prev.style.display='block';lbl.style.display='none';area.classList.add('has-img');document.getElementById('rm-img-btn').style.display='inline-block';}
+  else{prev.style.display='none';lbl.style.display='';area.classList.remove('has-img');document.getElementById('rm-img-btn').style.display='none';}
   // Checkboxes
   document.querySelectorAll('#diet-pills input').forEach(cb=>{cb.checked=(r?.tags||[]).includes(cb.value);});
   document.querySelectorAll('#allergy-pills input').forEach(cb=>{cb.checked=(r?.allergy||[]).includes(cb.value);});
@@ -392,6 +393,16 @@ document.getElementById('modal').addEventListener('click',e=>{
 });
 
 // IMAGE
+function removeImg(){
+  uploadedImg='REMOVE';
+  document.getElementById('img-prev').style.display='none';
+  document.getElementById('img-lbl').style.display='';
+  document.getElementById('img-area').classList.remove('has-img');
+  document.getElementById('ef-imgurl').value='';
+  document.getElementById('rm-img-btn').style.display='none';
+  document.getElementById('img-inp').value='';
+}
+
 function handleImg(inp){
   const file=inp.files[0];if(!file)return;
   if(file.size>10*1024*1024){toast('Billedet er for stort (max 10MB)','err');return;}
@@ -417,6 +428,7 @@ function handleImg(inp){
       document.getElementById('img-prev').style.display='block';
       document.getElementById('img-lbl').style.display='none';
       document.getElementById('img-area').classList.add('has-img');
+      document.getElementById('rm-img-btn').style.display='inline-block';
       uploadedImg=compressed;
       const sizeKB=Math.round(compressed.length/1024);
       document.getElementById('ef-imgurl').value=`(billede valgt — ${sizeKB} KB)`;
@@ -439,7 +451,7 @@ async function saveRecipe(){
   const tags=[...document.querySelectorAll('#diet-pills input:checked')].map(c=>c.value);
   if(subcat)tags.unshift(subcat);
   const allergy=[...document.querySelectorAll('#allergy-pills input:checked')].map(c=>c.value);
-  const imgUrl=uploadedImg||document.getElementById('ef-imgurl').value.trim()||null;
+  const imgUrl=uploadedImg==='REMOVE'?null:(uploadedImg||document.getElementById('ef-imgurl').value.trim()||null);
   const catBgMap={morgenmad:'#FDF0EC,#F4CEC4',frokost:'#EDF2FC,#C4D4F4',aftensmad:'#F4ECFA,#D8C4F0',dessert:'#FAECF4,#F0C4DC',snacks:'#EDFDF4,#B8EDD4',drikkevarer:'#EDF2FC,#C4D4F4',suppe:'#FAF4EC,#F0D4B8','bagværk':'#FAF4E8,#E8D8B4'};
   const payload={
     title, cat, lbl:CLBLS[cat]||cat,
