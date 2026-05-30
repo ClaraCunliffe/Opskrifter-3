@@ -1969,6 +1969,23 @@ async function saveFavoriteToCloud(recipeId, isSaved) {
   } catch(e) {}
 }
 
+async function loadPublicRecipes() {
+  try {
+    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc');
+    if(r.ok && r.data && r.data.length > 0) {
+      publicRecipes = r.data.map(r => ({
+        id: r.id,
+        title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
+        time: r.tid, pers: r.pers, desc: r.beskrivelse,
+        bg: r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
+        img: r.img_url || null,
+        ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
+        fromSupabase: true
+      }));
+    }
+  } catch(e) { console.warn('Could not load public recipes:', e.message); }
+}
+
 async function syncUserRecipes() {
   if(!currentUser?.sbId) return;
   try {
@@ -2010,6 +2027,7 @@ async function deleteRecipeFromCloud(sbId) {
 }
 
 let currentUser=null;
+let publicRecipes=[];
 function userKey(k){return currentUser?'dp_'+currentUser.username+'_'+k:k;}
 
 let saved=new Set(JSON.parse(localStorage.getItem(userKey('sv_saved'))||'[]'));
@@ -2034,7 +2052,7 @@ let pSlot=null,pRid=null,panelRid=null;
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 let selWeekStart=getMonday(new Date());
 
-function allRecipes(){return[...RECIPES,...userRecipes];}
+function allRecipes(){return[...(publicRecipes.length?publicRecipes:RECIPES),...userRecipes];}
 function persistUser(){localStorage.setItem(userKey('sv_userrecipes'),JSON.stringify(userRecipes));}
 
 function loadPlan(){
@@ -2310,7 +2328,9 @@ function cardHTML(r,i){
   const sv=saved.has(r.id);
   return `<div class="rc" style="animation-delay:${i*25}ms" onclick="openPanel(${r.id})">
     <div class="cimg" style="background:${catBg(r)}">
-      <svg width="120" height="110" viewBox="0 0 120 110" style="opacity:.85">${SHAPES[r.cat]||''}</svg>
+      ${r.img
+        ? `<img src="${r.img}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">`
+        : `<svg width="120" height="110" viewBox="0 0 120 110" style="opacity:.85">${SHAPES[r.cat]||''}</svg>`}
       <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
@@ -2851,7 +2871,16 @@ function renderPanelBody(id){
   const r=allRecipes().find(x=>x.id===id);if(!r)return;
   const ex=rx(id);
   const factor=panelServings/panelBaseServings;
-  document.getElementById('pHero').style.background=r.bg;
+  const hero=document.getElementById('pHero');
+  if(r.img){
+    hero.style.background='none';
+    hero.style.backgroundImage=`url(${r.img})`;
+    hero.style.backgroundSize='cover';
+    hero.style.backgroundPosition='center';
+  } else {
+    hero.style.background=r.bg;
+    hero.style.backgroundImage='none';
+  }
   document.getElementById('pDiff').textContent=r.diff;
   document.getElementById('pCat').textContent=r.lbl;
   // Scale ingredients
@@ -4538,7 +4567,7 @@ function loadUserData(){
   shopViewMode='alpha';
 }
 
-function showApp(){
+async function showApp(){
   const ls = document.getElementById('loginScreen');
   if(ls) ls.style.display='none';
   loadUserData();
@@ -4548,6 +4577,8 @@ function showApp(){
   initFamilyBtn();
   initMealToggles();
   renderFavCats();
+  // Load public recipes from Supabase, then render
+  await loadPublicRecipes();
   renderGrid();
   updateBadges();
   updateHero();
