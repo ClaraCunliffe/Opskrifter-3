@@ -2051,6 +2051,7 @@ async function loadPublicRecipes() {
         bg: r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
         img: r.img_url || null,
         ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
+        allergy: r.allergy || [],
         fromSupabase: true
       }));
     }
@@ -2466,10 +2467,17 @@ function getFiltered(pool){
     const okQ=!globalQ||r.title.toLowerCase().includes(globalQ)||r.desc.toLowerCase().includes(globalQ);
     const okDiff=!activeDiff||r.diff===activeDiff;
     const okIng=!ingQueries.length||ingQueries.every(q=>(r.ing||[]).some(i=>i.toLowerCase().includes(q))||r.title.toLowerCase().includes(q));
-    const extra=rx(r.id);
+    const extra={...rx(r.id), allergy:(r.allergy||rx(r.id).allergy||[])};
     const okDiet=!dietPrefs.length||dietPrefs.every(d=>extra.diet.includes(d));
     const okSeason=!filterSeason||extra.season.includes('all')||extra.season.includes(curSeason());
-    const okAllergy=!allergyPrefs.length||!allergyPrefs.some(a=>(extra.allergy||[]).includes(a));
+    // Check both explicit allergy field AND detected allergens from ingredients
+    const detectedAllergens=new Set(extra.allergy||[]);
+    (r.ing||[]).forEach(ing=>{
+      const name=ing.replace(/^[\d\s\/.,½¼¾]+\s*(g|kg|ml|l|dl|tsk|spsk|stk|fed|cm|bundt|dåse|pose)?\s*/i,'').split(',')[0].trim().toLowerCase();
+      const nutr=lookupNutr(name);
+      if(nutr)(nutr.allergens||[]).forEach(a=>detectedAllergens.add(a));
+    });
+    const okAllergy=!allergyPrefs.length||!allergyPrefs.some(a=>detectedAllergens.has(a));
     return okCat&&okQ&&okDiff&&okIng&&okDiet&&okSeason&&okAllergy;
   });
   const sort=document.getElementById('mainSort')?.value||'';
