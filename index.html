@@ -1287,7 +1287,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <input type="text" id="mineSearch" placeholder="Søg i mine opskrifter…" oninput="renderMine()">
       </div>
       <div class="mine-filters">
-        <select class="fridge-sort-sel" id="mineCatSel" onchange="renderMine()">
+        <select class="fridge-sort-sel" id="mineCatSel" onchange="updateMineSubcats();renderMine()">
           <option value="">Alle kategorier</option>
           <option value="morgenmad">Morgenmad</option>
           <option value="frokost">Frokost</option>
@@ -1298,6 +1298,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <option value="bagværk">Bagværk</option>
           <option value="snacks">Snacks</option>
           <option value="drikkevarer">Drikkevarer</option>
+        </select>
+        <select class="fridge-sort-sel" id="mineSubcatSel" onchange="renderMine()" style="display:none">
+          <option value="">Alle underkategorier</option>
         </select>
         <div class="mine-diff-pills">
           <button class="fdiff active" id="md-alle" onclick="setMineDiff(null,this)">Alle</button>
@@ -3430,6 +3433,31 @@ function setMineDiff(diff,btn){
   renderMine();
 }
 
+function updateMineSubcats(){
+  const cat=document.getElementById('mineCatSel')?.value||'';
+  const sel=document.getElementById('mineSubcatSel');
+  if(!sel)return;
+  if(!cat||!RF_SUBCATS[cat]){
+    sel.style.display='none';
+    sel.value='';
+    return;
+  }
+  // Show only subcats that exist in user's recipes for this cat
+  const inCat=userRecipes.filter(r=>r.cat===cat);
+  const usedSubs=new Set();
+  inCat.forEach(r=>(r.tags||[]).forEach(t=>{
+    if(RF_SUBCATS[cat].some(s=>s.v===t))usedSubs.add(t);
+  }));
+  if(usedSubs.size>0){
+    sel.style.display='';
+    sel.innerHTML='<option value="">Alle underkategorier</option>'+
+      RF_SUBCATS[cat].filter(s=>usedSubs.has(s.v)).map(s=>`<option value="${s.v}">${s.l}</option>`).join('');
+  } else {
+    sel.style.display='none';
+    sel.value='';
+  }
+}
+
 function renderMine(){
   const g=document.getElementById('mineGrid');
   const controls=document.getElementById('mineControls');
@@ -3465,6 +3493,8 @@ function renderMine(){
   // Filter
   if(q)list=list.filter(r=>r.title.toLowerCase().includes(q)||r.desc?.toLowerCase().includes(q)||r.lbl?.toLowerCase().includes(q));
   if(cat)list=list.filter(r=>r.cat===cat);
+  const subVal=document.getElementById('mineSubcatSel')?.value||'';
+  if(subVal)list=list.filter(r=>(r.tags||[]).includes(subVal));
   if(mineDiff)list=list.filter(r=>r.diff===mineDiff);
 
   // Sort
