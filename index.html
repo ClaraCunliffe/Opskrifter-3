@@ -2449,7 +2449,7 @@ function cardHTML(r,i){
       <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
-        ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:rgba(74,138,181,.15);border-color:rgba(74,138,181,.35);color:#4A8AB5">${dietMap[d]}</span>`:'';})()}
+        ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700">${dietMap[d]}</span>`:'';})()}
       </div>
       <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -3012,6 +3012,36 @@ function renderPanelBody(id){
   }
   document.getElementById('pDiff').textContent=r.diff;
   document.getElementById('pCat').textContent=r.lbl;
+  // Add diet and allergen badges next to MIDDEL/AFTENSMAD
+  const pbadges=document.querySelector('.pbadges');
+  // Remove old extra badges
+  pbadges.querySelectorAll('.p-extra-badge').forEach(b=>b.remove());
+  // Diet badges
+  const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};
+  const allTags=[...(rx(r.id).diet||[]),...(r.tags||[])];
+  Object.keys(dietMap).forEach(k=>{
+    if(allTags.includes(k)){
+      const b=document.createElement('span');
+      b.className='pbadge p-extra-badge';
+      b.style.cssText='background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700';
+      b.textContent=dietMap[k];
+      pbadges.appendChild(b);
+    }
+  });
+  // Allergen badge (from explicit allergy field + detected from NUTR_DB)
+  const allerSet=new Set(r.allergy||[]);
+  (r.ing||[]).forEach(ing=>{
+    const name=ing.replace(/^[\d\s\/.,½¼¾]+\s*(g|kg|ml|l|dl|tsk|spsk|stk|fed|cm|bundt|dåse|pose)?\s*/i,'').split(',')[0].trim().toLowerCase();
+    const nutr=lookupNutr(name);
+    if(nutr)(nutr.allergens||[]).forEach(a=>allerSet.add(a));
+  });
+  if(allerSet.size){
+    const b=document.createElement('span');
+    b.className='pbadge p-extra-badge';
+    b.style.cssText='background:#FAF0F3;border-color:#B5667A;color:#9B4858;font-weight:700';
+    b.textContent='⚠ '+[...allerSet].join(', ');
+    pbadges.appendChild(b);
+  }
   // Scale ingredients
   function scaleIng(ing){
     return ing.replace(/^(\d+[\d\/\s.,]*)\s/,(_,n)=>{
@@ -3377,7 +3407,7 @@ function renderMine(){
         <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
-        ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:rgba(74,138,181,.15);border-color:rgba(74,138,181,.35);color:#4A8AB5">${dietMap[d]}</span>`:'';})()}
+        ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700">${dietMap[d]}</span>`:'';})()}
       </div>
         ${(()=>{const s=curSeason();const ex=rx(r.id);const seas={forår:'🌱 Forår',sommer:'☀️ Sommer',efterår:'🍂 Efterår',vinter:'❄️ Vinter'};return ex.season&&!ex.season.includes('all')&&ex.season.includes(s)?`<span class="season-badge">${seas[s]||''}</span>`:''})()}
         <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
