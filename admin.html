@@ -80,7 +80,7 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 .img-lbl{font-size:.8rem;color:var(--txt3)}
 
 .pills{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
-.pill{display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:50px;border:1px solid var(--bor);background:var(--sur2);cursor:pointer;font-size:.78rem;user-select:none}
+.pill{display:flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:50px;border:1px solid var(--bor);background:var(--sur2);cursor:pointer;font-size:.78rem;user-select:none;white-space:nowrap}
 .pill input{accent-color:var(--acc);cursor:pointer}
 .pill.allergy{border-color:rgba(181,102,122,.25);background:#FFF5F7}
 .pill.allergy input{accent-color:var(--rose)}
@@ -103,7 +103,7 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 <header>
   <div class="logo"><span>Daily</span>Plate</div>
   <div class="badge">Admin</div>
-  <div class="ml">
+  <div class="ml"><button class="btn" onclick="toggleStats()" id="stats-btn">📊 Statistik</button>
     <span id="hEmail" style="font-size:.78rem;color:var(--txt3)"></span>
     <button class="btn" onclick="doLogout()">Log ud</button>
   </div>
@@ -235,6 +235,11 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
   </div>
 </div>
 
+<div id="stats-panel" style="display:none;margin-top:2rem">
+  <hr style="border:none;border-top:1px solid var(--bor);margin-bottom:1.5rem">
+  <div class="pg-title" style="font-size:1.3rem;margin-bottom:1rem">📊 Statistik</div>
+  <div class="stats" id="stat-cards"><div class="loading">Henter statistik…</div></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -324,6 +329,7 @@ function renderList(){
       </div>
       <span class="rbadge">${(r.ing||[]).length} ing.</span>
       <span class="rbadge">${(r.steps||[]).length} trin</span>
+      <button class="btn" onclick="event.stopPropagation();openModal('${r.id}')" style="flex-shrink:0;font-size:.75rem;padding:.35rem .8rem">Rediger</button>
     </div>`).join('');
 }
 
@@ -444,6 +450,45 @@ function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast show '+type;
   setTimeout(()=>t.className='toast',3000);
+}
+
+// STATS
+let statsLoaded=false;
+async function toggleStats(){
+  const panel=document.getElementById('stats-panel');
+  const btn=document.getElementById('stats-btn');
+  if(panel.style.display==='none'){
+    panel.style.display='block';
+    btn.textContent='✕ Luk statistik';
+    if(!statsLoaded){await loadStats();statsLoaded=true;}
+  } else {
+    panel.style.display='none';
+    btn.textContent='📊 Statistik';
+  }
+}
+
+async function loadStats(){
+  const cards=document.getElementById('stat-cards');
+  try {
+    // Count total users from auth (via Supabase admin API needs service key)
+    // Instead count from favoritter table unique users
+    const [favR, recR, userRecR] = await Promise.all([
+      sb('/rest/v1/favoritter?select=user_id'),
+      sb('/rest/v1/public_opskrifter?select=id'),
+      sb('/rest/v1/opskrifter?select=user_id')
+    ]);
+    const uniqueUsers=new Set((favR.data||[]).map(r=>r.user_id).concat((userRecR.data||[]).map(r=>r.user_id))).size;
+    const totalRecipes=(recR.data||[]).length;
+    const totalFavs=(favR.data||[]).length;
+    cards.innerHTML=`
+      <div class="stat"><div class="sn">${uniqueUsers}</div><div class="sl">Aktive brugere</div></div>
+      <div class="stat"><div class="sn">${totalRecipes}</div><div class="sl">Offentlige opskrifter</div></div>
+      <div class="stat"><div class="sn">${totalFavs}</div><div class="sl">Favoritter i alt</div></div>
+      <div class="stat"><div class="sn">${(userRecR.data||[]).length}</div><div class="sl">Brugeropskrifter</div></div>
+    `;
+  } catch(e){
+    cards.innerHTML=`<div class="empty">Kunne ikke hente statistik: ${e.message}</div>`;
+  }
 }
 
 // KEYBOARD
