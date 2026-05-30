@@ -2017,6 +2017,21 @@ async function sbUpdate(table, body, filters) {
   return r.ok ? r.data : null;
 }
 
+
+// ── ANALYTICS ─────────────────────────────────────────
+async function logEvent(event, metadata={}) {
+  try {
+    await sbFetch('/rest/v1/analytics', {
+      method: 'POST',
+      body: JSON.stringify({
+        event,
+        user_id: currentUser?.sbId || null,
+        metadata
+      })
+    });
+  } catch(e) {}
+}
+
 // ── SUPABASE DATA SYNC ────────────────────────────────
 async function syncFavorites() {
   if(!currentUser?.sbId) return;
@@ -2208,6 +2223,7 @@ document.addEventListener('click',e=>{
 });
 
 function switchMenu(id,btn){
+  logEvent('category_view', {category: id});
   activeView=id;activeSub=null;
   document.querySelectorAll('.mi,.mdi').forEach(m=>m.classList.remove('active'));
   const el=document.getElementById('mi-'+id);if(el)el.classList.add('active');
@@ -2538,6 +2554,7 @@ function toggleSave(id,e){
   isSaved?saved.add(String(id)):saved.delete(String(id));
   persist();
   if(currentUser?.sbId) saveFavoriteToCloud(id, isSaved);
+  logEvent(isSaved?'recipe_saved':'recipe_unsaved', {recipe_id: String(id)});
   if(activeView==='favoritter')renderFav();else renderGrid();
   updateBadges();updateHero();if(panelRid===id)renderPanelActions(id);
 }
@@ -2964,6 +2981,7 @@ function clearChecked(){localStorage.removeItem('sv_ck');renderShopping();}
 function openPanel(id){
   const r=allRecipes().find(x=>String(x.id)===String(id));if(!r)return;
   panelRid=id;
+  logEvent('recipe_view', {recipe_id: String(id), title: r?.title});
   // Reset serving to base
   const baseMatch=r.pers.match(/\d+/);
   panelBaseServings=baseMatch?parseInt(baseMatch[0]):4;
@@ -4977,6 +4995,8 @@ async function initAuth(){
   }
   // Show app immediately — don't wait for Clerk
   try { showApp(); } catch(e) { console.warn('showApp:', e.message); }
+  // Log page view
+  logEvent('page_view', {path: location.pathname, referrer: document.referrer});
   if(currentUser) {
     try { syncFavorites().then(()=>updateBadges()); } catch(e) {}
     try { syncUserRecipes().then(()=>{if(activeView==='mine')renderMine();}); } catch(e) {}
