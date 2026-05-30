@@ -1226,6 +1226,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="stitle">Dine favoritter</div>
       <span class="scnt" id="favCount"></span>
     </div>
+    <div id="favSearchRow" style="display:none;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+      <input type="text" id="favSearchInp" placeholder="Søg i favoritter…" oninput="renderFav()" style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .85rem;font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);outline:none">
+      <select id="favSubcatSel" onchange="renderFav()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);outline:none;cursor:pointer;display:none">
+        <option value="">Alle underkategorier</option>
+      </select>
+    </div>
     <div class="fav-filter-row" id="favFilterRow" style="display:none">
       <button class="fdiff active" id="ff-alle" onclick="setFavCat(null,this)">Alle</button>
       <button class="fdiff" id="ff-morgenmad" onclick="setFavCat('morgenmad',this)">Morgenmad</button>
@@ -1237,9 +1243,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <button class="fdiff" id="ff-bagværk" onclick="setFavCat('bagværk',this)">Bagværk</button>
       <button class="fdiff" id="ff-snacks" onclick="setFavCat('snacks',this)">Snacks</button>
       <button class="fdiff" id="ff-drikkevarer" onclick="setFavCat('drikkevarer',this)">Drikkevarer</button>
-      <select id="favSubcatSel" onchange="renderFav()" style="margin-left:auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.4rem .7rem;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;display:none">
-        <option value="">Alle underkategorier</option>
-      </select>
     </div>
     <div class="rgrid" id="favGrid"></div>
   </div>
@@ -1282,44 +1285,32 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   </div>
   <div class="page" style="padding-top:2rem">
     <div class="mine-controls" id="mineControls" style="display:none">
-      <div class="mine-search-wrap">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <input type="text" id="mineSearch" placeholder="Søg i mine opskrifter…" oninput="renderMine()">
-      </div>
-      <div class="mine-filters">
-        <select class="fridge-sort-sel" id="mineCatSel" onchange="updateMineSubcats();renderMine()">
-          <option value="">Alle kategorier</option>
-          <option value="morgenmad">Morgenmad</option>
-          <option value="frokost">Frokost</option>
-          <option value="aftensmad">Aftensmad</option>
-          <option value="dessert">Dessert</option>
-          <option value="salater">Salater</option>
-          <option value="suppe">Supper</option>
-          <option value="bagværk">Bagværk</option>
-          <option value="snacks">Snacks</option>
-          <option value="drikkevarer">Drikkevarer</option>
-        </select>
-        <select class="fridge-sort-sel" id="mineSubcatSel" onchange="renderMine()" style="display:none">
+      <div id="mineSearchRow" style="display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center">
+        <input type="text" id="mineSearch" placeholder="Søg i mine opskrifter…" oninput="renderMine()" style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .85rem;font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);outline:none">
+        <select id="mineSubcatSel" onchange="renderMine()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.5rem .8rem;font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);outline:none;cursor:pointer;display:none">
           <option value="">Alle underkategorier</option>
         </select>
-        <div class="mine-diff-pills">
-          <button class="fdiff active" id="md-alle" onclick="setMineDiff(null,this)">Alle</button>
-          <button class="fdiff fd-let" id="md-let" onclick="setMineDiff('Let',this)">Let</button>
-          <button class="fdiff fd-middel" id="md-middel" onclick="setMineDiff('Middel',this)">Middel</button>
-          <button class="fdiff fd-svær" id="md-svær" onclick="setMineDiff('Svær',this)">Svær</button>
-        </div>
-        <div class="mine-sort-wrap">
-          <span class="fb-label">Sortér</span>
-          <select class="fridge-sort-sel" id="mineSortSel" onchange="renderMine()">
-            <option value="newest">Nyeste først</option>
-            <option value="oldest">Ældste først</option>
-            <option value="alpha">A–Z</option>
-            <option value="diff">Sværhedsgrad</option>
-            <option value="time">Hurtigste tid</option>
-            <option value="cat">Kategori</option>
-          </select>
-        </div>
+        <select class="fridge-sort-sel" id="mineSortSel" onchange="renderMine()">
+          <option value="newest">Nyeste først</option>
+          <option value="oldest">Ældste først</option>
+          <option value="alpha">A–Z</option>
+          <option value="diff">Sværhedsgrad</option>
+          <option value="time">Hurtigste tid</option>
+          <option value="cat">Kategori</option>
+        </select>
       </div>
+      <div class="fav-filter-row" id="mineFilterRow">
+        <button class="fdiff active" id="mc-alle" onclick="setMineCat('',this)">Alle</button>
+        <button class="fdiff" id="mc-morgenmad" onclick="setMineCat('morgenmad',this)">Morgenmad</button>
+        <button class="fdiff" id="mc-frokost" onclick="setMineCat('frokost',this)">Frokost</button>
+        <button class="fdiff" id="mc-aftensmad" onclick="setMineCat('aftensmad',this)">Aftensmad</button>
+        <button class="fdiff" id="mc-dessert" onclick="setMineCat('dessert',this)">Dessert</button>
+        <button class="fdiff" id="mc-suppe" onclick="setMineCat('suppe',this)">Supper</button>
+        <button class="fdiff" id="mc-bagværk" onclick="setMineCat('bagværk',this)">Bagværk</button>
+        <button class="fdiff" id="mc-snacks" onclick="setMineCat('snacks',this)">Snacks</button>
+        <button class="fdiff" id="mc-drikkevarer" onclick="setMineCat('drikkevarer',this)">Drikkevarer</button>
+      </div>
+      <input type="hidden" id="mineCatSel" value="">
       <div class="mine-count" id="mineCount"></div>
     </div>
     <div id="mineGrid" class="rgrid mine-grid-empty"></div>
@@ -2585,6 +2576,10 @@ function renderFav(){
   const base=allRecipes().filter(r=>saved.has(String(r.id)));
   let filtered=activeFavCat?base.filter(r=>r.cat===activeFavCat):base;
 
+  // Search query
+  const q=(document.getElementById('favSearchInp')?.value||'').toLowerCase();
+  if(q)filtered=filtered.filter(r=>r.title.toLowerCase().includes(q)||r.desc?.toLowerCase().includes(q)||(r.lbl||'').toLowerCase().includes(q));
+
   // Subcat filter
   const subVal=document.getElementById('favSubcatSel')?.value||'';
   if(subVal)filtered=filtered.filter(r=>(r.tags||[]).includes(subVal));
@@ -2593,8 +2588,10 @@ function renderFav(){
 
   // Show/hide filter row and count
   const filterRow=document.getElementById('favFilterRow');
+  const searchRow=document.getElementById('favSearchRow');
   const countEl=document.getElementById('favCount');
   if(filterRow)filterRow.style.display=base.length?'flex':'none';
+  if(searchRow)searchRow.style.display=base.length?'flex':'none';
   if(countEl)countEl.textContent=list.length+' af '+base.length+' favoritter';
 
   // Only show pills for categories that exist in saved
@@ -3433,6 +3430,14 @@ function setMineDiff(diff,btn){
   renderMine();
 }
 
+function setMineCat(cat,el){
+  document.querySelectorAll('#mineFilterRow .fdiff').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('mineCatSel').value=cat;
+  updateMineSubcats();
+  renderMine();
+}
+
 function updateMineSubcats(){
   const cat=document.getElementById('mineCatSel')?.value||'';
   const sel=document.getElementById('mineSubcatSel');
@@ -3486,6 +3491,14 @@ function renderMine(){
   const timeToMin=t=>{const m=t.match(/(\d+)t/);const mm=t.match(/(\d+)\s*min/);return(m?parseInt(m[1])*60:0)+(mm?parseInt(mm[1]):0)||999;};
 
   let list=[...userRecipes];
+
+  // Hide pills for categories user has no recipes in
+  const cats=new Set(userRecipes.map(r=>r.cat));
+  document.querySelectorAll('#mineFilterRow .fdiff').forEach(btn=>{
+    if(btn.id==='mc-alle'){btn.style.display='';return;}
+    const cat=btn.id.replace('mc-','');
+    btn.style.display=cats.has(cat)?'':'none';
+  });
 
   // Apply global filters from filter bar (ingredient, diet, allergy, difficulty)
   list = getFiltered(list);
