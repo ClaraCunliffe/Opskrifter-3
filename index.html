@@ -694,7 +694,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .ud-item{display:block;width:100%;text-align:left;padding:.45rem .7rem;background:none;border:none;font-family:'Inter',sans-serif;font-size:.8rem;color:var(--text2);cursor:pointer;border-radius:7px;transition:background .15s}
 .ud-item:hover{background:var(--surface2)}
 .ud-logout{color:var(--rose)}
-.nav-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:600;flex-shrink:0}
+.nav-user-btn{display:flex;align-items:center;gap:.45rem;padding:.3rem .7rem .3rem .35rem;background:var(--surface);border:1px solid var(--border);border-radius:50px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text2);transition:all .18s}
+.nav-user-btn:hover{border-color:var(--accent2);background:var(--accent-bg);color:var(--accent)}
+.nav-avatar{width:24px;height:24px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.7rem;font-weight:600;flex-shrink:0}
 /* User dropdown */
 .user-drop{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.4rem;z-index:500;box-shadow:0 8px 32px rgba(80,50,120,.15);min-width:200px;display:none}
 .user-drop.open{display:block}
