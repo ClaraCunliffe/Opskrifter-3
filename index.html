@@ -2509,9 +2509,12 @@ function onSearch(){
     document.getElementById('view-alle').classList.add('active');
     document.querySelectorAll('.mi,.mdi').forEach(m=>m.classList.remove('active'));
     const el=document.getElementById('mi-alle');if(el)el.classList.add('active');
-    const heroSec=document.getElementById('heroSec');if(heroSec)heroSec.style.display=globalQ?'none':'';
-  } else {
-    const heroSec=document.getElementById('heroSec');if(heroSec)heroSec.style.display=globalQ?'none':'';
+  }
+  const heroSec=document.getElementById('heroSec');if(heroSec)heroSec.style.display=globalQ?'none':'';
+  const ps=document.getElementById('popularSection');
+  if(ps){
+    if(globalQ){ps.style.display='none';}
+    else if(ps.querySelector('#popularGrid')?.children.length>=2){ps.style.display='block';}
   }
   renderGrid();
 }
