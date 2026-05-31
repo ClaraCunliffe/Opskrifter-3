@@ -321,6 +321,27 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .cbtn{width:100%;padding:.55rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:.45rem}
 .cbtn:hover{background:#6a4e93}
 
+/* MEST GEMTE — slider */
+.pop-slider{display:flex;gap:.85rem;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;padding:.3rem;margin:-.3rem -.3rem .1rem}
+.pop-slider::-webkit-scrollbar{display:none}
+.pop-slider .rc{flex:0 0 240px;scroll-snap-align:start;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface);box-shadow:0 1px 8px rgba(80,50,120,.06);transition:box-shadow .18s,transform .18s}
+.pop-slider .rc:hover{box-shadow:0 6px 22px rgba(80,50,120,.13);transform:translateY(-2px);background:var(--surface)}
+.pop-slider .rc .cimg{height:140px}
+.pop-slider .rc .cbody{padding:.85rem 1rem 1rem}
+.pop-slider .rc .ctitle{font-size:1rem;margin-bottom:.35rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em}
+.pop-slider .rc .ccat{margin-bottom:.3rem;font-size:.62rem}
+.pop-slider .rc .cdesc{font-size:.74rem;margin-bottom:.6rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:0 0 auto}
+.pop-slider .rc .cmeta{font-size:.68rem;padding-top:.55rem;margin-bottom:.6rem;gap:.7rem}
+.pop-slider .rc .cbtn{font-size:.72rem;padding:.45rem .8rem}
+.pop-slider .rc .cbadges{top:.55rem;left:.55rem;gap:.25rem}
+.pop-slider .rc .cbadges .cdiff,.pop-slider .rc .cbadges .ccat-badge{font-size:.58rem;padding:.12rem .45rem}
+.pop-slider .rc .cfav{top:.55rem;right:.55rem;width:26px;height:26px}
+.pop-slider .rc .card-stars{margin-bottom:.3rem}
+.pop-arrow{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.85);border:1px solid rgba(123,94,167,.25);color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.pop-arrow:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pop-arrow:active{transform:scale(.94)}
+@media(max-width:640px){.pop-slider .rc{flex:0 0 220px}.pop-slider .rc .cimg{height:130px}}
+
 /* UGEPLAN LAYOUT */
 .plan-full{display:flex;flex-direction:column;gap:1.5rem}
 
@@ -561,6 +582,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .bsm-active{background:var(--surface2);border-color:var(--border2);font-weight:600}
 .bsm-auto{display:flex;align-items:center;gap:.35rem;background:var(--accent-bg);border-color:var(--border2);color:var(--accent)}
 .bsm-auto:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bsm-save-week{display:flex;align-items:center;gap:.35rem;background:var(--accent-bg);border-color:var(--border2);color:var(--accent)}
+.bsm-save-week:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 /* Allergy badge on cards */
 .allergy-warn{position:absolute;bottom:.7rem;left:.7rem;background:rgba(181,102,122,.15);border:1px solid rgba(181,102,122,.3);border-radius:50px;padding:.15rem .6rem;font-size:.62rem;font-weight:600;color:var(--rose)}
 /* Shop sections */
@@ -1088,10 +1111,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchSub('dessert','saucer')">Saucer &amp; toppings</button>
           <button class="mdi" onclick="switchSub('dessert','klassisk')">Klassiske danske desserter</button>
           <div class="mds"></div>
-          <button class="mdi" style="font-weight:600;color:var(--text);font-size:.76rem" onclick="switchMenu('bagværk',document.getElementById('mi-bagværk'))">Bagværk →</button>
-          <button class="mdi mdi-sub" onclick="switchSub('bagværk','brød')">Brød</button>
-          <button class="mdi mdi-sub" onclick="switchSub('bagværk','sødt')">Sødt bagværk</button>
-          <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('dessert',document.getElementById('mi-dessert'))">Alle desserter</button>
         </div>
       </div>
@@ -1219,16 +1238,26 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 <!-- OPSKRIFTER -->
 <div id="view-alle" class="view active">
-  <div id="popularSection" style="display:none;background:linear-gradient(160deg,#FFF6F1,#FCE7DC);padding:2.5rem 0;border-bottom:1px solid var(--border)">
+  <div id="popularSection" style="display:none;background:linear-gradient(160deg,#F0EBFA 0%,#E5DAF5 100%);padding:1.4rem 0 1.7rem;border-bottom:1px solid var(--border)">
     <div class="page" style="padding-top:0;padding-bottom:0">
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem">
-        <div>
-          <div style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem">🔥 Trending</div>
-          <h2 style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:300;line-height:1.1">Mest gemte <em style="font-style:italic;color:var(--accent)">opskrifter</em></h2>
-          <p style="font-size:.85rem;color:var(--text2);margin-top:.4rem">De opskrifter andre brugere har gemt som favorit flest gange.</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem">
+        <div style="display:flex;align-items:baseline;gap:.85rem;flex-wrap:wrap">
+          <h2 style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:300;line-height:1.1;letter-spacing:-.01em">Mest gemte <em style="font-style:italic;color:var(--accent)">opskrifter</em></h2>
+          <span style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.55);border:1px solid rgba(123,94,167,.2);border-radius:50px;padding:.18rem .7rem">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Populært
+          </span>
+        </div>
+        <div style="display:flex;gap:.35rem">
+          <button class="pop-arrow" onclick="popSliderScroll(-1)" aria-label="Forrige" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="pop-arrow" onclick="popSliderScroll(1)" aria-label="Næste" type="button">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
       </div>
-      <div class="rgrid" id="popularGrid"></div>
+      <div class="pop-slider" id="popularGrid"></div>
     </div>
   </div>
   <div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option></select></div></div><div class="rgrid" id="rGrid"></div></div></div>
@@ -1252,8 +1281,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <button class="fdiff" id="ff-aftensmad" onclick="setFavCat('aftensmad',this)">Aftensmad</button>
       <button class="fdiff" id="ff-dessert" onclick="setFavCat('dessert',this)">Dessert</button>
       <button class="fdiff" id="ff-salater" onclick="setFavCat('salater',this)">Salater</button>
-      <button class="fdiff" id="ff-suppe" onclick="setFavCat('suppe',this)">Supper</button>
-      <button class="fdiff" id="ff-bagværk" onclick="setFavCat('bagværk',this)">Bagværk</button>
       <button class="fdiff" id="ff-snacks" onclick="setFavCat('snacks',this)">Snacks</button>
       <button class="fdiff" id="ff-drikkevarer" onclick="setFavCat('drikkevarer',this)">Drikkevarer</button>
     </div>
@@ -1318,8 +1345,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <button class="fdiff" id="mc-frokost" onclick="setMineCat('frokost',this)">Frokost</button>
         <button class="fdiff" id="mc-aftensmad" onclick="setMineCat('aftensmad',this)">Aftensmad</button>
         <button class="fdiff" id="mc-dessert" onclick="setMineCat('dessert',this)">Dessert</button>
-        <button class="fdiff" id="mc-suppe" onclick="setMineCat('suppe',this)">Supper</button>
-        <button class="fdiff" id="mc-bagværk" onclick="setMineCat('bagværk',this)">Bagværk</button>
         <button class="fdiff" id="mc-snacks" onclick="setMineCat('snacks',this)">Snacks</button>
         <button class="fdiff" id="mc-drikkevarer" onclick="setMineCat('drikkevarer',this)">Drikkevarer</button>
       </div>
@@ -1363,8 +1388,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
             <option value="frokost">Frokost</option>
             <option value="aftensmad" selected>Aftensmad</option>
             <option value="dessert">Dessert</option>
-            <option value="suppe">Supper</option>
-            <option value="bagværk">Bagværk</option>
             <option value="snacks">Snacks</option>
             <option value="drikkevarer">Drikkevarer</option>
           </select>
@@ -1512,7 +1535,19 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   <div class="page">
     <div class="shead" style="margin-bottom:1.2rem">
       <div class="stitle">Kalender</div>
-      <div style="display:flex;gap:.5rem"><button class="copy-week-btn" onclick="copyWeekToNext()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopier til næste uge</button><button class="bsm" onclick="clearPlan()">Ryd alt</button></div>
+      <div style="display:flex;gap:.5rem">
+        <div style="position:relative" id="insertPlanWrap">
+          <button class="copy-week-btn" id="insertPlanBtn" onclick="toggleInsertPlanDrop()" style="display:flex;align-items:center;gap:.4rem">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Indsæt gemt madplan
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="insertPlanDrop" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(80,50,120,.15);z-index:600;min-width:260px;max-width:340px;max-height:400px;overflow-y:auto;padding:.35rem">
+            <div id="insertPlanDropList"></div>
+          </div>
+        </div>
+        <button class="bsm" onclick="clearPlan()">Ryd alt</button>
+      </div>
     </div>
     <div class="plan-full">
       <!-- CALENDAR - full width prominent -->
@@ -1548,6 +1583,10 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
             <button class="bsm bsm-auto" onclick="openAutoModal()" title="Generer ugeplan automatisk">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               Auto
+            </button>
+            <button class="bsm bsm-save-week" onclick="openSaveModal()" title="Gem denne uge som plan">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Gem uge
             </button>
             <button class="bsm" onclick="shareWeekPlan()" title="Del ugeplan">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -1595,10 +1634,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div class="saved-plans-wrap">
           <div class="sp-top">
             <div class="sp-title">Gemte ugeplaner</div>
-            <button class="sp-save-btn" onclick="openSaveModal()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Gem denne uge
-            </button>
           </div>
           <div class="sp-body"><div id="savedPlansList"></div></div>
         </div>
@@ -2118,6 +2153,14 @@ async function saveFavoriteToCloud(recipeId, isSaved) {
       await sbDelete('favoritter', `user_id=eq.${currentUser.sbId}&recipe_id=eq.${encodeURIComponent(String(recipeId))}`);
     }
   } catch(e) {}
+}
+
+function popSliderScroll(dir){
+  const s=document.getElementById('popularGrid');
+  if(!s)return;
+  const card=s.querySelector('.rc');
+  const step=(card?card.offsetWidth:240)+14;
+  s.scrollBy({left:dir*step*2,behavior:'smooth'});
 }
 
 async function loadPopularRecipes() {
@@ -3329,7 +3372,7 @@ function renderMList(){
     <div class="mr" onclick="assignSlot(${r.id})">
       <div class="mrc" style="background:${CAT_COLORS[r.cat]||'var(--border2)'}"></div>
       <div class="mri"><div class="mrt">${r.title}</div><div class="mrs">${r.lbl} · ${r.time}</div></div>
-      <button class="mrb">Vælg</button>
+      <button class="mrb" onclick="event.stopPropagation();assignSlot(${r.id})">Vælg</button>
     </div>`;
 
   let html='';
@@ -4986,6 +5029,56 @@ function openRandomRecipe(){
 }
 
 // ── COPY WEEK TO NEXT ───────────────────────────────
+// ── INDSÆT GEMT MADPLAN DROPDOWN ────────────────────────
+function toggleInsertPlanDrop(){
+  const drop=document.getElementById('insertPlanDrop');
+  const isOpen=drop.style.display!=='none';
+  if(isOpen){drop.style.display='none';return;}
+  renderInsertPlanDrop();
+  drop.style.display='block';
+}
+function renderInsertPlanDrop(){
+  const list=document.getElementById('insertPlanDropList');
+  if(!savedPlans.length){
+    list.innerHTML='<div style="padding:.9rem 1rem;font-size:.8rem;color:var(--text3);text-align:center">Ingen gemte ugeplaner endnu.<br>Gem en ugeplan herunder på siden.</div>';
+    return;
+  }
+  list.innerHTML=savedPlans.map((sp,i)=>{
+    const d=new Date(sp.savedAt);
+    const dateStr=d.getDate()+'. '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();
+    const count=sp.meals.length;
+    return `<div style="display:flex;align-items:center;gap:.7rem;padding:.55rem .8rem;border-radius:8px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="insertSavedPlanToCurrentWeek(${i})">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sp.name}</div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:.06rem">${count} måltider · ${dateStr}</div>
+      </div>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+    </div>`;
+  }).join('');
+}
+function insertSavedPlanToCurrentWeek(idx){
+  document.getElementById('insertPlanDrop').style.display='none';
+  const sp=savedPlans[idx];
+  const weekDates=Array.from({length:7},(_,i)=>addDays(selWeekStart,i));
+  const hasExisting=weekDates.some(d=>MEALS.some(m=>planGet(planKey(d,m.key)).length>0));
+  if(hasExisting){
+    if(!confirm(`Ugen har allerede planlagte måltider. Vil du erstatte dem med "${sp.name}"?`))return;
+    weekDates.forEach(d=>MEALS.forEach(m=>{delete plan[planKey(d,m.key)];}));
+  }
+  sp.meals.forEach(({day,meal,recipeId})=>{
+    const d=weekDates[day];
+    if(d)planAdd(planKey(d,meal),recipeId);
+  });
+  persist();
+  renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#insertPlanWrap')){
+    const drop=document.getElementById('insertPlanDrop');
+    if(drop)drop.style.display='none';
+  }
+});
+
 function copyWeekToNext(){
   const nextStart=addDays(selWeekStart,7);
   const weekDates=Array.from({length:7},(_,i)=>addDays(selWeekStart,i));
