@@ -2317,7 +2317,7 @@ async function loadPlanFromCloud(){
 function planGet(key){const v=plan[key];if(!v)return[];if(Array.isArray(v))return v;return[v];}
 function planSet(key,arr){if(!arr||!arr.length){delete plan[key];}else{plan[key]=arr;}}
 function planAdd(key,rid){const arr=planGet(key);if(!arr.includes(rid))arr.push(rid);planSet(key,arr);}
-function planRemoveOne(key,rid){planSet(key,planGet(key).filter(id=>id!==rid));}
+function planRemoveOne(key,rid){planSet(key,planGet(key).filter(id=>String(id)!==String(rid)));}
 
 // Date helpers
 function getMonday(d){d=new Date(d);const day=d.getDay();d.setDate(d.getDate()-(day===0?6:day-1));d.setHours(0,0,0,0);return d;}
@@ -2839,8 +2839,8 @@ function renderWeekGrid(){
       const k=planKey(d,m.key),rids=planGet(k);
       if(rids.length){
         const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';return`
-          <div class="cell-filled" onclick="openPanel(${rid})" style="margin-bottom:3px">
-            <button class="cell-rm" onclick="rmSlotOne(event,'${dStr(d)}','${m.key}',${rid})">✕</button>
+          <div class="cell-filled" onclick="openPanel('${rid}')" style="margin-bottom:3px">
+            <button class="cell-rm" onclick="rmSlotOne(event,'${dStr(d)}','${m.key}','${rid}')">✕</button>
             <div class="cf-bar" style="background:${CAT_COLORS[r.cat]||'#D4C4E4'}"></div>
             <div class="cf-body"><div class="cf-title">${r.title}</div><div class="cf-meta">${r.time}</div></div>
           </div>`;}).join('');
@@ -3369,10 +3369,10 @@ function renderMList(){
   const rest=all.filter(r=>!saved.has(String(r.id))&&!userRecipes.some(u=>u.id===r.id));
 
   const row=(r)=>`
-    <div class="mr" onclick="assignSlot(${r.id})">
+    <div class="mr" onclick="assignSlot('${r.id}')">
       <div class="mrc" style="background:${CAT_COLORS[r.cat]||'var(--border2)'}"></div>
       <div class="mri"><div class="mrt">${r.title}</div><div class="mrs">${r.lbl} · ${r.time}</div></div>
-      <button class="mrb" onclick="event.stopPropagation();assignSlot(${r.id})">Vælg</button>
+      <button class="mrb" onclick="event.stopPropagation();assignSlot('${r.id}')">Vælg</button>
     </div>`;
 
   let html='';
@@ -3634,7 +3634,7 @@ function renderMine(){
           <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
         <div class="mine-card-tag">Min opskrift</div>
-        <button class="mine-card-del" onclick="deleteUserRecipe(${r.id},event)" title="Slet">
+        <button class="mine-card-del" onclick="deleteUserRecipe('${r.id}',event)" title="Slet">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         </button>
       </div>
