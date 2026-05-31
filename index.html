@@ -2083,8 +2083,22 @@ async function sbFetch(path, opts={}) {
     'Authorization': `Bearer ${sbToken || SB_KEY}`,
     ...opts.headers
   };
-  const res = await fetch(SB_URL + path, {...opts, headers});
-  const text = await res.text();
+  let res = await fetch(SB_URL + path, {...opts, headers});
+  let text = await res.text();
+  // Detect expired JWT and retry with anon key
+  if(!res.ok && sbToken && text.includes('JWT expired')){
+    console.warn('User session JWT expired — clearing and retrying with anon key');
+    sbToken = null;
+    ['sb_token','sb_uid','sb_email'].forEach(k=>localStorage.removeItem(k));
+    const retryHeaders = {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      ...opts.headers
+    };
+    res = await fetch(SB_URL + path, {...opts, headers: retryHeaders});
+    text = await res.text();
+  }
   try { return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null }; }
   catch { return { ok: res.ok, status: res.status, data: text }; }
 }
