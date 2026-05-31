@@ -277,8 +277,20 @@ const ALL_SUB_VALS=Object.values(SUBCATS).flat().map(s=>s.v);
 
 async function sb(path,opts={}){
   const h={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${token||SB_KEY}`,...(opts.headers||{})};
-  const r=await fetch(SB_URL+path,{...opts,headers:h});
-  const t=await r.text();
+  let r=await fetch(SB_URL+path,{...opts,headers:h});
+  let t=await r.text();
+  // Detect expired admin JWT — force re-login
+  if(!r.ok && token && t.includes('JWT expired')){
+    console.warn('Admin JWT expired — clearing token');
+    token=null;
+    localStorage.removeItem('adm_tok');
+    localStorage.removeItem('adm_email');
+    // Show login screen
+    const lg=document.getElementById('pg-login');if(lg)lg.style.display='flex';
+    const mn=document.getElementById('pg-main');if(mn)mn.style.display='none';
+    const err=document.getElementById('l-err');if(err)err.textContent='Din session er udløbet — log venligst ind igen.';
+    return {ok:false,data:{error:'JWT expired'}};
+  }
   try{return{ok:r.ok,data:t?JSON.parse(t):null};}catch{return{ok:r.ok,data:t};}
 }
 
