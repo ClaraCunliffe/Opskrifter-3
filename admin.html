@@ -199,6 +199,16 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
       </div>
       <!-- Beskrivelse -->
       <div class="field"><label>Kort beskrivelse</label><input type="text" id="ef-desc" placeholder="En sætning om retten…"></div>
+      <!-- Næringsindhold (manuelt) -->
+      <div class="field">
+        <label>Næringsindhold per portion <span style="font-weight:400;text-transform:none;letter-spacing:0">(valgfri — overskriver automatisk beregning)</span></label>
+        <div class="frow" style="margin-top:.3rem">
+          <div class="field"><label style="font-size:.62rem">Kcal</label><input type="number" id="ef-kcal" placeholder="450" min="0"></div>
+          <div class="field"><label style="font-size:.62rem">Protein (g)</label><input type="number" id="ef-protein" placeholder="25" min="0" step="0.1"></div>
+          <div class="field"><label style="font-size:.62rem">Kulhydrat (g)</label><input type="number" id="ef-carbs" placeholder="40" min="0" step="0.1"></div>
+          <div class="field"><label style="font-size:.62rem">Fedt (g)</label><input type="number" id="ef-fat" placeholder="18" min="0" step="0.1"></div>
+        </div>
+      </div>
       <!-- Ingredienser -->
       <div class="field"><label>Ingredienser (én per linje)</label><textarea id="ef-ing" rows="7" placeholder="400 g spaghetti&#10;2 citroner&#10;…"></textarea></div>
       <!-- Trin -->
@@ -366,6 +376,10 @@ function openModal(id){
   document.getElementById('ef-time').value=r?.tid||'';
   document.getElementById('ef-pers').value=r?.pers||'';
   document.getElementById('ef-desc').value=r?.beskrivelse||'';
+  document.getElementById('ef-kcal').value=r?.kcal||'';
+  document.getElementById('ef-protein').value=r?.protein||'';
+  document.getElementById('ef-carbs').value=r?.carbs||'';
+  document.getElementById('ef-fat').value=r?.fat||'';
   document.getElementById('ef-ing').value=(r?.ing||[]).join('\n');
   document.getElementById('ef-steps').value=(r?.steps||[]).join('\n');
   document.getElementById('ef-imgurl').value=r?.img_url||'';
@@ -462,6 +476,10 @@ async function saveRecipe(){
     ing:document.getElementById('ef-ing').value.split('\n').map(s=>s.trim()).filter(Boolean),
     steps:document.getElementById('ef-steps').value.split('\n').map(s=>s.trim()).filter(Boolean),
     tags, allergy, img_url:imgUrl,
+    kcal: parseFloat(document.getElementById('ef-kcal').value)||null,
+    protein: parseFloat(document.getElementById('ef-protein').value)||null,
+    carbs: parseFloat(document.getElementById('ef-carbs').value)||null,
+    fat: parseFloat(document.getElementById('ef-fat').value)||null,
     bg:`linear-gradient(160deg,${catBgMap[cat]||'#F2EEF6,#D8C4E8'})`
   };
   let r;
