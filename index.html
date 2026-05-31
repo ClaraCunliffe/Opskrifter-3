@@ -2148,6 +2148,7 @@ async function loadPublicRecipes() {
         img: r.img_url || null,
         ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
         allergy: r.allergy || [],
+        kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat,
         fromSupabase: true
       }));
     }
@@ -3119,7 +3120,7 @@ function openPanel(id){
   document.getElementById('panel').classList.add('open');
   document.body.style.overflow='hidden';
   // Async fetch OFF nutrition
-  if(r.ing&&r.ing.length) fetchOFFForPanel(r.ing);
+  if(r.ing&&r.ing.length) fetchOFFForPanel(r.ing, r);
 }
 
 function renderPanelBody(id){
@@ -4712,8 +4713,37 @@ function addAllOFFAllergens(){
   renderAllergyTags();reRender();updateFridgeNutrition();
 }
 
-// Inject nutrition into recipe panel from built-in DB
-function fetchOFFForPanel(ings) {
+// Inject nutrition into recipe panel from built-in DB or manual override
+function fetchOFFForPanel(ings, recipe) {
+  // If manual values exist, use them directly
+  if(recipe && (recipe.kcal!=null || recipe.protein!=null || recipe.carbs!=null || recipe.fat!=null)){
+    const nutrRow=document.getElementById('panelNutrRow');
+    if(nutrRow){
+      nutrRow.innerHTML=
+        '<div class="nutr-cell"><div class="nutr-val">'+(recipe.kcal!=null?Math.round(recipe.kcal):'–')+'</div><div class="nutr-lbl">Kcal</div></div>'+
+        '<div class="nutr-cell"><div class="nutr-val">'+(recipe.protein!=null?Math.round(recipe.protein)+'g':'–')+'</div><div class="nutr-lbl">Protein</div></div>'+
+        '<div class="nutr-cell"><div class="nutr-val">'+(recipe.carbs!=null?Math.round(recipe.carbs)+'g':'–')+'</div><div class="nutr-lbl">Kulhydrat</div></div>'+
+        '<div class="nutr-cell"><div class="nutr-val">'+(recipe.fat!=null?Math.round(recipe.fat)+'g':'–')+'</div><div class="nutr-lbl">Fedt</div></div>';
+      const src=document.getElementById('panelNutrSrc');
+      if(src){src.style.display='none';}
+    }
+    // Still show allergens detected from ingredients
+    const allergenSet=new Set();
+    (ings||[]).forEach(ing=>{
+      const name=ing.replace(/^[\d\s\/.,½¼¾]+\s*(g|kg|ml|l|dl|tsk|spsk|stk|fed|cm|bundt|dåse|pose)?\s*/i,'').split(',')[0].trim().toLowerCase();
+      const d=lookupNutr(name);
+      if(d)(d.allergens||[]).forEach(a=>allergenSet.add(a));
+    });
+    if(allergenSet.size){
+      const pbody=document.getElementById('pBody');
+      if(pbody&&!document.getElementById('offAllergenNote')){
+        pbody.insertAdjacentHTML('afterbegin','<div id="offAllergenNote" style="font-size:.75rem;color:var(--rose);padding:.3rem 0 .5rem">⚠ Mulige allergener: '+[...allergenSet].join(', ')+'</div>');
+      }
+    }
+    return;
+  }
+
+  // Otherwise calculate from ingredient DB
   let totKcal=0,totProt=0,totCarbs=0,totFat=0,count=0;
   const allergenSet=new Set();
   (ings||[]).forEach(ing=>{
