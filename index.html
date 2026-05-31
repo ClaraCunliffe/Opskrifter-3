@@ -2173,11 +2173,13 @@ async function loadPopularRecipes() {
       counts[f.recipe_id] = (counts[f.recipe_id]||0) + 1;
     });
     // Get top 10
+    // Only consider admin/public recipes, not user-uploaded ones
+    const adminPool = publicRecipes;
     const top = Object.entries(counts)
       .sort((a,b) => b[1] - a[1])
-      .slice(0,10)
-      .map(([id]) => allRecipes().find(rec => String(rec.id) === String(id)))
-      .filter(Boolean);
+      .map(([id]) => adminPool.find(rec => String(rec.id) === String(id)))
+      .filter(Boolean)
+      .slice(0,10);
     const section = document.getElementById('popularSection');
     const grid = document.getElementById('popularGrid');
     if(top.length >= 2) {
@@ -2279,7 +2281,7 @@ let pSlot=null,pRid=null,panelRid=null;
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 let selWeekStart=getMonday(new Date());
 
-function allRecipes(){return[...(publicRecipes.length?publicRecipes:RECIPES),...userRecipes];}
+function allRecipes(){return[...publicRecipes,...userRecipes];}
 function persistUser(){localStorage.setItem(userKey('sv_userrecipes'),JSON.stringify(userRecipes));}
 
 function loadPlan(){
