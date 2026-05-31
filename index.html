@@ -1218,7 +1218,20 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 </div>
 
 <!-- OPSKRIFTER -->
-<div id="view-alle" class="view active"><div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option><option value="cost">Laveste pris</option></select></div></div><div class="rgrid" id="rGrid"></div></div></div>
+<div id="view-alle" class="view active">
+  <div id="popularSection" style="display:none;background:linear-gradient(160deg,#FFF6F1,#FCE7DC);padding:2.5rem 0;border-bottom:1px solid var(--border)">
+    <div class="page" style="padding-top:0;padding-bottom:0">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.5rem">
+        <div>
+          <div style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem">🔥 Trending</div>
+          <h2 style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:300;line-height:1.1">Mest gemte <em style="font-style:italic;color:var(--accent)">opskrifter</em></h2>
+          <p style="font-size:.85rem;color:var(--text2);margin-top:.4rem">De opskrifter andre brugere har gemt som favorit flest gange.</p>
+        </div>
+      </div>
+      <div class="rgrid" id="popularGrid"></div>
+    </div>
+  </div>
+  <div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option><option value="cost">Laveste pris</option></select></div></div><div class="rgrid" id="rGrid"></div></div></div>
 <!-- FAVORITTER -->
 <div id="view-favoritter" class="view">
   <div class="page">
@@ -2097,6 +2110,32 @@ async function saveFavoriteToCloud(recipeId, isSaved) {
   } catch(e) {}
 }
 
+async function loadPopularRecipes() {
+  try {
+    const r = await sbFetch('/rest/v1/favoritter?select=recipe_id');
+    if(!r.ok || !r.data) return;
+    // Count favorites per recipe
+    const counts = {};
+    r.data.forEach(f => {
+      counts[f.recipe_id] = (counts[f.recipe_id]||0) + 1;
+    });
+    // Get top 10
+    const top = Object.entries(counts)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0,10)
+      .map(([id]) => allRecipes().find(rec => String(rec.id) === String(id)))
+      .filter(Boolean);
+    const section = document.getElementById('popularSection');
+    const grid = document.getElementById('popularGrid');
+    if(top.length >= 2) {
+      section.style.display = 'block';
+      grid.innerHTML = top.map((rec,i) => cardHTML(rec,i)).join('');
+    } else {
+      section.style.display = 'none';
+    }
+  } catch(e) { console.warn('loadPopularRecipes:', e.message); }
+}
+
 async function loadPublicRecipes() {
   try {
     const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc');
@@ -2275,6 +2314,11 @@ function switchMenu(id,btn){
   if(btn&&btn!==el)btn.classList.add('active');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('heroSec').style.display=id==='alle'?'':'none';
+  // Show popular section only on alle
+  const ps=document.getElementById('popularSection');
+  if(ps && id!=='alle') ps.dataset.hidden='1';
+  if(ps && id==='alle' && ps.dataset.hidden){ps.dataset.hidden='';}
+  if(ps) ps.style.display=(id==='alle'&&ps.querySelector('#popularGrid')?.children.length>=2)?'block':'none';
   // Show filter bar only on recipe views
   const recipeViews=['alle','morgenmad','frokost','aftensmad','dessert','salater','suppe','bagværk','snacks','drikkevarer','favoritter','discover','fridge','mine'];
   document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge');
@@ -5016,6 +5060,7 @@ async function showApp(){
   // Load public recipes from Supabase, then render
   await loadPublicRecipes();
   renderGrid();
+  loadPopularRecipes();
   updateBadges();
   updateHero();
   document.getElementById('filterBar').classList.add('visible');
