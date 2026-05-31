@@ -996,7 +996,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="nlogo" onclick="switchMenu('alle')"><span class="nl1">Daily</span><span class="nl2">Plate</span></div>
     <div class="nsearch" style="flex:1;max-width:340px">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" placeholder="Søg opskrifter…" oninput="globalQ=this.value.toLowerCase();renderGrid()" id="headerSearch">
+      <input type="text" placeholder="Søg opskrifter…" oninput="onSearch()" id="headerSearch">
     </div>
     <div class="nright">
       <button class="bsm" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter</button>
@@ -1010,7 +1010,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       </button>
       <button class="bsm bsm-cal" onclick="requireLogin(()=>switchMenu('ugeplan'))">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        Kalender <span id="pBadge" class="mbadge" style="display:none">0</span>
+        Kalender
       </button>
       <button class="bsm bsm-fridge" id="btn-fridge" onclick="requireLogin(()=>switchMenu('fridge'))">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14"/><path d="M9 6v2M9 14v3"/></svg>
@@ -2501,8 +2501,18 @@ function switchSub(cat,sub){
 }
 
 function onSearch(){
-  globalQ=document.getElementById('gSearch').value.toLowerCase();
-  if(activeView!=='alle'){activeView='alle';activeSub=null;}
+  const inp=document.getElementById('headerSearch')||document.getElementById('gSearch');
+  globalQ=(inp?.value||'').toLowerCase();
+  if(activeView!=='alle'){
+    activeView='alle';activeSub=null;
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-alle').classList.add('active');
+    document.querySelectorAll('.mi,.mdi').forEach(m=>m.classList.remove('active'));
+    const el=document.getElementById('mi-alle');if(el)el.classList.add('active');
+    const heroSec=document.getElementById('heroSec');if(heroSec)heroSec.style.display=globalQ?'none':'';
+  } else {
+    const heroSec=document.getElementById('heroSec');if(heroSec)heroSec.style.display=globalQ?'none':'';
+  }
   renderGrid();
 }
 
