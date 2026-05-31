@@ -1231,7 +1231,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="rgrid" id="popularGrid"></div>
     </div>
   </div>
-  <div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option><option value="cost">Laveste pris</option></select></div></div><div class="rgrid" id="rGrid"></div></div></div>
+  <div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option></select></div></div><div class="rgrid" id="rGrid"></div></div></div>
 <!-- FAVORITTER -->
 <div id="view-favoritter" class="view">
   <div class="page">
@@ -3067,11 +3067,7 @@ function renderShopping(){
     const isChecked=checked.has(key);
     const isHome=homeItems.has(key);
     const qtyStr=item.qty>0?item.qty+(item.unit?' '+item.unit:''):'';
-    const price=estimateIngPrice(item);
-    const pkgs=price?packageLabel(item):'';
-    const priceTag=isHome
-      ?`<span class="si-home-tag">✓ Har derhjemme</span>`
-      :(price?`<span class="si-price">${pkgs} · ~${price} kr</span>`:'');
+    const priceTag=isHome?`<span class="si-home-tag">✓ Har derhjemme</span>`:'';
     const multiTag=item.count>1?`<span class="si-combined">${item.count}× ret</span>`:'';
     return `<label class="si${isChecked?' ck':''}${isHome?' si-home':''}">
       <input type="checkbox" ${isChecked?'checked':''} onchange="toggleCk('${key.replace(/'/g,"\\'")}',this)">
@@ -3082,13 +3078,9 @@ function renderShopping(){
     </label>`;
   }
 
-  // Calculate total
-  const total=combined.reduce((sum,item)=>{if(homeItems.has(item.name))return sum;const p=estimateIngPrice(item);return sum+(p||0);},0);
+  // Hide price total (priser var ikke nøjagtige)
   const totalEl=document.getElementById('shopTotal');
-  if(totalEl){
-    totalEl.style.display=total>0?'flex':'none';
-    totalEl.innerHTML='Estimeret total: ~<strong>'+Math.round(total)+' kr.</strong><span style="margin-left:auto;font-size:.7rem;color:var(--text3)">Danske supermarkedspriser, estimat</span>';
-  }
+  if(totalEl) totalEl.style.display='none';
 
   if(shopViewMode==='butik'){
     const byCat={};
