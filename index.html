@@ -874,13 +874,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .hstat-item{padding:.5rem .75rem}
   .hsn{font-size:1.4rem}
   .hsl{font-size:.58rem}
-  .filter-bar-inner{padding:0 .75rem;gap:.5rem}
+  .filter-bar-inner{padding:0 .75rem;gap:.4rem;flex-wrap:wrap !important;overflow-x:visible !important}
+  .fb-ing-multi,.diet-select-wrap,.allergy-search-wrap{flex:1 1 calc(50% - .25rem) !important}
+  .fb-diff-wrap{flex:1 1 calc(50% - .25rem)}
+  .fb-diff-wrap .fridge-sort-sel{width:100%}
   .fb-label{display:none}
   .fb-divider{display:none}
   .fb-ing{min-width:130px}
-  .fb-ing-multi{min-width:130px !important;max-width:200px !important}
-  .allergy-search-wrap{min-width:130px;max-width:200px}
-  .diet-select-wrap{min-width:130px;max-width:200px}
+  .fb-ing-multi{min-width:130px !important;max-width:none !important}
+  .allergy-search-wrap{min-width:130px;max-width:none}
+  .diet-select-wrap{min-width:130px;max-width:none}
   .rgrid{grid-template-columns:1fr}
   .cimg{height:180px}
   .panel{width:100vw}
@@ -1244,7 +1247,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div>
       <div class="hkick">Din daglige inspiration</div>
       <h1>Opskrifter og madplaner<br>til <em>hverdagen</em></h1>
-      <p>Et personligt kogebog til hverdagen. Planlæg din uge, gem favoritter og find inspiration til alle måltider.</p>
+      <p>En personlig kogebog til hverdagen. Planlæg din uge, gem favoritter og find inspiration til alle måltider.</p>
       <div class="hstats">
         <div class="hstat-item"><div class="hsn" id="hC">20</div><div class="hsl">Opskrifter</div></div>
         <div class="hstat-item"><div class="hsn" id="hF">0</div><div class="hsl">Favoritter</div></div>
@@ -1416,7 +1419,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         Mine opskrifter
       </div>
-      <h2 class="mine-title">Dit personlige <em>kogebog</em></h2>
+      <h2 class="mine-title">Din personlige <em>kogebog</em></h2>
       <p class="mine-sub">Tilføj dine egne opskrifter og gem dem sammen med de øvrige.</p>
     </div>
     <div style="display:flex;gap:.6rem">
@@ -2550,7 +2553,8 @@ function switchMenu(id,btn){
   }
   // Show filter bar only on recipe views
   const recipeViews=['alle','morgenmad','frokost','aftensmad','dessert','salater','suppe','bagværk','snacks','drikkevarer','favoritter','discover','fridge','mine'];
-  document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge');
+  // Mine has its own search/filter controls — don't show the global filter bar there
+  document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge'&&id!=='mine');
   // Highlight fridge button
   document.getElementById('btn-fridge').classList.toggle('active-btn',id==='fridge');
   document.getElementById('btn-mine').classList.toggle('active-btn',id==='mine');
