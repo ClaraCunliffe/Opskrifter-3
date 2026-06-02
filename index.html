@@ -838,11 +838,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 /* ── MOBIL ─────────────────────────────────────── */
 @media(max-width:600px){
   .ntop{padding:.5rem .75rem;gap:.4rem;flex-wrap:wrap}
-  .nlogo{font-size:1rem}
-  /* Mobile: show search bar as full-width row below the top buttons */
-  .nsearch{display:block;order:3;flex:1 1 100%;max-width:none;min-width:0;margin-top:.1rem}
-  .nsearch input{font-size:.85rem;padding:.5rem 1rem .5rem 2.2rem}
-  .nright{gap:.2rem;flex-wrap:nowrap;flex-shrink:0;min-width:0}
+  .nlogo{font-size:1rem;flex-shrink:0}
+  /* Mobile: search inline next to logo and icons */
+  .nsearch{display:block;order:1;flex:1 1 0;min-width:100px;max-width:none;margin:0}
+  .nsearch input{font-size:.82rem;padding:.45rem .75rem .45rem 2.1rem}
+  .nsearch svg{left:.7rem}
+  .nright{gap:.2rem;flex-wrap:wrap;flex-shrink:0;min-width:0;order:2;justify-content:flex-end;margin-left:0}
   /* Mobile: hide Favoritter (still in user menu) and Familie (still in modal) */
   .bsm-fav{display:none !important}
   .bsm-family{display:none !important}
@@ -860,7 +861,10 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .nright .bsm.bsm-cal svg,
   .nright .bsm.bsm-fridge svg,
   .nright .bsm.bsm-mine svg{flex-shrink:0}
-  #navLoginBtn{padding:.4rem .8rem !important;font-size:.72rem !important}
+  /* Login button + bruger-knap wrapper til ny linje */
+  #navLoginBtn{order:99;flex:1 1 100%;margin-top:.35rem;padding:.5rem 1rem !important;font-size:.78rem !important;text-align:center}
+  .nav-user{order:99;flex:1 1 100%;margin-top:.35rem}
+  .nav-user-btn{width:100%;justify-content:center}
   .mbadge{min-width:14px;height:14px;font-size:.55rem}
   .nmenu{padding:0 .25rem}
   .mi{padding:.55rem .7rem;font-size:.75rem}
@@ -875,6 +879,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .fb-label{display:none}
   .fb-divider{display:none}
   .fb-ing{min-width:130px}
+  .fb-ing-multi{min-width:130px !important;max-width:200px !important}
   .allergy-search-wrap{min-width:130px;max-width:200px}
   .diet-select-wrap{min-width:130px;max-width:200px}
   .rgrid{grid-template-columns:1fr}
