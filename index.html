@@ -161,7 +161,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .fridge-res-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:300}
 .fridge-res-sub{font-size:.78rem;color:var(--text3);margin-top:.18rem}
 .fridge-sort-wrap{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
-.fridge-sort-sel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.38rem .7rem;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;transition:border-color .18s}
+.fridge-sort-sel{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:.38rem .7rem;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text);outline:none;cursor:pointer;transition:border-color .18s;min-height:34px}
 .fridge-sort-sel:focus{border-color:var(--accent2)}
 .fridge-grid .rc{position:relative}
 .match-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--border)}
@@ -655,9 +655,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 
 /* Allergy search input */
-.allergy-search-wrap{display:flex;flex-direction:column;gap:.3rem;position:relative;min-width:220px;max-width:340px}
+.allergy-search-wrap{display:flex;flex-direction:column;gap:.3rem;position:relative;min-width:200px;max-width:260px}
 .allergy-input-row{display:flex;gap:.4rem;align-items:flex-start}
-.allergy-input-box{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:.3rem .55rem;cursor:text;transition:all .2s;min-width:200px;max-width:320px}
+.allergy-input-box{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:.3rem .55rem;cursor:text;transition:all .2s;min-width:200px;max-width:260px;min-height:34px}
 .allergy-input-box:focus-within{background:var(--surface);border-color:var(--accent2);box-shadow:0 0 0 3px rgba(123,94,167,.08)}
 .allergy-tags{display:flex;flex-wrap:wrap;gap:.25rem}
 .allergy-tag{display:inline-flex;align-items:center;gap:.3rem;background:var(--accent-bg);border:1px solid var(--border2);border-radius:50px;padding:.15rem .55rem;font-size:.72rem;color:var(--accent);font-weight:500;white-space:nowrap}
@@ -743,7 +743,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 
 /* Multi-tag ingredient search */
-.fb-ing-multi{flex-wrap:wrap;gap:.3rem;min-width:220px;max-width:380px;border-radius:12px;cursor:text;align-items:center}
+.fb-ing-multi{flex-wrap:wrap;gap:.3rem;min-width:200px;max-width:260px;border-radius:8px !important;cursor:text;align-items:center;padding:.3rem .55rem !important;min-height:34px}
 .ing-tags{display:flex;flex-wrap:wrap;gap:.25rem;align-items:center}
 .ing-tag{display:inline-flex;align-items:center;gap:.3rem;background:var(--accent-bg);border:1px solid var(--border2);border-radius:50px;padding:.15rem .6rem;font-size:.75rem;color:var(--accent);font-weight:500;white-space:nowrap}
 .ing-tag button{background:none;border:none;cursor:pointer;color:var(--accent2);font-size:.65rem;padding:0;line-height:1;transition:opacity .15s}
@@ -806,7 +806,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 
 /* Diet tag select */
-.diet-select-wrap{position:relative;min-width:200px;max-width:340px}
+.diet-select-wrap{position:relative;min-width:200px;max-width:260px}
 .diet-tags-box{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:.3rem .55rem;cursor:pointer;transition:all .2s;min-height:34px}
 .diet-tags-box:focus-within,.diet-tags-box:hover{background:var(--surface);border-color:var(--accent2)}
 .diet-placeholder{font-size:.8rem;color:var(--text3);pointer-events:none;flex:1;white-space:nowrap}
@@ -837,9 +837,11 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 /* ── MOBIL ─────────────────────────────────────── */
 @media(max-width:600px){
-  .ntop{padding:.5rem .75rem;gap:.4rem}
+  .ntop{padding:.5rem .75rem;gap:.4rem;flex-wrap:wrap}
   .nlogo{font-size:1rem}
-  .nsearch{display:none}
+  /* Mobile: show search bar as full-width row below the top buttons */
+  .nsearch{display:block;order:3;flex:1 1 100%;max-width:none;min-width:0;margin-top:.1rem}
+  .nsearch input{font-size:.85rem;padding:.5rem 1rem .5rem 2.2rem}
   .nright{gap:.2rem;flex-wrap:nowrap;flex-shrink:0;min-width:0}
   /* Mobile: hide Favoritter (still in user menu) and Familie (still in modal) */
   .bsm-fav{display:none !important}
@@ -1305,7 +1307,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="diet-select-wrap">
       <div class="diet-tags-box" id="dietTagsBox" onclick="toggleDietDrop()">
         <div id="dietTags" class="allergy-tags"></div>
-        <span class="diet-placeholder" id="dietPlaceholder">Vælg kostpræference…</span>
+        <span class="diet-placeholder" id="dietPlaceholder">Vælg kost…</span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--text3);margin-left:auto"><path d="M6 9l6 6 6-6"/></svg>
       </div>
       <div class="diet-drop" id="dietDrop">
