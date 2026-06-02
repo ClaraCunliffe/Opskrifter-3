@@ -839,10 +839,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 @media(max-width:600px){
   .ntop{padding:.5rem .75rem;gap:.4rem;flex-wrap:wrap}
   .nlogo{font-size:1rem;flex-shrink:0}
-  /* Mobile: search as own row below the top buttons */
-  .nsearch{display:block;order:3;flex:1 1 100%;max-width:none;min-width:0;margin-top:.2rem}
-  .nsearch input{font-size:.85rem;padding:.5rem 1rem .5rem 2.2rem}
-  .nright{gap:.25rem;flex-wrap:nowrap;flex-shrink:0;min-width:0;margin-left:auto}
+  /* Mobile: search on row 1 next to logo (BEFORE Mine icon) */
+  .nsearch{display:block;order:1;flex:1 1 0;min-width:120px;max-width:none;margin:0}
+  .nsearch input{font-size:.82rem;padding:.45rem .75rem .45rem 2.1rem}
+  .nsearch svg{left:.7rem}
+  /* Icons + Login wrap to row 2, right-aligned */
+  .nright{gap:.25rem;flex-wrap:nowrap;flex-shrink:0;min-width:0;order:2;flex:1 1 100%;justify-content:flex-end;margin-left:0;margin-top:.2rem}
   /* Mobile: hide Favoritter (still in user menu) and Familie (still in modal) */
   .bsm-fav{display:none !important}
   .bsm-family{display:none !important}
