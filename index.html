@@ -838,13 +838,14 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 /* ── MOBIL ─────────────────────────────────────── */
 @media(max-width:600px){
   .ntop{padding:.5rem .75rem;gap:.4rem;flex-wrap:wrap}
-  .nlogo{font-size:1rem;flex-shrink:0}
-  /* Mobile: search on row 1 next to logo (BEFORE Mine icon) */
-  .nsearch{display:block;order:1;flex:1 1 0;min-width:120px;max-width:none;margin:0}
+  /* Logo alene på linje 1, fuld bredde */
+  .nlogo{font-size:1.05rem;flex:1 1 100%;order:0}
+  /* Søgefelt på linje 2, fylder den ledige plads */
+  .nsearch{display:block;order:1;flex:1 1 0;min-width:100px;max-width:none;margin:0}
   .nsearch input{font-size:.82rem;padding:.45rem .75rem .45rem 2.1rem}
   .nsearch svg{left:.7rem}
-  /* Icons + Login wrap to row 2, right-aligned */
-  .nright{gap:.25rem;flex-wrap:nowrap;flex-shrink:0;min-width:0;order:2;flex:1 1 100%;justify-content:flex-end;margin-left:0;margin-top:.2rem}
+  /* Ikoner + login på linje 2 til højre for søgefeltet */
+  .nright{gap:.25rem;flex-wrap:nowrap;flex-shrink:0;min-width:0;order:2;flex:0 0 auto;justify-content:flex-end;margin-left:0;margin-top:0}
   /* Mobile: hide Favoritter (still in user menu) and Familie (still in modal) */
   .bsm-fav{display:none !important}
   .bsm-family{display:none !important}
@@ -853,7 +854,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .nright .bsm.bsm-fridge,
   .nright .bsm.bsm-mine{
     padding:.42rem;
-    min-width:34px;
+    min-width:32px;
     height:32px;
     justify-content:center;
     gap:0;
@@ -861,8 +862,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   }
   .nright .bsm.bsm-cal svg,
   .nright .bsm.bsm-fridge svg,
-  .nright .bsm.bsm-mine svg{flex-shrink:0}
-  #navLoginBtn{padding:.4rem .9rem !important;font-size:.74rem !important;white-space:nowrap}
+  .nright .bsm.bsm-mine svg{flex-shrink:0;width:13px;height:13px}
+  #navLoginBtn{padding:.4rem .8rem !important;font-size:.72rem !important;white-space:nowrap}
   .mbadge{min-width:14px;height:14px;font-size:.55rem}
   .nmenu{padding:0 .25rem}
   .mi{padding:.55rem .7rem;font-size:.75rem}
