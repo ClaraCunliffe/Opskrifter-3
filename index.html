@@ -837,11 +837,28 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 /* ── MOBIL ─────────────────────────────────────── */
 @media(max-width:600px){
-  .ntop{padding:.5rem 1rem;gap:.5rem}
-  .nlogo{font-size:1.1rem}
+  .ntop{padding:.5rem .75rem;gap:.4rem}
+  .nlogo{font-size:1rem}
   .nsearch{display:none}
-  .nright{gap:.3rem}
-  .bsm{padding:.35rem .65rem;font-size:.72rem}
+  .nright{gap:.2rem;flex-wrap:nowrap;flex-shrink:0;min-width:0}
+  /* Mobile: hide Favoritter (still in user menu) and Familie (still in modal) */
+  .bsm-fav{display:none !important}
+  .bsm-family{display:none !important}
+  /* Mobile: icon-only for Mine/Kalender/Køleskab */
+  .nright .bsm.bsm-cal,
+  .nright .bsm.bsm-fridge,
+  .nright .bsm.bsm-mine{
+    padding:.42rem;
+    min-width:34px;
+    height:32px;
+    justify-content:center;
+    gap:0;
+    font-size:0
+  }
+  .nright .bsm.bsm-cal svg,
+  .nright .bsm.bsm-fridge svg,
+  .nright .bsm.bsm-mine svg{flex-shrink:0}
+  #navLoginBtn{padding:.4rem .8rem !important;font-size:.72rem !important}
   .mbadge{min-width:14px;height:14px;font-size:.55rem}
   .nmenu{padding:0 .25rem}
   .mi{padding:.55rem .7rem;font-size:.75rem}
@@ -868,46 +885,56 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .pbsec,.pbedit,.pbprint{flex:1;font-size:.72rem;padding:.5rem .6rem}
   .ing-grid{grid-template-columns:1fr}
   .nutr-row{grid-template-columns:repeat(2,1fr)}
-  .page{padding:1rem}
+  .page{padding:.85rem}
   .shead{flex-wrap:wrap;gap:.5rem}
   .shead > div:last-child{flex-wrap:wrap;width:100%}
+  .stitle{font-size:1.6rem}
   .week-grid{min-width:600px}
-  .cal-dow{font-size:.58rem;padding:.4rem 0}
-  .cal-day{min-height:44px;padding:.4rem .2rem}
-  .cal-dn{font-size:.72rem}
+  .cal-dow{font-size:.58rem;padding:.35rem 0}
+  .cal-day{min-height:38px;padding:.3rem .15rem;gap:.18rem}
+  .cal-dn{font-size:.7rem}
   /* Måneds-kalender mere kompakt på mobil */
-  .cal-top{padding:.85rem 1rem;flex-wrap:wrap;gap:.6rem}
-  .cal-month-lbl{font-size:1.1rem}
-  .cal-legend{gap:.55rem;font-size:.68rem;flex-wrap:wrap}
-  .cal-legend-item{font-size:.62rem}
-  .cal-day.today .cal-dn{width:22px;height:22px;font-size:.7rem}
-  .cdot{width:5px;height:5px}
-  .week-head{flex-wrap:wrap;gap:.5rem}
-  .week-btns{flex-wrap:wrap;gap:.3rem}
-  .week-btns .bsm{font-size:.72rem;padding:.32rem .65rem}
+  .cal-top{padding:.7rem .8rem;flex-wrap:wrap;gap:.5rem}
+  .cal-month-lbl{font-size:1rem}
+  .cal-nav-btn{width:28px;height:28px}
+  .cal-legend{gap:.45rem;font-size:.62rem;flex-wrap:wrap}
+  .cal-legend-item{font-size:.58rem;gap:.2rem}
+  .cal-legend-dot{width:6px;height:6px}
+  .cal-day.today .cal-dn{width:20px;height:20px;font-size:.65rem}
+  .cdot{width:4px;height:4px}
+  .cal-dots{min-height:6px;gap:2px}
+  .week-head{flex-wrap:wrap;gap:.4rem}
+  .week-title{font-size:.95rem;flex:1 1 100%}
+  .week-btns{flex-wrap:wrap;gap:.25rem;width:100%}
+  .week-btns .bsm{font-size:.68rem;padding:.3rem .55rem;flex:1 1 auto;min-width:0}
+  .week-btns .bsm svg{width:11px;height:11px}
+  .meal-toggles-row{padding:.4rem .1rem;gap:.3rem}
+  .meal-toggles-row .mt-label{font-size:.58rem}
+  .mt-pill{padding:.22rem .65rem;font-size:.68rem}
+  .mt-sep{margin:0 .2rem}
   /* MOBIL UGEPLAN — dag for dag i stedet for 7-kolonners grid */
   .wg-scroll{overflow-x:visible;border:none;box-shadow:none;background:transparent;border-radius:0}
-  .week-grid-mobile{display:flex !important;flex-direction:column !important;grid-template-columns:none !important;min-width:0 !important;gap:.6rem;background:transparent !important;padding:0}
-  .wg-day{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+  .week-grid-mobile{display:flex !important;flex-direction:column !important;grid-template-columns:none !important;min-width:0 !important;gap:.45rem;background:transparent !important;padding:0}
+  .wg-day{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--sh)}
   .wg-day-today{border-color:var(--accent2);box-shadow:0 0 0 1px var(--accent2),var(--sh)}
-  .wg-day-head{padding:.55rem .9rem;background:linear-gradient(180deg,#F8FCFF,#fff);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:baseline}
-  .wg-day-head .day-n{font-family:'Fraunces',serif;font-size:1rem;font-weight:400;color:var(--text)}
-  .wg-day-head .day-d{font-size:.72rem;color:var(--text3);font-weight:500}
+  .wg-day-head{padding:.4rem .75rem;background:linear-gradient(180deg,#F8FCFF,#fff);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:baseline}
+  .wg-day-head .day-n{font-family:'Fraunces',serif;font-size:.92rem;font-weight:400;color:var(--text)}
+  .wg-day-head .day-d{font-size:.7rem;color:var(--text3);font-weight:500}
   .wg-day-head .day-d.today-d{color:var(--accent);font-weight:600}
-  .wg-day-meals{padding:.25rem .55rem}
-  .wg-meal-row{display:flex;gap:.55rem;padding:.4rem 0;border-top:1px solid var(--border);align-items:stretch}
+  .wg-day-meals{padding:.15rem .55rem}
+  .wg-meal-row{display:flex;gap:.5rem;padding:.3rem 0;border-top:1px solid var(--border);align-items:stretch}
   .wg-meal-row:first-child{border-top:none}
-  .wg-meal-label{flex:0 0 62px;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding-top:.55rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .wg-meal-cells{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
-  .wg-meal-cells .cell-empty{min-height:36px;padding:.4rem .6rem;flex-direction:row;gap:.4rem;justify-content:flex-start;border-radius:7px}
-  .wg-meal-cells .cell-empty .cell-plus{font-size:1rem;margin-bottom:0;line-height:1}
-  .wg-meal-cells .cell-empty .cell-lbl{text-transform:none;letter-spacing:0;font-size:.72rem}
-  .wg-meal-cells .cell-filled{min-height:44px;border-radius:7px}
+  .wg-meal-label{flex:0 0 56px;font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);padding-top:.42rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wg-meal-cells{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .wg-meal-cells .cell-empty{min-height:30px;padding:.32rem .55rem;flex-direction:row;gap:.4rem;justify-content:flex-start;border-radius:6px}
+  .wg-meal-cells .cell-empty .cell-plus{font-size:.95rem;margin-bottom:0;line-height:1}
+  .wg-meal-cells .cell-empty .cell-lbl{text-transform:none;letter-spacing:0;font-size:.68rem}
+  .wg-meal-cells .cell-filled{min-height:36px;border-radius:6px}
   .wg-meal-cells .cf-bar{height:3px}
-  .wg-meal-cells .cf-body{padding:.4rem .55rem}
-  .wg-meal-cells .cf-title{font-size:.78rem;margin-bottom:.1rem}
-  .wg-meal-cells .cf-meta{font-size:.62rem;color:var(--text3)}
-  .wg-meal-cells .cell-add-more{font-size:.66rem;padding:.18rem}
+  .wg-meal-cells .cf-body{padding:.32rem .5rem}
+  .wg-meal-cells .cf-title{font-size:.75rem;margin-bottom:.05rem}
+  .wg-meal-cells .cf-meta{font-size:.6rem;color:var(--text3)}
+  .wg-meal-cells .cell-add-more{font-size:.62rem;padding:.15rem;border-radius:6px}
   .wg-meal-cells .cell-rm{width:18px;height:18px;font-size:.7rem}
   .shop-grid{grid-template-columns:1fr}
   .shop-top{flex-wrap:wrap;gap:.5rem}
@@ -928,10 +955,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .user-drop{right:0;min-width:160px}
   .nav-user-btn span{display:none}
   /* MOBIL FIXES — nylige tilføjelser */
-  .copy-week-btn{padding:.4rem .7rem;font-size:.72rem}
+  .copy-week-btn{padding:.35rem .55rem;font-size:.68rem}
+  .copy-week-btn svg{width:11px;height:11px}
   #insertPlanDrop{min-width:240px !important;max-width:calc(100vw - 2rem) !important;right:auto !important;left:0 !important}
-  #importBanner > div{padding:0 1rem !important;flex-direction:column;align-items:stretch !important;gap:.7rem !important}
-  #importBanner > div > div:last-child{justify-content:flex-end}
+  #importBanner > div{padding:0 1rem !important}
+  #importBanner > div > div:first-child{flex-direction:column;align-items:stretch !important;gap:.7rem !important}
+  #importBanner > div > div:first-child > div:last-child{justify-content:flex-end}
   #importBanner button{font-size:.74rem !important;padding:.45rem .8rem !important}
   .pop-slider{padding-left:.5rem !important;padding-right:.5rem !important;margin-left:-.5rem !important;margin-right:-.5rem !important}
   .pop-arrow{display:none !important}
@@ -939,9 +968,13 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 @media(max-width:400px){
   .hero h1{font-size:1.7rem}
   .bsm{padding:.3rem .5rem;font-size:.68rem}
-  .nright{gap:.2rem}
-  .copy-week-btn{font-size:.68rem;padding:.35rem .55rem}
+  .nright{gap:.18rem}
+  .nright .bsm{padding:.35rem;min-width:30px}
+  .copy-week-btn{font-size:.64rem;padding:.32rem .45rem}
   #importBanner button{font-size:.7rem !important}
+  .stitle{font-size:1.4rem}
+  .week-btns .bsm{font-size:.62rem;padding:.28rem .4rem}
+  .wg-meal-label{flex:0 0 48px;font-size:.55rem}
 }
 </style>
 </head>
@@ -1043,8 +1076,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <input type="text" placeholder="Søg opskrifter…" oninput="onSearch()" id="headerSearch">
     </div>
     <div class="nright">
-      <button class="bsm" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter</button>
-      <button class="bsm" onclick="requireLogin(()=>openFamilySettings())">
+      <button class="bsm bsm-fav" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter</button>
+      <button class="bsm bsm-family" onclick="requireLogin(()=>openFamilySettings())">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span id="familyBtnLbl">Familie</span>
       </button>
