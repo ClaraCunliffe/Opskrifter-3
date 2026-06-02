@@ -12,7 +12,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#F8F6F9;--surface:#FFF;--surface2:#F2EEF6;--border:#E5DFF0;--border2:#D0C4E2;--accent:#7B5EA7;--accent2:#9E7DC8;--accent-bg:#F0EBFA;--rose:#B5667A;--rose-bg:#FAF0F3;--text:#1E1628;--text2:#6B5E7A;--text3:#A899B8;--r:12px;--sh:0 1px 12px rgba(80,50,120,.07);--shm:0 4px 24px rgba(80,50,120,.12)}
-html{font-size:15px}body{font-family:'Inter',sans-serif;background:linear-gradient(180deg,#F2F8FD 0%,#F5F7FB 100%);background-attachment:fixed;color:var(--text);line-height:1.6;min-height:100vh}
+html{font-size:15px}body{font-family:'Inter',sans-serif;background:linear-gradient(180deg,#F2F8FD 0%,#F5F7FB 100%);background-attachment:fixed;color:var(--text);line-height:1.6;min-height:100vh;overflow-x:hidden}
 
 /* NAV */
 header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
@@ -493,6 +493,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .mrc{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .mrb{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:.28rem .8rem;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .18s}
 .mrb:hover{background:#6a4e93}
+.share-sel-row:hover{background:var(--accent-bg) !important;border-color:var(--border2) !important}
+.share-sel-row:has(input:checked){background:var(--accent-bg) !important;border-color:var(--accent) !important}
 
 /* EMPTY */
 .empty-state{grid-column:1/-1;text-align:center;padding:5rem 2rem;color:var(--text3)}
@@ -868,13 +870,45 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .nutr-row{grid-template-columns:repeat(2,1fr)}
   .page{padding:1rem}
   .shead{flex-wrap:wrap;gap:.5rem}
+  .shead > div:last-child{flex-wrap:wrap;width:100%}
   .week-grid{min-width:600px}
   .cal-dow{font-size:.58rem;padding:.4rem 0}
   .cal-day{min-height:44px;padding:.4rem .2rem}
   .cal-dn{font-size:.72rem}
+  /* Måneds-kalender mere kompakt på mobil */
+  .cal-top{padding:.85rem 1rem;flex-wrap:wrap;gap:.6rem}
+  .cal-month-lbl{font-size:1.1rem}
+  .cal-legend{gap:.55rem;font-size:.68rem;flex-wrap:wrap}
+  .cal-legend-item{font-size:.62rem}
+  .cal-day.today .cal-dn{width:22px;height:22px;font-size:.7rem}
+  .cdot{width:5px;height:5px}
   .week-head{flex-wrap:wrap;gap:.5rem}
   .week-btns{flex-wrap:wrap;gap:.3rem}
   .week-btns .bsm{font-size:.72rem;padding:.32rem .65rem}
+  /* MOBIL UGEPLAN — dag for dag i stedet for 7-kolonners grid */
+  .wg-scroll{overflow-x:visible;border:none;box-shadow:none;background:transparent;border-radius:0}
+  .week-grid-mobile{display:flex !important;flex-direction:column !important;grid-template-columns:none !important;min-width:0 !important;gap:.6rem;background:transparent !important;padding:0}
+  .wg-day{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+  .wg-day-today{border-color:var(--accent2);box-shadow:0 0 0 1px var(--accent2),var(--sh)}
+  .wg-day-head{padding:.55rem .9rem;background:linear-gradient(180deg,#F8FCFF,#fff);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:baseline}
+  .wg-day-head .day-n{font-family:'Fraunces',serif;font-size:1rem;font-weight:400;color:var(--text)}
+  .wg-day-head .day-d{font-size:.72rem;color:var(--text3);font-weight:500}
+  .wg-day-head .day-d.today-d{color:var(--accent);font-weight:600}
+  .wg-day-meals{padding:.25rem .55rem}
+  .wg-meal-row{display:flex;gap:.55rem;padding:.4rem 0;border-top:1px solid var(--border);align-items:stretch}
+  .wg-meal-row:first-child{border-top:none}
+  .wg-meal-label{flex:0 0 62px;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding-top:.55rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wg-meal-cells{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+  .wg-meal-cells .cell-empty{min-height:36px;padding:.4rem .6rem;flex-direction:row;gap:.4rem;justify-content:flex-start;border-radius:7px}
+  .wg-meal-cells .cell-empty .cell-plus{font-size:1rem;margin-bottom:0;line-height:1}
+  .wg-meal-cells .cell-empty .cell-lbl{text-transform:none;letter-spacing:0;font-size:.72rem}
+  .wg-meal-cells .cell-filled{min-height:44px;border-radius:7px}
+  .wg-meal-cells .cf-bar{height:3px}
+  .wg-meal-cells .cf-body{padding:.4rem .55rem}
+  .wg-meal-cells .cf-title{font-size:.78rem;margin-bottom:.1rem}
+  .wg-meal-cells .cf-meta{font-size:.62rem;color:var(--text3)}
+  .wg-meal-cells .cell-add-more{font-size:.66rem;padding:.18rem}
+  .wg-meal-cells .cell-rm{width:18px;height:18px;font-size:.7rem}
   .shop-grid{grid-template-columns:1fr}
   .shop-top{flex-wrap:wrap;gap:.5rem}
   .mine-hero{flex-direction:column;padding:1.5rem 0}
@@ -883,7 +917,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .mine-filters{flex-direction:column;align-items:flex-start}
   .modal{max-width:100%;border-radius:12px 12px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh}
   .mo{align-items:flex-end;padding:0}
-  .save-modal{border-radius:12px 12px 0 0}
+  .save-modal{border-radius:12px 12px 0 0;max-width:100%;max-height:90vh}
   .save-mo{align-items:flex-end;padding:0}
   .rform-modal{border-radius:12px 12px 0 0;max-height:95vh}
   .rform-overlay{align-items:flex-end;padding:0}
@@ -893,11 +927,21 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .user-drop{right:0;min-width:160px}
   .nav-user-btn span{display:none}
+  /* MOBIL FIXES — nylige tilføjelser */
+  .copy-week-btn{padding:.4rem .7rem;font-size:.72rem}
+  #insertPlanDrop{min-width:240px !important;max-width:calc(100vw - 2rem) !important;right:auto !important;left:0 !important}
+  #importBanner > div{padding:0 1rem !important;flex-direction:column;align-items:stretch !important;gap:.7rem !important}
+  #importBanner > div > div:last-child{justify-content:flex-end}
+  #importBanner button{font-size:.74rem !important;padding:.45rem .8rem !important}
+  .pop-slider{padding-left:.5rem !important;padding-right:.5rem !important;margin-left:-.5rem !important;margin-right:-.5rem !important}
+  .pop-arrow{display:none !important}
 }
 @media(max-width:400px){
   .hero h1{font-size:1.7rem}
   .bsm{padding:.3rem .5rem;font-size:.68rem}
   .nright{gap:.2rem}
+  .copy-week-btn{font-size:.68rem;padding:.35rem .55rem}
+  #importBanner button{font-size:.7rem !important}
 }
 </style>
 </head>
@@ -1182,18 +1226,25 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 <!-- IMPORT BANNER (delte opskrifter) -->
 <div id="importBanner" style="display:none;background:linear-gradient(135deg,#EDE4F8,#E0D2F0);border-bottom:1px solid var(--border2);padding:.9rem 0">
-  <div style="max-width:1320px;margin:auto;padding:0 2.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-    <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  <div style="max-width:1320px;margin:auto;padding:0 2.5rem">
+    <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
+      <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div style="flex:1;min-width:200px">
+        <div style="font-family:'Fraunces',serif;font-size:1rem;font-weight:400;color:var(--text)"><span id="importCount">0</span> delte opskrifter venter</div>
+        <div style="font-size:.75rem;color:var(--text2);margin-top:.1rem" id="importFrom"></div>
+        <button type="button" id="importPreviewToggle" onclick="toggleImportPreview()" style="background:none;border:none;font-family:'Inter',sans-serif;font-size:.72rem;color:var(--accent);cursor:pointer;margin-top:.35rem;padding:0;display:inline-flex;align-items:center;gap:.25rem">
+          <span id="importPreviewToggleLbl">Vis opskrifter</span>
+          <svg id="importPreviewChev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:flex-start">
+        <button onclick="dismissImport()" style="background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer">Afvis</button>
+        <button onclick="confirmImportRecipes()" style="background:var(--accent);border:none;color:#fff;border-radius:8px;padding:.5rem 1.1rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer">Importér til Mine opskrifter</button>
+      </div>
     </div>
-    <div style="flex:1;min-width:200px">
-      <div style="font-family:'Fraunces',serif;font-size:1rem;font-weight:400;color:var(--text)"><span id="importCount">0</span> delte opskrifter venter</div>
-      <div style="font-size:.75rem;color:var(--text2);margin-top:.1rem" id="importFrom"></div>
-    </div>
-    <div style="display:flex;gap:.5rem">
-      <button onclick="dismissImport()" style="background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.8rem;cursor:pointer">Afvis</button>
-      <button onclick="confirmImportRecipes()" style="background:var(--accent);border:none;color:#fff;border-radius:8px;padding:.5rem 1.1rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer">Importér til Mine opskrifter</button>
-    </div>
+    <div id="importPreview" style="display:none;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7);border-radius:10px;padding:.6rem .85rem;margin-top:.75rem;max-height:260px;overflow-y:auto"></div>
   </div>
 </div>
 
@@ -1792,6 +1843,26 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
   </div>
 </div>
+<!-- VÆLG OPSKRIFTER AT DELE -->
+<div class="save-mo" id="shareSelectMo" onclick="if(event.target===this)closeShareSelectModal()">
+  <div class="save-modal" style="max-width:560px;max-height:85vh;display:flex;flex-direction:column">
+    <h3>Vælg opskrifter at dele</h3>
+    <p>Markér de opskrifter du vil sende videre til en ven.</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0 .75rem;border-bottom:1px solid var(--border);margin-bottom:.6rem">
+      <span id="shareSelCount" style="font-size:.78rem;color:var(--text2);font-weight:500">0 valgt</span>
+      <div style="display:flex;gap:.4rem">
+        <button class="bsm" onclick="shareSelectAll(true)" type="button">Vælg alle</button>
+        <button class="bsm" onclick="shareSelectAll(false)" type="button">Fravælg alle</button>
+      </div>
+    </div>
+    <div id="shareSelList" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem;min-height:60px"></div>
+    <div class="save-modal-btns">
+      <button class="smb-cancel" onclick="closeShareSelectModal()">Annuller</button>
+      <button class="smb-save" id="shareSelBtn" onclick="confirmShareSelection()" disabled style="opacity:.5;cursor:not-allowed">Del valgte</button>
+    </div>
+  </div>
+</div>
+
 <div class="save-mo" id="shareMo" onclick="if(event.target===this)closeShareModal()">
   <div class="save-modal" style="max-width:500px">
     <h3>Del ugeplan</h3>
@@ -2194,32 +2265,54 @@ function popSliderScroll(dir){
   s.scrollBy({left:dir*step*2,behavior:'smooth'});
 }
 
-async function loadPopularRecipes() {
+async function loadPopularRecipes(retryCount = 0) {
+  const section = document.getElementById('popularSection');
+  const grid = document.getElementById('popularGrid');
+  if(!section || !grid) return;
+
+  // Make sure we have public recipes loaded. If not, try fetching.
+  if(!publicRecipes.length){
+    try { await loadPublicRecipes(); } catch(e) {}
+  }
+  const adminPool = publicRecipes;
+  if(!adminPool.length){
+    section.style.display='none';
+    // Retry up to 3 times with backoff in case Supabase is slow
+    if(retryCount < 3){
+      setTimeout(() => loadPopularRecipes(retryCount + 1), 1000 * (retryCount + 1));
+    }
+    return;
+  }
+
+  let top = [];
   try {
     const r = await sbFetch('/rest/v1/favoritter?select=recipe_id');
-    if(!r.ok || !r.data) return;
-    // Count favorites per recipe
-    const counts = {};
-    r.data.forEach(f => {
-      counts[f.recipe_id] = (counts[f.recipe_id]||0) + 1;
-    });
-    // Get top 10
-    // Only consider admin/public recipes, not user-uploaded ones
-    const adminPool = publicRecipes;
-    const top = Object.entries(counts)
-      .sort((a,b) => b[1] - a[1])
-      .map(([id]) => adminPool.find(rec => String(rec.id) === String(id)))
-      .filter(Boolean)
-      .slice(0,10);
-    const section = document.getElementById('popularSection');
-    const grid = document.getElementById('popularGrid');
-    if(top.length >= 2) {
-      section.style.display = 'block';
-      grid.innerHTML = top.map((rec,i) => cardHTML(rec,i)).join('');
-    } else {
-      section.style.display = 'none';
+    if(r.ok && Array.isArray(r.data) && r.data.length) {
+      // Count favorites per recipe and sort
+      const counts = {};
+      r.data.forEach(f => { counts[f.recipe_id] = (counts[f.recipe_id]||0) + 1; });
+      top = Object.entries(counts)
+        .sort((a,b) => b[1] - a[1])
+        .map(([id]) => adminPool.find(rec => String(rec.id) === String(id)))
+        .filter(Boolean);
     }
-  } catch(e) { console.warn('loadPopularRecipes:', e.message); }
+  } catch(e) { console.warn('loadPopularRecipes favorites:', e.message); }
+
+  // Fallback: if too few have favorites (or anon user can't read favoritter),
+  // fill with any other admin recipes so the section still shows.
+  if(top.length < 10){
+    const usedIds = new Set(top.map(r => String(r.id)));
+    adminPool.forEach(r => { if(!usedIds.has(String(r.id))) top.push(r); });
+  }
+  top = top.slice(0,10);
+
+  if(top.length >= 2) {
+    grid.innerHTML = top.map((rec,i) => cardHTML(rec,i)).join('');
+    // Only display the section if we are on the "alle" view, otherwise leave hidden
+    if(activeView === 'alle' && !globalQ){ section.style.display = 'block'; }
+  } else {
+    section.style.display = 'none';
+  }
 }
 
 async function loadPublicRecipes() {
@@ -2410,7 +2503,12 @@ function switchMenu(id,btn){
   const ps=document.getElementById('popularSection');
   if(ps && id!=='alle') ps.dataset.hidden='1';
   if(ps && id==='alle' && ps.dataset.hidden){ps.dataset.hidden='';}
-  if(ps) ps.style.display=(id==='alle'&&ps.querySelector('#popularGrid')?.children.length>=2)?'block':'none';
+  const pgChildren = ps?.querySelector('#popularGrid')?.children.length || 0;
+  if(ps) ps.style.display=(id==='alle' && pgChildren>=2 && !globalQ)?'block':'none';
+  // If we're on alle and popular grid is empty, try to (re)load it
+  if(id==='alle' && pgChildren < 2){
+    try { loadPopularRecipes(); } catch(e) {}
+  }
   // Show filter bar only on recipe views
   const recipeViews=['alle','morgenmad','frokost','aftensmad','dessert','salater','suppe','bagværk','snacks','drikkevarer','favoritter','discover','fridge','mine'];
   document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge');
@@ -2868,6 +2966,7 @@ function initMealToggles(){
 }
 
 function renderWeekGrid(){
+  if(window.innerWidth<=600) return renderWeekGridMobile();
   const today=new Date();
   const weekDates=Array.from({length:7},(_,i)=>addDays(selWeekStart,i));
   const s=weekDates[0],e=weekDates[6];
@@ -2901,8 +3000,57 @@ function renderWeekGrid(){
       }
     });
   });
+  document.getElementById('weekGrid').className='week-grid';
   document.getElementById('weekGrid').innerHTML=h;
 }
+
+function renderWeekGridMobile(){
+  const today=new Date();
+  const weekDates=Array.from({length:7},(_,i)=>addDays(selWeekStart,i));
+  const s=weekDates[0],e=weekDates[6];
+  const fmt=d=>`${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}`;
+  document.getElementById('weekTitle').textContent=`Uge ${getWeekNum(selWeekStart)} · ${fmt(s)} – ${fmt(e)} ${e.getFullYear()}`;
+  const DAY_NAMES=['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
+  const meals=MEALS.filter(m=>visibleMeals.includes(m.key));
+  let h='';
+  weekDates.forEach((d,di)=>{
+    const isToday=sameDay(d,today);
+    let mealRows='';
+    meals.forEach(m=>{
+      const k=planKey(d,m.key),rids=planGet(k);
+      let cellHtml='';
+      if(rids.length){
+        const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';return`
+          <div class="cell-filled" onclick="openPanel('${rid}')">
+            <button class="cell-rm" onclick="rmSlotOne(event,'${dStr(d)}','${m.key}','${rid}')">✕</button>
+            <div class="cf-bar" style="background:${CAT_COLORS[r.cat]||'#D4C4E4'}"></div>
+            <div class="cf-body"><div class="cf-title">${r.title}</div><div class="cf-meta">${r.time}</div></div>
+          </div>`;}).join('');
+        cellHtml=`${cards}<button class="cell-add-more" onclick="openSlotPicker('${dStr(d)}','${m.key}')">+ Tilføj</button>`;
+      } else {
+        cellHtml=`<div class="cell-empty" onclick="openSlotPicker('${dStr(d)}','${m.key}')"><span class="cell-plus">+</span><span class="cell-lbl">Tilføj ${m.lbl.toLowerCase()}</span></div>`;
+      }
+      mealRows+=`<div class="wg-meal-row"><div class="wg-meal-label">${m.lbl}</div><div class="wg-meal-cells">${cellHtml}</div></div>`;
+    });
+    h+=`<div class="wg-day${isToday?' wg-day-today':''}">
+      <div class="wg-day-head"><span class="day-n">${DAY_NAMES[di]}</span><span class="day-d${isToday?' today-d':''}">${d.getDate()}. ${MONTH_NAMES[d.getMonth()].slice(0,3)}</span></div>
+      <div class="wg-day-meals">${mealRows}</div>
+    </div>`;
+  });
+  const wg=document.getElementById('weekGrid');
+  wg.className='week-grid week-grid-mobile';
+  wg.innerHTML=h;
+}
+
+// Re-render week grid when window resizes across the mobile breakpoint
+let _wgPrevMobile = window.innerWidth<=600;
+window.addEventListener('resize', () => {
+  const nowMobile = window.innerWidth<=600;
+  if(nowMobile !== _wgPrevMobile){
+    _wgPrevMobile = nowMobile;
+    if(document.getElementById('weekGrid')) renderWeekGrid();
+  }
+});
 
 function getWeekNum(d){const onejan=new Date(d.getFullYear(),0,1);return Math.ceil(((d-onejan)/86400000+onejan.getDay()+1)/7);}
 
@@ -3684,7 +3832,9 @@ function renderMine(){
         <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="${sv?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
-        <div class="mine-card-tag">Min opskrift</div>
+        ${r.imported
+          ? `<div class="mine-card-tag" style="background:rgba(74,138,181,.18);border-color:rgba(74,138,181,.35);color:#1E5380" title="${(r.importedFrom||'').replace(/"/g,'&quot;')}">⇣ Importeret${r.importedFrom?' fra '+r.importedFrom.replace(/</g,'&lt;'):''}</div>`
+          : `<div class="mine-card-tag">Min opskrift</div>`}
         <button class="mine-card-del" onclick="deleteUserRecipe('${r.id}',event)" title="Slet">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
         </button>
@@ -4866,7 +5016,54 @@ function shareRecipe(id) {
 
 function shareMineOpskrifter() {
   if(!userRecipes.length) { alert('Du har ingen egne opskrifter at dele endnu.'); return; }
-  encodeAndShare(userRecipes, 'Mine opskrifter ('+ userRecipes.length +')');
+  openShareSelectModal();
+}
+
+function openShareSelectModal(){
+  const list = document.getElementById('shareSelList');
+  list.innerHTML = userRecipes.map(r => `
+    <label class="share-sel-row" style="display:flex;align-items:center;gap:.7rem;padding:.55rem .75rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s">
+      <input type="checkbox" data-rid="${r.id}" onchange="updateShareCount()" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
+      <div style="width:8px;height:8px;border-radius:50%;background:${CAT_COLORS[r.cat]||'var(--border2)'};flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.83rem;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:.05rem">${r.lbl} · ${r.time}</div>
+      </div>
+    </label>
+  `).join('');
+  updateShareCount();
+  document.getElementById('shareSelectMo').classList.add('open');
+}
+
+function closeShareSelectModal(){
+  document.getElementById('shareSelectMo').classList.remove('open');
+}
+
+function shareSelectAll(check){
+  document.querySelectorAll('#shareSelList input[type="checkbox"]').forEach(c => { c.checked = check; });
+  updateShareCount();
+}
+
+function updateShareCount(){
+  const checked = document.querySelectorAll('#shareSelList input[type="checkbox"]:checked').length;
+  document.getElementById('shareSelCount').textContent = checked + ' valgt af ' + userRecipes.length;
+  const btn = document.getElementById('shareSelBtn');
+  btn.disabled = checked === 0;
+  btn.style.opacity = checked === 0 ? '.5' : '1';
+  btn.style.cursor = checked === 0 ? 'not-allowed' : 'pointer';
+  btn.textContent = checked > 0 ? `Del ${checked} ${checked===1?'opskrift':'opskrifter'}` : 'Del valgte';
+}
+
+function confirmShareSelection(){
+  const ids = [...document.querySelectorAll('#shareSelList input[type="checkbox"]:checked')]
+    .map(c => c.dataset.rid);
+  const selected = userRecipes.filter(r => ids.includes(String(r.id)));
+  if(!selected.length) return;
+  closeShareSelectModal();
+  const label = selected.length === 1
+    ? selected[0].title
+    : selected.length + ' opskrifter';
+  encodeAndShare(selected, label);
 }
 
 function encodeAndShare(recipes, label) {
@@ -4904,23 +5101,66 @@ function checkRecipeImport() {
     document.getElementById('importCount').textContent = payload.recipes.length;
     document.getElementById('importFrom').textContent =
       'Fra: ' + (payload.from||'ukendt') + ' · Delt: ' + (payload.shared||'');
+    // Build preview list
+    const preview = document.getElementById('importPreview');
+    if(preview){
+      preview.innerHTML = payload.recipes.map(r => {
+        const color = (typeof CAT_COLORS!=='undefined' && CAT_COLORS[r.cat]) || '#D4C4E4';
+        const safeTitle = (r.title||'Uden titel').replace(/</g,'&lt;');
+        const safeDesc = (r.desc||'').replace(/</g,'&lt;');
+        return `<div style="display:flex;align-items:flex-start;gap:.6rem;padding:.45rem 0;border-bottom:1px solid rgba(123,94,167,.15)">
+          <div style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;margin-top:.35rem"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem;font-weight:500;color:var(--text)">${safeTitle}</div>
+            <div style="font-size:.7rem;color:var(--text2);margin-top:.1rem">${r.lbl||r.cat||''}${r.time?' · '+r.time:''}${r.pers?' · '+r.pers:''}</div>
+            ${safeDesc?`<div style="font-size:.7rem;color:var(--text3);margin-top:.2rem;line-height:1.4">${safeDesc}</div>`:''}
+          </div>
+        </div>`;
+      }).join('');
+    }
     document.getElementById('importBanner').style.display = '';
     // Clean URL
     history.replaceState(null, '', location.pathname);
-  } catch(e) {}
+  } catch(e) { console.warn('checkRecipeImport failed:', e); }
 }
 
-function confirmImportRecipes() {
+function toggleImportPreview(){
+  const prev = document.getElementById('importPreview');
+  const lbl = document.getElementById('importPreviewToggleLbl');
+  const chev = document.getElementById('importPreviewChev');
+  if(!prev) return;
+  const isHidden = prev.style.display === 'none' || !prev.style.display;
+  prev.style.display = isHidden ? 'block' : 'none';
+  if(lbl) lbl.textContent = isHidden ? 'Skjul opskrifter' : 'Vis opskrifter';
+  if(chev) chev.style.transform = isHidden ? 'rotate(180deg)' : '';
+}
+
+async function confirmImportRecipes() {
   if(!pendingImport) return;
   let imported = 0;
-  pendingImport.recipes.forEach(r => {
-    const newId = Date.now() + Math.random();
+  const newRecipes = [];
+  for(const r of pendingImport.recipes){
+    const newId = Date.now() + imported;
     const newR = {...r, id: newId, imported: true,
-      importedFrom: pendingImport.from};
+      importedFrom: pendingImport.from || 'En ven'};
     userRecipes.push(newR);
+    newRecipes.push(newR);
     imported++;
-  });
+  }
   persistUser();
+  // Sync to cloud if logged in, so imports persist across devices
+  if(currentUser?.sbId && typeof saveRecipeToCloud==='function'){
+    for(const rec of newRecipes){
+      try {
+        const cloudId = await saveRecipeToCloud(rec);
+        if(cloudId){
+          const idx = userRecipes.findIndex(x => String(x.id) === String(rec.id));
+          if(idx >= 0) { userRecipes[idx].id = cloudId; }
+        }
+      } catch(e){}
+    }
+    persistUser();
+  }
   dismissImport();
   switchMenu('mine');
   setTimeout(() => alert(imported + ' opskrift' + (imported===1?'':'er') +
@@ -5222,7 +5462,7 @@ async function showApp(){
   // Load public recipes from Supabase, then render
   await loadPublicRecipes();
   renderGrid();
-  loadPopularRecipes();
+  await loadPopularRecipes();
   updateBadges();
   updateHero();
   document.getElementById('filterBar').classList.add('visible');
@@ -5306,6 +5546,7 @@ async function doLogin(){
     ]);
     updateNavUser();initDietButtons();renderAllergyTags();
     initFamilyBtn();initMealToggles();renderFavCats();updateBadges();updateHero();
+    try { loadPopularRecipes(); } catch(e) {}
     if(window.__pendingAction){const a=window.__pendingAction;window.__pendingAction=null;a();}
   } catch(e){
     err.textContent=e.message||'Forkert e-mail eller adgangskode.';
