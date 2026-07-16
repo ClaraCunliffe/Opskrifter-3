@@ -101,6 +101,19 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 
 .field input[type="checkbox"]{width:auto !important;padding:0 !important;background:none !important;border:initial !important;flex-shrink:0}
 #diet-pills, #allergy-pills{max-width:100%;overflow:visible}
+
+/* IMAGE ADJUST (pan/zoom crop) */
+.img-adjust-overlay{display:none;position:fixed;inset:0;background:rgba(10,5,20,.6);z-index:600;align-items:center;justify-content:center;padding:1rem;box-sizing:border-box}
+.img-adjust-overlay.open{display:flex}
+.img-adjust-box{background:#fff;border-radius:16px;padding:1.4rem;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(60,30,100,.25);box-sizing:border-box}
+.img-adjust-box h3{font-family:'Fraunces',serif;font-weight:300;font-size:1.1rem;margin-bottom:.2rem}
+.img-adjust-box p{font-size:.78rem;color:var(--txt3);margin-bottom:.9rem}
+.img-adjust-frame{position:relative;width:100%;aspect-ratio:5/3;overflow:hidden;border-radius:10px;background:#111;cursor:grab;touch-action:none;user-select:none}
+.img-adjust-frame.dragging{cursor:grabbing}
+.img-adjust-frame img{position:absolute;left:0;top:0;max-width:none;max-height:none;user-select:none;pointer-events:none;transform-origin:0 0;will-change:transform}
+.img-adjust-controls{display:flex;align-items:center;gap:.7rem;margin-top:1rem}
+.img-adjust-controls input[type=range]{flex:1;accent-color:var(--acc)}
+.img-adjust-foot{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem}
 </style>
 </head>
 <body>
@@ -166,8 +179,11 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
           <div id="img-lbl" class="img-lbl">Klik for at uploade billede<br><strong>JPG, PNG</strong> op til 10MB</div>
           <input type="file" id="img-inp" accept="image/*" style="display:none" onchange="handleImg(this)">
         </div>
-        <button type="button" onclick="removeImg()" id="rm-img-btn" style="display:none;margin-top:.4rem;padding:.4rem .8rem;background:#FAF0F3;border:1px solid rgba(181,102,122,.3);color:var(--rose);border-radius:6px;font-size:.78rem;cursor:pointer">Fjern billede</button>
-        <input type="text" id="ef-imgurl" placeholder="Eller indsæt billed-URL…" style="margin-top:.4rem">
+        <div style="display:flex;gap:.4rem;margin-top:.4rem">
+          <button type="button" onclick="openImgAdjust()" id="adj-img-btn" style="display:none;padding:.4rem .8rem;background:var(--sur2);border:1px solid var(--bor);color:var(--txt2);border-radius:6px;font-size:.78rem;cursor:pointer">🔧 Juster placering</button>
+          <button type="button" onclick="removeImg()" id="rm-img-btn" style="display:none;padding:.4rem .8rem;background:#FAF0F3;border:1px solid rgba(181,102,122,.3);color:var(--rose);border-radius:6px;font-size:.78rem;cursor:pointer">Fjern billede</button>
+        </div>
+        <input type="text" id="ef-imgurl" placeholder="Eller indsæt billed-URL…" style="margin-top:.4rem" onchange="handleImgUrlPaste()">
       </div>
       <!-- Titel -->
       <div class="field"><label>Titel *</label><input type="text" id="ef-title" placeholder="F.eks. Cremet citronspaghetti…"></div>
@@ -243,6 +259,25 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
       <button class="btn btn-d" id="del-btn" onclick="deleteRecipe()" style="display:none;margin-right:auto">Slet opskrift</button>
       <button class="btn" onclick="closeModal()">Annuller</button>
       <button class="btn btn-p" onclick="saveRecipe()" id="save-btn">Gem opskrift</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE ADJUST OVERLAY -->
+<div class="img-adjust-overlay" id="img-adjust-overlay">
+  <div class="img-adjust-box">
+    <h3>Juster billede</h3>
+    <p>Træk billedet for at flytte det, brug skyderen for at zoome. Rammen viser ca. hvordan billedet vises på siden.</p>
+    <div class="img-adjust-frame" id="img-adjust-frame">
+      <img id="img-adjust-img" src="" draggable="false" alt="">
+    </div>
+    <div class="img-adjust-controls">
+      <span style="font-size:.85rem">🔍</span>
+      <input type="range" id="img-adjust-zoom" min="100" max="300" value="100" oninput="updateAdjZoom()">
+    </div>
+    <div class="img-adjust-foot">
+      <button class="btn" onclick="closeImgAdjust()">Annuller</button>
+      <button class="btn btn-p" onclick="applyImgAdjust()">Anvend</button>
     </div>
   </div>
 </div>
@@ -395,8 +430,9 @@ function openModal(id){
   const prev=document.getElementById('img-prev');
   const lbl=document.getElementById('img-lbl');
   const area=document.getElementById('img-area');
-  if(r?.img_url){prev.src=r.img_url;prev.style.display='block';lbl.style.display='none';area.classList.add('has-img');document.getElementById('rm-img-btn').style.display='inline-block';}
-  else{prev.style.display='none';lbl.style.display='';area.classList.remove('has-img');document.getElementById('rm-img-btn').style.display='none';}
+  rawImgSrc=r?.img_url||null;
+  if(r?.img_url){prev.src=r.img_url;prev.style.display='block';lbl.style.display='none';area.classList.add('has-img');document.getElementById('rm-img-btn').style.display='inline-block';document.getElementById('adj-img-btn').style.display='inline-block';}
+  else{prev.style.display='none';lbl.style.display='';area.classList.remove('has-img');document.getElementById('rm-img-btn').style.display='none';document.getElementById('adj-img-btn').style.display='none';}
   // Checkboxes
   document.querySelectorAll('#diet-pills input').forEach(cb=>{cb.checked=(r?.tags||[]).includes(cb.value);});
   document.querySelectorAll('#allergy-pills input').forEach(cb=>{cb.checked=(r?.allergy||[]).includes(cb.value);});
@@ -407,7 +443,7 @@ function openModal(id){
 function closeModal(){
   document.getElementById('modal').style.display='none';
   document.body.style.overflow='';
-  editId=null;uploadedImg=null;
+  editId=null;uploadedImg=null;rawImgSrc=null;
 }
 
 document.getElementById('modal').addEventListener('click',e=>{
@@ -415,14 +451,32 @@ document.getElementById('modal').addEventListener('click',e=>{
 });
 
 // IMAGE
+let rawImgSrc=null; // full-quality source used as basis for the pan/zoom adjuster
+
 function removeImg(){
   uploadedImg='REMOVE';
+  rawImgSrc=null;
   document.getElementById('img-prev').style.display='none';
   document.getElementById('img-lbl').style.display='';
   document.getElementById('img-area').classList.remove('has-img');
   document.getElementById('ef-imgurl').value='';
   document.getElementById('rm-img-btn').style.display='none';
+  document.getElementById('adj-img-btn').style.display='none';
   document.getElementById('img-inp').value='';
+}
+
+// When a URL is pasted manually (instead of uploading a file), sync the preview + adjuster
+function handleImgUrlPaste(){
+  const val=document.getElementById('ef-imgurl').value.trim();
+  if(!val||val.startsWith('(billede'))return;
+  uploadedImg=null; // use the URL text as-is on save
+  rawImgSrc=val;
+  const prev=document.getElementById('img-prev');
+  prev.src=val;prev.style.display='block';
+  document.getElementById('img-lbl').style.display='none';
+  document.getElementById('img-area').classList.add('has-img');
+  document.getElementById('rm-img-btn').style.display='inline-block';
+  document.getElementById('adj-img-btn').style.display='inline-block';
 }
 
 function handleImg(inp){
@@ -451,7 +505,9 @@ function handleImg(inp){
       document.getElementById('img-lbl').style.display='none';
       document.getElementById('img-area').classList.add('has-img');
       document.getElementById('rm-img-btn').style.display='inline-block';
+      document.getElementById('adj-img-btn').style.display='inline-block';
       uploadedImg=compressed;
+      rawImgSrc=e.target.result; // keep the original full-quality upload for the adjuster
       const sizeKB=Math.round(compressed.length/1024);
       document.getElementById('ef-imgurl').value=`(billede valgt — ${sizeKB} KB)`;
       toast('Billede klar ✓','ok');
@@ -461,6 +517,114 @@ function handleImg(inp){
   };
   reader.onerror=()=>toast('Kunne ikke læse fil','err');
   reader.readAsDataURL(file);
+}
+
+// ── IMAGE ADJUST (pan/zoom crop) ──────────────────────
+const adjState={scale:1,x:0,y:0,natW:0,natH:0,frameW:0,frameH:0,dragging:false,startX:0,startY:0,startPX:0,startPY:0};
+
+function openImgAdjust(){
+  const src=rawImgSrc||uploadedImg||document.getElementById('ef-imgurl').value.trim();
+  if(!src||src.startsWith('(billede')){toast('Intet billede at justere','err');return;}
+  const imgEl=document.getElementById('img-adjust-img');
+  const isExternal=/^https?:\/\//i.test(src);
+  if(isExternal) imgEl.crossOrigin='anonymous'; else imgEl.removeAttribute('crossorigin');
+  imgEl.onload=()=>{
+    adjState.natW=imgEl.naturalWidth;adjState.natH=imgEl.naturalHeight;
+    const frame=document.getElementById('img-adjust-frame');
+    const rect=frame.getBoundingClientRect();
+    adjState.frameW=rect.width;adjState.frameH=rect.height;
+    document.getElementById('img-adjust-zoom').value=100;
+    adjState.scale=Math.max(adjState.frameW/adjState.natW,adjState.frameH/adjState.natH);
+    adjState.x=(adjState.frameW-adjState.natW*adjState.scale)/2;
+    adjState.y=(adjState.frameH-adjState.natH*adjState.scale)/2;
+    applyAdjTransform();
+  };
+  imgEl.onerror=()=>toast('Kunne ikke indlæse billedet til justering','err');
+  imgEl.src=src;
+  document.getElementById('img-adjust-overlay').classList.add('open');
+}
+
+function closeImgAdjust(){
+  document.getElementById('img-adjust-overlay').classList.remove('open');
+}
+
+function applyAdjTransform(){
+  document.getElementById('img-adjust-img').style.transform=`translate(${adjState.x}px,${adjState.y}px) scale(${adjState.scale})`;
+}
+
+function clampAdjPosition(){
+  const dispW=adjState.natW*adjState.scale, dispH=adjState.natH*adjState.scale;
+  const minX=Math.min(0,adjState.frameW-dispW), minY=Math.min(0,adjState.frameH-dispH);
+  adjState.x=Math.max(minX,Math.min(0,adjState.x));
+  adjState.y=Math.max(minY,Math.min(0,adjState.y));
+}
+
+function updateAdjZoom(){
+  const zoom=parseFloat(document.getElementById('img-adjust-zoom').value)/100;
+  const baseScale=Math.max(adjState.frameW/adjState.natW,adjState.frameH/adjState.natH);
+  const oldScale=adjState.scale;
+  const newScale=baseScale*zoom;
+  // keep the point currently at the frame's center fixed while zooming
+  const cx=(adjState.frameW/2-adjState.x)/oldScale;
+  const cy=(adjState.frameH/2-adjState.y)/oldScale;
+  adjState.scale=newScale;
+  adjState.x=adjState.frameW/2-cx*newScale;
+  adjState.y=adjState.frameH/2-cy*newScale;
+  clampAdjPosition();
+  applyAdjTransform();
+}
+
+function adjStartDrag(e){
+  e.preventDefault();
+  adjState.dragging=true;
+  const p=e.touches?e.touches[0]:e;
+  adjState.startX=p.clientX;adjState.startY=p.clientY;
+  adjState.startPX=adjState.x;adjState.startPY=adjState.y;
+  document.getElementById('img-adjust-frame').classList.add('dragging');
+}
+function adjMoveDrag(e){
+  if(!adjState.dragging)return;
+  e.preventDefault();
+  const p=e.touches?e.touches[0]:e;
+  adjState.x=adjState.startPX+(p.clientX-adjState.startX);
+  adjState.y=adjState.startPY+(p.clientY-adjState.startY);
+  clampAdjPosition();
+  applyAdjTransform();
+}
+function adjEndDrag(){
+  adjState.dragging=false;
+  document.getElementById('img-adjust-frame')?.classList.remove('dragging');
+}
+document.getElementById('img-adjust-frame').addEventListener('mousedown',adjStartDrag);
+document.getElementById('img-adjust-frame').addEventListener('touchstart',adjStartDrag,{passive:false});
+document.addEventListener('mousemove',adjMoveDrag);
+document.addEventListener('touchmove',adjMoveDrag,{passive:false});
+document.addEventListener('mouseup',adjEndDrag);
+document.addEventListener('touchend',adjEndDrag);
+
+function applyImgAdjust(){
+  const imgEl=document.getElementById('img-adjust-img');
+  const outW=1000,outH=600; // fixed 5:3 output, matches the adjuster frame ratio
+  const scaleFactor=outW/adjState.frameW;
+  const canvas=document.createElement('canvas');
+  canvas.width=outW;canvas.height=outH;
+  const ctx=canvas.getContext('2d');
+  try{
+    ctx.save();
+    ctx.scale(scaleFactor,scaleFactor);
+    ctx.drawImage(imgEl,adjState.x,adjState.y,adjState.natW*adjState.scale,adjState.natH*adjState.scale);
+    ctx.restore();
+    const compressed=canvas.toDataURL('image/jpeg',0.85);
+    uploadedImg=compressed;
+    document.getElementById('img-prev').src=compressed;
+    document.getElementById('img-prev').style.display='block';
+    document.getElementById('img-area').classList.add('has-img');
+    document.getElementById('ef-imgurl').value=`(billede justeret — ${Math.round(compressed.length/1024)} KB)`;
+    closeImgAdjust();
+    toast('Billede justeret ✓','ok');
+  }catch(err){
+    toast('Kan ikke justere dette billede (ekstern URL uden CORS) — upload filen i stedet','err');
+  }
 }
 
 // SAVE
