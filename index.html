@@ -4998,6 +4998,7 @@ function openSlotPicker(dateStr,meal){
   document.getElementById('mTitle').textContent='Vælg opskrift';
   document.getElementById('mSub').textContent=d.getDate()+'. '+MONTH_NAMES[d.getMonth()]+' — '+m.lbl;
   document.getElementById('mSW').style.display='';
+  const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
   document.getElementById('mSearch').value='';if(typeof mFilterSelected!=='undefined'){mFilterSelected={protein:null,carb:null,veg:null};renderMFilterChips();const body=document.getElementById('mFilterBody');const toggle=document.getElementById('mFilterToggle');if(body)body.style.display='none';if(toggle)toggle.classList.remove('open');}renderMList();
   document.getElementById('mOv').classList.add('open');
 }
@@ -5008,6 +5009,17 @@ function startPickSlot(rid,e){
   document.getElementById('mTitle').textContent='Tilføj til kalender';
   document.getElementById('mSub').textContent=r.title;
   document.getElementById('mSW').style.display='none';
+  const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
+  if(typeof mFilterSelected!=='undefined'){
+    mFilterSelected={protein:null,carb:null,veg:null};
+    renderMFilterChips();
+    const body=document.getElementById('mFilterBody');
+    const toggle=document.getElementById('mFilterToggle');
+    if(body)body.style.display='none';
+    if(toggle)toggle.classList.remove('open');
+    const lbl=document.getElementById('mFilterToggleLbl');
+    if(lbl)lbl.textContent='Skift opskrift — sammensæt selv';
+  }
   renderSlotList();
   document.getElementById('mOv').classList.add('open');
 }
@@ -7319,7 +7331,53 @@ function mFilterToggle(cat,id){
   if(mFilterSelected[cat]===id) mFilterSelected[cat]=null;
   else mFilterSelected[cat]=id;
   renderMFilterChips();
+  // If we're currently in day-picker mode (pSlot is null, pRid is set), switch to recipe picker
+  const anySelected=Object.values(mFilterSelected).some(v=>v);
+  if(anySelected && typeof pSlot!=='undefined' && !pSlot && pRid){
+    // Switch to recipe-picker mode: keep the recipe as "starting point" but let user pick another
+    document.getElementById('mTitle').textContent='Vælg en anden opskrift';
+    document.getElementById('mSub').textContent='Filtreret ud fra din valg';
+    document.getElementById('mSW').style.display='';
+    document.getElementById('mSearch').value='';
+    // Convert to slot-picker style so assignSlot works — but we need a slot to add to
+    // Since we came from a recipe (pRid), we need a placeholder — leave as is, but change render
+    // We render the filtered recipe list; clicking one replaces pRid and continues to day-picker
+    renderMListForPickedRecipe();
+    return;
+  }
   renderMList();
+}
+
+function renderMListForPickedRecipe(){
+  const q=document.getElementById('mSearch').value.toLowerCase();
+  const all=allRecipes().filter(r=>(!q||r.title.toLowerCase().includes(q)||r.lbl.toLowerCase().includes(q))&&mFilterMatches(r));
+  const row=(r)=>`
+    <div class="mr" onclick="pickAlternativeRecipe('${r.id}')">
+      <div class="mrc" style="background:${CAT_COLORS[r.cat]||'var(--border2)'}"></div>
+      <div class="mri"><div class="mrt">${r.title}</div><div class="mrs">${r.lbl} · ${r.time}</div></div>
+      <button class="mrb" onclick="event.stopPropagation();pickAlternativeRecipe('${r.id}')">Vælg</button>
+    </div>`;
+  const list=all.map(row).join('');
+  document.getElementById('mList').innerHTML=list||'<div style="padding:1.5rem;text-align:center;font-size:.82rem;color:var(--text3)">Ingen opskrifter matcher</div>';
+}
+
+function pickAlternativeRecipe(rid){
+  // User picked a new recipe from the filter results — go back to day picker with new recipe
+  pRid=String(rid);
+  const r=allRecipes().find(x=>String(x.id)===String(rid));
+  document.getElementById('mTitle').textContent='Tilføj til kalender';
+  document.getElementById('mSub').textContent=r.title;
+  document.getElementById('mSW').style.display='none';
+  // Reset filter
+  mFilterSelected={protein:null,carb:null,veg:null};
+  renderMFilterChips();
+  const body=document.getElementById('mFilterBody');
+  const toggle=document.getElementById('mFilterToggle');
+  if(body)body.style.display='none';
+  if(toggle)toggle.classList.remove('open');
+  const lbl=document.getElementById('mFilterToggleLbl');
+  if(lbl)lbl.textContent='Skift opskrift — sammensæt selv';
+  renderSlotList();
 }
 
 function mFilterReset(){
