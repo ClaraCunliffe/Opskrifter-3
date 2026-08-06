@@ -1110,6 +1110,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .mfilter-chip.selected{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:500}
 .mfilter-reset{margin-top:.4rem;background:transparent;border:none;color:var(--text3);font-family:'Inter',sans-serif;font-size:.72rem;cursor:pointer;padding:.25rem .5rem;text-decoration:underline;transition:color .15s}
 .mfilter-reset:hover{color:var(--accent)}
+
+.mfilter-compose{margin-top:.8rem;width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.65rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
+.mfilter-compose:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,167,.25)}
 </style>
 </head>
 <body>
@@ -3355,6 +3358,14 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <div class="mfilter-lbl">Grøntsag</div>
           <div class="mfilter-chips" id="mfc-veg"></div>
         </div>
+        <div class="mfilter-cat">
+          <div class="mfilter-lbl">Sauce &amp; dressing</div>
+          <div class="mfilter-chips" id="mfc-sauce"></div>
+        </div>
+        <button class="mfilter-compose" id="mFilterCompose" onclick="composeAsMeal()" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Tilføj som eget måltid
+        </button>
         <button class="mfilter-reset" id="mFilterReset" onclick="mFilterReset()" style="display:none">Nulstil filter</button>
       </div>
     </div>
@@ -4999,7 +5010,7 @@ function openSlotPicker(dateStr,meal){
   document.getElementById('mSub').textContent=d.getDate()+'. '+MONTH_NAMES[d.getMonth()]+' — '+m.lbl;
   document.getElementById('mSW').style.display='';
   const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
-  document.getElementById('mSearch').value='';if(typeof mFilterSelected!=='undefined'){mFilterSelected={protein:null,carb:null,veg:null};renderMFilterChips();const body=document.getElementById('mFilterBody');const toggle=document.getElementById('mFilterToggle');if(body)body.style.display='none';if(toggle)toggle.classList.remove('open');}renderMList();
+  document.getElementById('mSearch').value='';if(typeof mFilterSelected!=='undefined'){mFilterSelected={protein:null,carb:null,veg:null,sauce:null};renderMFilterChips();const body=document.getElementById('mFilterBody');const toggle=document.getElementById('mFilterToggle');if(body)body.style.display='none';if(toggle)toggle.classList.remove('open');}renderMList();
   document.getElementById('mOv').classList.add('open');
 }
 function startPickSlot(rid,e){
@@ -5011,7 +5022,7 @@ function startPickSlot(rid,e){
   document.getElementById('mSW').style.display='none';
   const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
   if(typeof mFilterSelected!=='undefined'){
-    mFilterSelected={protein:null,carb:null,veg:null};
+    mFilterSelected={protein:null,carb:null,veg:null,sauce:null};
     renderMFilterChips();
     const body=document.getElementById('mFilterBody');
     const toggle=document.getElementById('mFilterToggle');
@@ -7280,6 +7291,18 @@ const BYG_COMPONENTS={
     {id:'quinoa',name:'Quinoa / bulgur',match:['quinoa','bulgur','couscous']},
     {id:'noodles',name:'Nudler',match:['nudler','noodles']}
   ],
+  sauce:[
+    {id:'brun-sovs',name:'Brun sovs',match:['brun sovs','brun sauce']},
+    {id:'bearnaise',name:'Bearnaise',match:['bearnaise','bernaise']},
+    {id:'tzatziki',name:'Tzatziki',match:['tzatziki']},
+    {id:'aioli',name:'Aioli',match:['aioli']},
+    {id:'pesto',name:'Pesto',match:['pesto']},
+    {id:'hummus',name:'Hummus',match:['hummus']},
+    {id:'vinaigrette',name:'Vinaigrette / dressing',match:['dressing','vinaigrette','olie','eddike']},
+    {id:'coleslaw',name:'Coleslaw',match:['coleslaw']},
+    {id:'sojasovs',name:'Sojasovs',match:['soja','sojasovs']},
+    {id:'ketchup',name:'Ketchup / sennep',match:['ketchup','sennep']}
+  ],
   veg:[
     {id:'broccoli',name:'Broccoli',match:['broccoli']},
     {id:'blomkaal',name:'Blomkål',match:['blomkål']},
@@ -7296,7 +7319,7 @@ const BYG_COMPONENTS={
   ]
 };
 
-let mFilterSelected={protein:null,carb:null,veg:null};
+let mFilterSelected={protein:null,carb:null,veg:null,sauce:null};
 
 function renderMFilterChips(){
   Object.keys(BYG_COMPONENTS).forEach(cat=>{
@@ -7325,6 +7348,8 @@ function renderMFilterChips(){
     }
   }
   if(resetBtn)resetBtn.style.display=anySelected?'inline-block':'none';
+  const composeBtn=document.getElementById('mFilterCompose');
+  if(composeBtn)composeBtn.style.display=anySelected?'inline-flex':'none';
 }
 
 function mFilterToggle(cat,id){
@@ -7369,7 +7394,7 @@ function pickAlternativeRecipe(rid){
   document.getElementById('mSub').textContent=r.title;
   document.getElementById('mSW').style.display='none';
   // Reset filter
-  mFilterSelected={protein:null,carb:null,veg:null};
+  mFilterSelected={protein:null,carb:null,veg:null,sauce:null};
   renderMFilterChips();
   const body=document.getElementById('mFilterBody');
   const toggle=document.getElementById('mFilterToggle');
@@ -7381,7 +7406,7 @@ function pickAlternativeRecipe(rid){
 }
 
 function mFilterReset(){
-  mFilterSelected={protein:null,carb:null,veg:null};
+  mFilterSelected={protein:null,carb:null,veg:null,sauce:null};
   renderMFilterChips();
   renderMList();
 }
@@ -7400,7 +7425,7 @@ function mFilterMatches(recipe){
   const ingText=(recipe.ing||[]).join(' ').toLowerCase();
   const titleText=(recipe.title||'').toLowerCase();
   const searchText=ingText+' '+titleText;
-  for(const cat of ['protein','carb','veg']){
+  for(const cat of ['protein','carb','veg','sauce']){
     if(mFilterSelected[cat]){
       const comp=BYG_COMPONENTS[cat].find(x=>x.id===mFilterSelected[cat]);
       if(!comp)continue;
@@ -7409,6 +7434,104 @@ function mFilterMatches(recipe){
   }
   return true;
 }
+
+function composeAsMeal(){
+  const parts=[];
+  const allIng=[];
+  const componentNames={
+    'kylling':{name:'Kylling',ing:['kyllingebryst 150g pr. person'],steps:['Krydr og steg kyllingen 5-6 min pr. side']},
+    'okse':{name:'Oksekød',ing:['oksekød 150g pr. person'],steps:['Brun oksekødet og krydr med salt og peber']},
+    'svin':{name:'Svinekød',ing:['svinekød 150g pr. person'],steps:['Steg svinekødet 4-5 min pr. side']},
+    'lam':{name:'Lam',ing:['lammekød 150g pr. person'],steps:['Steg eller braise lammet efter smag']},
+    'kalkun':{name:'Kalkun',ing:['kalkun 150g pr. person'],steps:['Steg eller braise kalkunen']},
+    'laks':{name:'Laks',ing:['laksefilet 150g pr. person'],steps:['Steg laksen med skindet nedad 4 min, vend 2-3 min']},
+    'torsk':{name:'Torsk',ing:['torskefilet 150g pr. person'],steps:['Steg torsken forsigtigt 3-4 min pr. side']},
+    'tun':{name:'Tun',ing:['tun 120g pr. person'],steps:['Steg kort ved høj varme']},
+    'rejer':{name:'Rejer',ing:['rejer 150g pr. person'],steps:['Damp eller steg rejer kort']},
+    'aeg':{name:'Æg',ing:['æg 2-3 stk pr. person'],steps:['Kog, steg eller pocher æggene']},
+    'tofu':{name:'Tofu',ing:['fast tofu 150g pr. person'],steps:['Press tofuen tør og steg i tern']},
+    'baelg':{name:'Bønner / linser',ing:['bønner eller linser 100g pr. person'],steps:['Kog eller varm igennem']},
+    'kartofler':{name:'Kartofler',ing:['kartofler 300g pr. person'],steps:['Kog eller bag kartoflerne']},
+    'ris':{name:'Ris',ing:['ris 80g pr. person'],steps:['Kog risene efter pakkens anvisning']},
+    'pasta':{name:'Pasta',ing:['pasta 100g pr. person'],steps:['Kog pastaen i saltet vand']},
+    'brod':{name:'Brød / flute',ing:['brød / flute'],steps:['Server ved siden af']},
+    'quinoa':{name:'Quinoa / bulgur',ing:['quinoa eller bulgur 80g pr. person'],steps:['Kog efter pakkens anvisning']},
+    'noodles':{name:'Nudler',ing:['nudler 100g pr. person'],steps:['Kog nudlerne kort']},
+    'broccoli':{name:'Broccoli',ing:['broccoli 150g pr. person'],steps:['Damp broccoli 5-7 min']},
+    'blomkaal':{name:'Blomkål',ing:['blomkål 150g pr. person'],steps:['Damp blomkål 8-10 min']},
+    'gulerod':{name:'Gulerødder',ing:['gulerødder 200g pr. person'],steps:['Bag eller kog gulerødderne']},
+    'spinat':{name:'Spinat',ing:['spinat 100g pr. person'],steps:['Vend spinaten kort på pande']},
+    'salat':{name:'Salat',ing:['blandet salat 80g pr. person'],steps:['Skyl og vend med dressing']},
+    'tomat':{name:'Tomater',ing:['tomater 2-3 stk pr. person'],steps:['Skær tomaterne og krydr med olie og salt']},
+    'aert':{name:'Ærter',ing:['ærter 100g pr. person'],steps:['Damp ærterne kort']},
+    'kaal':{name:'Kål',ing:['kål 200g pr. person'],steps:['Snit og tilbered efter smag']},
+    'svamp':{name:'Svampe',ing:['champignoner 150g pr. person'],steps:['Steg svampe indtil de er brune']},
+    'peberfrugt':{name:'Peberfrugt',ing:['peberfrugt 1 stk pr. person'],steps:['Skær og steg eller server rå']},
+    'squash':{name:'Squash / aubergine',ing:['squash eller aubergine 150g pr. person'],steps:['Skær i skiver og steg eller bag']},
+    'majs':{name:'Majs',ing:['majs 1 kolbe eller dåse pr. person'],steps:['Kog eller varm igennem']},
+    'brun-sovs':{name:'Brun sovs',ing:['smør 30g','mel 30g','bouillon 3 dl','kulør'],steps:['Lav en jævning af smør og mel, pisk bouillon i']},
+    'bearnaise':{name:'Bearnaise',ing:['smør 100g','æggeblommer 2 stk','estragon','eddike'],steps:['Lav bearnaise-sauce over vandbad']},
+    'tzatziki':{name:'Tzatziki',ing:['græsk yoghurt 3 dl','agurk 1/2','hvidløg 1 fed','citron'],steps:['Riv agurken, pres væden ud, bland med yoghurt']},
+    'aioli':{name:'Aioli',ing:['mayo 1 dl','hvidløg 2 fed','citron'],steps:['Bland alle ingredienser']},
+    'pesto':{name:'Pesto',ing:['pesto'],steps:['Server på siden eller vend i pasta']},
+    'hummus':{name:'Hummus',ing:['hummus'],steps:['Server som dip eller på siden']},
+    'vinaigrette':{name:'Vinaigrette',ing:['olivenolie 3 spsk','eddike 1 spsk','sennep','salt'],steps:['Pisk alle ingredienser sammen']},
+    'coleslaw':{name:'Coleslaw',ing:['hvidkål 200g','gulerødder 1','mayo','eddike'],steps:['Snit fint og vend med dressing']},
+    'sojasovs':{name:'Sojasovs',ing:['sojasovs'],steps:['Server på siden']},
+    'ketchup':{name:'Ketchup / sennep',ing:['ketchup','sennep'],steps:['Server ved siden af']}
+  };
+  const allSteps=[];
+  ['protein','carb','veg','sauce'].forEach(cat=>{
+    if(mFilterSelected[cat]){
+      const key=mFilterSelected[cat];
+      const info=componentNames[key];
+      if(info){
+        parts.push(info.name);
+        info.ing.forEach(x=>allIng.push(x));
+        allSteps.push(`— ${info.name} —`);
+        info.steps.forEach(x=>allSteps.push(x));
+      }
+    }
+  });
+  if(parts.length===0){toast('Vælg mindst én komponent','err');return;}
+  if(!currentUser?.sbId){toast('Log ind for at tilføje til madplan','err');return;}
+  const title=parts.join(' + ');
+  const newId=Date.now();
+  const recipe={
+    id:newId,
+    title:title,
+    cat:'aftensmad',
+    lbl:'Aftensmad',
+    diff:'Nem',
+    time:'30 min',
+    pers:'2',
+    desc:'Sammensat middag',
+    ing:allIng,
+    steps:allSteps,
+    bg:'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
+    tags:['aftensmad','sammensat'],
+    allergy:[],
+    img:null,kcal:null,protein:null,carbs:null,fat:null
+  };
+  if(typeof userRecipes==='undefined')window.userRecipes=[];
+  userRecipes.push(recipe);
+  if(typeof persistUser==='function')persistUser();
+  // Add directly to the current slot if we have one
+  if(pSlot){
+    planAdd(pSlot.dateStr+'||'+pSlot.meal,String(newId));
+    persist();closeModal();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();
+    toast('Måltid tilføjet til madplan ✓','ok');
+  } else {
+    // No slot yet — set pRid and go to day picker
+    pRid=String(newId);
+    document.getElementById('mTitle').textContent='Vælg dag';
+    document.getElementById('mSub').textContent=title;
+    document.getElementById('mSW').style.display='none';
+    const mf=document.getElementById('mFilter');if(mf)mf.style.display='none';
+    renderSlotList();
+  }
+}
+
 </script>
 </body>
 </html>
