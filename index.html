@@ -5077,7 +5077,7 @@ function startPickSlot(rid,e){
   document.getElementById('mSub').textContent=r.title;
   document.getElementById('mSW').style.display='none';
   const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
-  const mr=document.getElementById('mRole');if(mr)mr.style.display='none';
+  const mr=document.getElementById('mRole');if(mr)mr.style.display='';
   mResetRole();
   if(typeof mFilterSelected!=='undefined'){
     mFilterSelected={protein:null,carb:null,veg:null,sauce:null};
@@ -5199,6 +5199,11 @@ function assignSlot(rid){if(!pSlot)return;planAdd(pSlot.dateStr+'||'+pSlot.meal,
 function assignDay(ds,m){
   if(!pRid)return;
   planAdd(ds+'||'+m,pRid);
+  // Store role if not "full"
+  if(typeof mSelectedRole!=='undefined' && mSelectedRole && mSelectedRole!=='full'){
+    if(typeof slotRoles==='undefined')window.slotRoles={};
+    slotRoles[ds+'||'+m+'||'+pRid]=mSelectedRole;
+  }
   // Auto-enable the meal row in the week view if not already visible
   if(!visibleMeals.includes(m)){
     visibleMeals.push(m);
