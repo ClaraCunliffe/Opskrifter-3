@@ -1113,6 +1113,21 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
 .mfilter-compose{margin-top:.8rem;width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.65rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;justify-content:center;gap:.4rem}
 .mfilter-compose:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,167,.25)}
+
+/* Modal role selector — mark recipe as component of composed menu */
+.mrole{padding:.75rem 1rem;border-bottom:1px solid var(--border);background:var(--surface2)}
+.mrole-lbl{font-size:.65rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.45rem}
+.mrole-pills{display:flex;flex-wrap:wrap;gap:.3rem}
+.mrole-pill{background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:.32rem .75rem;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.mrole-pill:hover{border-color:var(--accent2);color:var(--accent)}
+.mrole-pill.selected{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(123,94,167,.2)}
+
+/* Role badge on calendar cards */
+.cf-role{display:inline-block;font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:.12rem .5rem;border-radius:50px;margin-bottom:.25rem;background:var(--accent-bg);color:var(--accent);border:1px solid var(--border2)}
+.cf-role[data-r="protein"]{background:#F7E6D3;color:#8B5A2B;border-color:#E9CFA5}
+.cf-role[data-r="carb"]{background:#F5EEDA;color:#7A6420;border-color:#E5D89B}
+.cf-role[data-r="veg"]{background:#E3EDD0;color:#4C6D22;border-color:#CADFA8}
+.cf-role[data-r="sauce"]{background:#DCE7F2;color:#2B5178;border-color:#B4CBE1}
 </style>
 </head>
 <body>
@@ -3338,6 +3353,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <div class="mo" id="mOv" onclick="closeMBg(event)">
   <div class="modal">
     <div class="mh"><div><h3 id="mTitle">Vælg opskrift</h3><p id="mSub"></p></div><button class="mhc" onclick="closeModal()">✕</button></div>
+    <div class="mrole" id="mRole">
+      <div class="mrole-lbl">Rolle i måltidet</div>
+      <div class="mrole-pills">
+        <button class="mrole-pill selected" data-role="full" onclick="mSetRole('full')">Hele måltidet</button>
+        <button class="mrole-pill" data-role="protein" onclick="mSetRole('protein')">Protein</button>
+        <button class="mrole-pill" data-role="carb" onclick="mSetRole('carb')">Kulhydrat</button>
+        <button class="mrole-pill" data-role="veg" onclick="mSetRole('veg')">Grøntsag</button>
+        <button class="mrole-pill" data-role="sauce" onclick="mSetRole('sauce')">Sauce</button>
+      </div>
+    </div>
     <div class="msearch" id="mSW"><input type="text" id="mSearch" placeholder="Søg…" oninput="renderMList()"></div>
     <div class="mfilter" id="mFilter">
       <div class="mfilter-toggle" id="mFilterToggle" onclick="toggleMFilter()">
@@ -3844,6 +3869,7 @@ function userKey(k){return currentUser?.sbId?'dp_'+currentUser.sbId+'_'+k:k;}
 
 let saved=new Set(JSON.parse(localStorage.getItem(userKey('sv_saved'))||'[]'));
 let plan=loadPlan();
+let slotRoles = {};
 let fridgeItems=JSON.parse(localStorage.getItem(userKey('sv_fridge'))||'[]');
 let userRecipes=JSON.parse(localStorage.getItem(userKey('sv_userrecipes'))||'[]');
 let editingRecipeId=null,mineDiff=null;
@@ -3870,9 +3896,13 @@ function persistUser(){localStorage.setItem(userKey('sv_userrecipes'),JSON.strin
 function loadPlan(){
   try{const d=JSON.parse(localStorage.getItem(userKey('sv_plan2'))||'{}');return d;}catch(e){return {};}
 }
+function loadSlotRoles(){
+  try{const d=JSON.parse(localStorage.getItem(userKey('sv_slotRoles'))||'{}');return d;}catch(e){return {};}
+}
 function persist(){
   localStorage.setItem(userKey('sv_saved'),JSON.stringify([...saved]));
   localStorage.setItem(userKey('sv_plan2'),JSON.stringify(plan));
+  localStorage.setItem(userKey('sv_slotRoles'),JSON.stringify(slotRoles||{}));
   if(currentUser?.sbId) savePlanToCloud();
 }
 
@@ -3946,6 +3976,22 @@ function closeFavCatDrop(){document.getElementById('favCatDrop')?.classList.remo
 document.addEventListener('click',e=>{
   if(!e.target.closest('#favCatBtn')&&!e.target.closest('#favCatDrop'))closeFavCatDrop();
 });
+
+
+// Role selector for composed menu in modal
+let mSelectedRole='full';
+function mSetRole(role){
+  mSelectedRole=role;
+  document.querySelectorAll('.mrole-pill').forEach(el=>{
+    el.classList.toggle('selected',el.dataset.role===role);
+  });
+}
+function mResetRole(){
+  mSelectedRole='full';
+  document.querySelectorAll('.mrole-pill').forEach(el=>{
+    el.classList.toggle('selected',el.dataset.role==='full');
+  });
+}
 
 function switchMenu(id,btn){
   logEvent('category_view', {category: id});
@@ -4450,11 +4496,15 @@ function renderWeekGrid(){
     weekDates.forEach(d=>{
       const k=planKey(d,m.key),rids=planGet(k);
       if(rids.length){
-        const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';return`
+        const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';
+          const role=slotRoles?slotRoles[dStr(d)+'||'+m.key+'||'+rid]:null;
+          const roleLabels={protein:'Protein',carb:'Kulhydrat',veg:'Grøntsag',sauce:'Sauce'};
+          const roleBadge=role?`<span class="cf-role" data-r="${role}">${roleLabels[role]||role}</span>`:'';
+          return`
           <div class="cell-filled" onclick="openPanel('${rid}')" style="margin-bottom:3px">
             <button class="cell-rm" onclick="rmSlotOne(event,'${dStr(d)}','${m.key}','${rid}')">✕</button>
             <div class="cf-bar" style="background:${CAT_COLORS[r.cat]||'#D4C4E4'}"></div>
-            <div class="cf-body"><div class="cf-title">${r.title}</div><div class="cf-meta">${r.time}</div></div>
+            <div class="cf-body">${roleBadge}<div class="cf-title">${r.title}</div><div class="cf-meta">${r.time}</div></div>
           </div>`;}).join('');
         h+=`<div class="plan-cell plan-cell-multi">${cards}<button class="cell-add-more" onclick="openSlotPicker('${dStr(d)}','${m.key}')">+ Tilføj</button></div>`;
       } else {
@@ -4482,11 +4532,15 @@ function renderWeekGridMobile(){
       const k=planKey(d,m.key),rids=planGet(k);
       let cellHtml='';
       if(rids.length){
-        const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';return`
+        const cards=rids.map(rid=>{const r=allRecipes().find(x=>String(x.id)===String(rid));if(!r)return'';
+          const role=slotRoles?slotRoles[dStr(d)+'||'+m.key+'||'+rid]:null;
+          const roleLabels={protein:'Protein',carb:'Kulhydrat',veg:'Grøntsag',sauce:'Sauce'};
+          const roleBadge=role?`<span class="cf-role" data-r="${role}">${roleLabels[role]||role}</span>`:'';
+          return`
           <div class="cell-filled" onclick="openPanel('${rid}')">
             <button class="cell-rm" onclick="rmSlotOne(event,'${dStr(d)}','${m.key}','${rid}')">✕</button>
             <div class="cf-bar" style="background:${CAT_COLORS[r.cat]||'#D4C4E4'}"></div>
-            <div class="cf-body"><div class="cf-title">${r.title}</div><div class="cf-meta">${r.time}</div></div>
+            <div class="cf-body">${roleBadge}<div class="cf-title">${r.title}</div><div class="cf-meta">${r.time}</div></div>
           </div>`;}).join('');
         cellHtml=`${cards}<button class="cell-add-more" onclick="openSlotPicker('${dStr(d)}','${m.key}')">+ Tilføj</button>`;
       } else {
@@ -4516,7 +4570,7 @@ window.addEventListener('resize', () => {
 
 function getWeekNum(d){const onejan=new Date(d.getFullYear(),0,1);return Math.ceil(((d-onejan)/86400000+onejan.getDay()+1)/7);}
 
-function rmSlotOne(e,ds,m,rid){e.stopPropagation();planRemoveOne(ds+'||'+m,rid);persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
+function rmSlotOne(e,ds,m,rid){e.stopPropagation();planRemoveOne(ds+'||'+m,rid);if(typeof slotRoles!=='undefined')delete slotRoles[ds+'||'+m+'||'+rid];persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
 function rmSlot(e,ds,m){e.stopPropagation();delete plan[ds+'||'+m];persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
 function clearPlan(){if(confirm('Ryd al planlagt mad?')){plan={};persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}}
 
@@ -5010,6 +5064,8 @@ function openSlotPicker(dateStr,meal){
   document.getElementById('mSub').textContent=d.getDate()+'. '+MONTH_NAMES[d.getMonth()]+' — '+m.lbl;
   document.getElementById('mSW').style.display='';
   const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
+  const mr=document.getElementById('mRole');if(mr)mr.style.display='';
+  mResetRole();
   document.getElementById('mSearch').value='';if(typeof mFilterSelected!=='undefined'){mFilterSelected={protein:null,carb:null,veg:null,sauce:null};renderMFilterChips();const body=document.getElementById('mFilterBody');const toggle=document.getElementById('mFilterToggle');if(body)body.style.display='none';if(toggle)toggle.classList.remove('open');}renderMList();
   document.getElementById('mOv').classList.add('open');
 }
@@ -5021,6 +5077,8 @@ function startPickSlot(rid,e){
   document.getElementById('mSub').textContent=r.title;
   document.getElementById('mSW').style.display='none';
   const mf=document.getElementById('mFilter');if(mf)mf.style.display='';
+  const mr=document.getElementById('mRole');if(mr)mr.style.display='none';
+  mResetRole();
   if(typeof mFilterSelected!=='undefined'){
     mFilterSelected={protein:null,carb:null,veg:null,sauce:null};
     renderMFilterChips();
@@ -5131,7 +5189,13 @@ function slotPickerChangeWeek(days){
   slotPickerWeek=addDays(slotPickerWeek,days);
   renderSlotList();
 }
-function assignSlot(rid){if(!pSlot)return;planAdd(pSlot.dateStr+'||'+pSlot.meal,rid);persist();closeModal();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
+function assignSlot(rid){if(!pSlot)return;planAdd(pSlot.dateStr+'||'+pSlot.meal,rid);
+  // Store role if not "full"
+  if(typeof mSelectedRole!=='undefined' && mSelectedRole && mSelectedRole!=='full'){
+    if(typeof slotRoles==='undefined')window.slotRoles={};
+    slotRoles[pSlot.dateStr+'||'+pSlot.meal+'||'+rid]=mSelectedRole;
+  }
+  persist();closeModal();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
 function assignDay(ds,m){
   if(!pRid)return;
   planAdd(ds+'||'+m,pRid);
@@ -6908,6 +6972,7 @@ function saveUsers(u){localStorage.setItem(USERS_KEY,JSON.stringify(u));}
 function loadUserData(){
   saved=new Set(JSON.parse(localStorage.getItem(userKey('sv_saved'))||'[]'));
   try{plan=JSON.parse(localStorage.getItem(userKey('sv_plan2'))||'{}');}catch(e){plan={};}
+try{slotRoles=JSON.parse(localStorage.getItem(userKey('sv_slotRoles'))||'{}');}catch(e){slotRoles={};}
   userRecipes=JSON.parse(localStorage.getItem(userKey('sv_userrecipes'))||'[]');
   fridgeItems=JSON.parse(localStorage.getItem(userKey('sv_fridge'))||'[]');
   savedPlans=JSON.parse(localStorage.getItem(userKey('sv_savedplans'))||'[]');
