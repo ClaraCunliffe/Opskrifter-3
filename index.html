@@ -5071,7 +5071,8 @@ function openSlotPicker(dateStr,meal){
 }
 function startPickSlot(rid,e){
   if(e)e.stopPropagation();pRid=String(rid);pSlot=null;
-  slotPickerWeek=new Date(selWeekStart);
+  const thisMonday=getMonday(new Date());
+  slotPickerWeek=selWeekStart<thisMonday?new Date(thisMonday):new Date(selWeekStart);
   const r=allRecipes().find(x=>String(x.id)===String(rid));
   document.getElementById('mTitle').textContent='Tilføj til kalender';
   document.getElementById('mSub').textContent=r.title;
@@ -5131,15 +5132,20 @@ let slotPickerWeek = null;
 
 function renderSlotList(){
   if(!slotPickerWeek) slotPickerWeek = new Date(selWeekStart);
+  const today=new Date();today.setHours(0,0,0,0);
+  const thisWeekStart=getMonday(new Date());
+  // Prevent showing past weeks
+  if(slotPickerWeek<thisWeekStart)slotPickerWeek=new Date(thisWeekStart);
   const weekDates=Array.from({length:7},(_,i)=>addDays(slotPickerWeek,i));
   const DAY_NAMES=['Man','Tir','Ons','Tor','Fre','Lør','Søn'];
-  const today=new Date();
   const weekNum=getWeekNum(slotPickerWeek);
   const fmt=d=>d.getDate()+'. '+MONTH_NAMES[d.getMonth()].slice(0,3);
+  // Is current picker week the same as this week? If so, disable back button
+  const isThisWeek=sameDay(slotPickerWeek,thisWeekStart);
 
   let h=`
     <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0">
-      <button onclick="slotPickerChangeWeek(-7)" style="background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;color:var(--text2)">←</button>
+      <button onclick="slotPickerChangeWeek(-7)" ${isThisWeek?'disabled':''} style="background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:${isThisWeek?'not-allowed':'pointer'};font-size:.85rem;display:flex;align-items:center;justify-content:center;color:${isThisWeek?'var(--border2)':'var(--text2)'};opacity:${isThisWeek?'.4':'1'}">←</button>
       <div style="flex:1;text-align:center">
         <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:300">Uge ${weekNum}</div>
         <div style="font-size:.7rem;color:var(--text3)">${fmt(weekDates[0])} – ${fmt(weekDates[6])} ${weekDates[6].getFullYear()}</div>
@@ -5150,7 +5156,9 @@ function renderSlotList(){
 
   weekDates.forEach((d,i)=>{
     const isToday=sameDay(d,today);
-    const isPast=d<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const isPast=d<today;
+    // Skip past days entirely
+    if(isPast)return;
     const dayMeals=MEALS;
     const hasAny=dayMeals.some(m=>planGet(planKey(d,m.key)).length>0);
 
@@ -5166,7 +5174,7 @@ function renderSlotList(){
       const title=rids.length>0
         ? rids.map(rid=>allRecipes().find(r=>String(r.id)===String(rid))?.title||'').filter(Boolean).join(', ')
         : null;
-      h+=`<div class="mr" onclick="assignDay('${dStr(d)}','${m.key}')" style="padding:.38rem 1rem .38rem 1.5rem;${isPast?'opacity:.5':''}">
+      h+=`<div class="mr" onclick="assignDay('${dStr(d)}','${m.key}')" style="padding:.38rem 1rem .38rem 1.5rem">
         <div class="mrc" style="background:${title?CAT_COLORS[allRecipes().find(r=>planGet(planKey(d,m.key))[0]===r.id)?.cat]||'var(--accent2)':'var(--border)'}"></div>
         <div class="mri">
           <div class="mrt" style="font-size:.78rem">${m.lbl}</div>
@@ -5186,7 +5194,10 @@ function renderSlotList(){
 }
 
 function slotPickerChangeWeek(days){
-  slotPickerWeek=addDays(slotPickerWeek,days);
+  const thisWeekStart=getMonday(new Date());
+  const target=addDays(slotPickerWeek,days);
+  if(target<thisWeekStart)return;
+  slotPickerWeek=target;
   renderSlotList();
 }
 function assignSlot(rid){if(!pSlot)return;planAdd(pSlot.dateStr+'||'+pSlot.meal,rid);
