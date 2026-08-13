@@ -1134,6 +1134,122 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .ovn-pills{display:flex;flex-wrap:wrap;gap:.4rem}
 .ovn-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:.3rem .7rem;font-size:.75rem;font-weight:500;color:var(--text);box-shadow:var(--sh)}
 .ovn-pill svg{color:var(--accent);flex-shrink:0}
+
+/* ─── Guide component styles ─── */
+
+/* Cheat sheet — quick reference row (Mål & omregning) */
+.guide-cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-bottom:1.4rem}
+.guide-cheat-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center;box-shadow:var(--sh);transition:all .2s}
+.guide-cheat-item:hover{border-color:var(--accent2);transform:translateY(-1px)}
+.gcheat-big{font-family:'Fraunces',serif;font-weight:300;font-size:1.6rem;color:var(--accent);letter-spacing:-.02em;line-height:1;margin-bottom:.35rem}
+.gcheat-lbl{font-size:.7rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+
+/* Guide group + label */
+.guide-group{margin-bottom:1.7rem}
+.guide-group-label{font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:.9rem;padding-bottom:.4rem;display:flex;align-items:center;gap:.6rem}
+.guide-group-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Guide callout (info boxes) */
+.guide-callout{display:flex;align-items:flex-start;gap:.9rem;background:linear-gradient(135deg,rgba(123,94,167,.06),rgba(158,125,200,.1));border:1px solid var(--border2);border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.4rem}
+.guide-callout-icon{width:36px;height:36px;background:var(--accent);color:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.guide-callout-icon svg{width:18px;height:18px}
+.guide-callout-body{flex:1}
+.guide-callout-label{font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.3rem}
+.guide-callout-text{font-size:.85rem;color:var(--text2);line-height:1.55;font-weight:400}
+
+/* Guide tip box */
+.guide-tip{display:flex;gap:.7rem;align-items:flex-start;padding:.85rem 1rem;background:var(--accent-bg);border-radius:10px;margin-bottom:1.4rem;font-size:.82rem;color:var(--text2);line-height:1.6}
+.guide-tip-icon{width:26px;height:26px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.guide-tip-icon svg{width:14px;height:14px}
+
+/* Guide tables */
+.guide-table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);margin-bottom:1rem;font-size:.85rem}
+.guide-table thead{background:linear-gradient(135deg,rgba(123,94,167,.06),rgba(158,125,200,.1))}
+.guide-table th{padding:.75rem 1rem;text-align:left;font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.guide-table td{padding:.7rem 1rem;border-top:1px solid var(--border);color:var(--text2)}
+.guide-table tbody tr:hover{background:var(--surface2)}
+
+/* Temp-pill for kernetemperaturer */
+.temp-pill{display:inline-flex;align-items:center;gap:.3rem;padding:.15rem .55rem;border-radius:50px;font-size:.72rem;font-weight:600;letter-spacing:.02em}
+.temp-pill-red{background:#FCE4E4;color:#B4324C}
+.temp-pill-orange{background:#FBE9D2;color:#A55A18}
+.temp-pill-green{background:#E3EDD0;color:#4C6D22}
+
+/* Compact opbevaring cards — horizontal with icon + rule pills */
+.opb-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
+.opb-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.95rem 1.15rem;display:flex;gap:1rem;align-items:flex-start;box-shadow:var(--sh);transition:all .2s}
+.opb-card:hover{border-color:var(--accent2);transform:translateY(-1px);box-shadow:var(--shm)}
+.opb-icon{width:38px;height:38px;background:var(--accent-bg);color:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.opb-icon-pos{background:#E6EDD6;color:#5B7030}
+.opb-icon-neg{background:#FDE5E5;color:#B4324C}
+.opb-icon svg{width:20px;height:20px}
+.opb-body{flex:1;min-width:0}
+.opb-title{font-family:'Fraunces',serif;font-weight:400;font-size:1rem;color:var(--text);margin-bottom:.4rem;letter-spacing:-.01em}
+.opb-rules{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}
+.opb-pill{font-size:.68rem;font-weight:600;padding:.22rem .6rem;border-radius:50px;letter-spacing:.01em;display:inline-flex;align-items:center;gap:.3rem;line-height:1.3}
+.opb-pill svg{width:10px;height:10px;flex-shrink:0}
+.opb-pill-pos{background:#E6EDD6;color:#5B7030}
+.opb-pill-neg{background:#FDE5E5;color:#B4324C}
+.opb-detail{font-size:.78rem;color:var(--text3);line-height:1.55;font-weight:300}
+.opb-detail strong{color:var(--text2);font-weight:500}
+
+/* Warn boxes (safety warnings) */
+.warn-box{display:flex;align-items:flex-start;gap:1rem;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--rose);border-radius:10px;padding:1rem 1.15rem;margin-bottom:.7rem;box-shadow:var(--sh)}
+.warn-icon{width:36px;height:36px;background:#FDE5E5;color:#B4324C;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.warn-icon svg{width:19px;height:19px}
+.warn-body{flex:1;min-width:0}
+.warn-body h4{font-family:'Fraunces',serif;font-weight:400;font-size:1rem;color:var(--text);margin:0 0 .35rem 0;letter-spacing:-.01em}
+.warn-body p{font-size:.8rem;color:var(--text2);line-height:1.6;font-weight:300;margin:0}
+.warn-body p strong{color:var(--text);font-weight:500}
+
+/* Oven symbols grid */
+.oven-sym-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.6rem;margin-bottom:1rem}
+.oven-sym{display:flex;align-items:flex-start;gap:.8rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;box-shadow:var(--sh);transition:all .2s}
+.oven-sym:hover{border-color:var(--accent2);transform:translateY(-1px)}
+.oven-sym-iconwrap{width:34px;height:34px;background:var(--accent-bg);color:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.oven-sym-txt{flex:1;min-width:0}
+.oven-sym-name{font-family:'Fraunces',serif;font-weight:400;font-size:.92rem;color:var(--text);margin-bottom:.15rem;line-height:1.25}
+.oven-sym-desc{font-size:.72rem;color:var(--text3);line-height:1.5;font-weight:300}
+
+/* Interactive converter */
+.converter-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.converter-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.9rem;flex-wrap:wrap}
+.converter-row:last-of-type{margin-bottom:0}
+.converter-label{font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;flex-basis:100%;margin-bottom:.15rem}
+.converter-box select,.converter-box input[type="number"]{
+  font-family:'Inter',sans-serif;font-size:.9rem;padding:.55rem .75rem;
+  border:1px solid var(--border);border-radius:8px;background:var(--surface2);color:var(--text);
+  flex:1;min-width:0;cursor:pointer;font-weight:400;
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237B5EA7' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right .75rem center;padding-right:2rem
+}
+.converter-box input[type="number"]{max-width:120px;background-image:none;padding-right:.75rem;flex:0 0 100px}
+.converter-box select:focus,.converter-box input:focus{outline:none;border-color:var(--accent);background-color:var(--surface)}
+.converter-arrow{color:var(--accent);font-size:1.1rem;font-weight:400;padding:0 .1rem}
+.converter-result{margin-top:1.2rem;padding:1.1rem 1.3rem;background:linear-gradient(135deg,rgba(123,94,167,.06),rgba(158,125,200,.1));border:1px solid var(--border2);border-radius:10px;text-align:center;font-size:.9rem;color:var(--text2);font-weight:400;line-height:1.5}
+.converter-result strong{color:var(--accent);font-family:'Fraunces',serif;font-weight:400;font-size:1.5rem;letter-spacing:-.02em;display:inline-block;margin:0 .15rem}
+
+/* Temperature converter — dual input */
+.temp-converter{display:flex;gap:.8rem;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1rem;margin-bottom:1rem;box-shadow:var(--sh)}
+.temp-input-group{text-align:center;flex:1;max-width:180px}
+.temp-input-group label{display:block;font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.temp-input-group input{font-family:'Fraunces',serif;font-weight:300;font-size:1.75rem;color:var(--accent);text-align:center;width:100%;padding:.55rem .3rem;border:1px solid var(--border);border-radius:10px;background:var(--surface2);letter-spacing:-.02em}
+.temp-input-group input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+.temp-arrow{font-size:1.3rem;color:var(--accent2);font-weight:300;padding-top:1.2rem}
+
+@keyframes guideFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:640px){
+  .opb-card{padding:.85rem 1rem;gap:.75rem}
+  .opb-icon{width:32px;height:32px}
+  .opb-icon svg{width:17px;height:17px}
+  .opb-title{font-size:.95rem}
+  .warn-box{padding:.85rem 1rem;gap:.75rem}
+  .warn-icon{width:32px;height:32px}
+  .guide-cheat{grid-template-columns:repeat(2,1fr)}
+  .oven-sym-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -1964,15 +2080,6 @@ Bag i 25 minutter.
         <h2>Ovnsymboler <em>forklaret</em></h2>
         <p class="lead">De symboler du finder på ovnens knap eller display — og hvad de gør.</p>
       </div>
-
-      <div class="guide-callout">
-        <div class="guide-callout-icon">
-          <svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-        </div>
-        <div class="guide-callout-body">
-          <div class="guide-callout-label">Vigtigst at vide</div>
-          <div class="guide-callout-text">Skifter du fra <strong>alm. over-/undervarme</strong> til <strong>varmluft</strong>, så sænk temperaturen <strong>ca. 20°C</strong> — ellers bliver maden overbagt.</div>
-        </div>
 
       <div class="guide-group">
         <div class="guide-group-label">De mest brugte</div>
