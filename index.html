@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="da">
 <head>
 <meta charset="UTF-8">
@@ -8,7 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <title>DailyPlate</title>
 <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" type="text/javascript"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#F8F6F9;--surface:#FFF;--surface2:#F2EEF6;--border:#E5DFF0;--border2:#D0C4E2;--accent:#7B5EA7;--accent2:#9E7DC8;--accent-bg:#F0EBFA;--rose:#B5667A;--rose-bg:#FAF0F3;--text:#1E1628;--text2:#6B5E7A;--text3:#A899B8;--r:12px;--sh:0 1px 12px rgba(80,50,120,.07);--shm:0 4px 24px rgba(80,50,120,.12)}
@@ -1128,6 +1127,13 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .cf-role[data-r="carb"]{background:#F5EEDA;color:#7A6420;border-color:#E5D89B}
 .cf-role[data-r="veg"]{background:#E3EDD0;color:#4C6D22;border-color:#CADFA8}
 .cf-role[data-r="sauce"]{background:#DCE7F2;color:#2B5178;border-color:#B4CBE1}
+
+/* Oven symbols in recipe panel */
+.ovn-row{background:var(--accent-bg);border:1px solid var(--border2);border-radius:10px;padding:.7rem .9rem;margin-bottom:1rem}
+.ovn-lbl{font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.45rem}
+.ovn-pills{display:flex;flex-wrap:wrap;gap:.4rem}
+.ovn-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:.3rem .7rem;font-size:.75rem;font-weight:500;color:var(--text);box-shadow:var(--sh)}
+.ovn-pill svg{color:var(--accent);flex-shrink:0}
 </style>
 </head>
 <body>
@@ -1148,7 +1154,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 
       <!-- Google button -->
       <button class="clerk-google-btn" onclick="clerkSignInWithGoogle()">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.96 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        <svg width="18" height="18" viewbox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.96 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
         Fortsæt med Google
       </button>
 
@@ -1165,7 +1171,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <div class="lpass-wrap">
             <input class="lfi" id="l-pass" type="password" placeholder="Din adgangskode" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
             <button class="lpass-eye" onclick="togglePass('l-pass',this)" type="button">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
           </div>
         </div>
@@ -1194,7 +1200,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <div class="lpass-wrap">
             <input class="lfi" id="r-pass" type="password" placeholder="Mindst 8 tegn" autocomplete="new-password" onkeydown="if(event.key==='Enter')document.getElementById('r-pass2').focus()" oninput="checkPassStrength(this.value)">
             <button class="lpass-eye" onclick="togglePass('r-pass',this)" type="button">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
           </div>
           <div id="passStrength" style="display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap"></div>
@@ -1205,7 +1211,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <div class="lpass-wrap">
             <input class="lfi" id="r-pass2" type="password" placeholder="Gentag adgangskode" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
             <button class="lpass-eye" onclick="togglePass('r-pass2',this)" type="button">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
           </div>
         </div>
@@ -1224,37 +1230,37 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   <div class="ntop">
     <div class="nlogo" onclick="switchMenu('alle')"><span class="nl1">Daily</span><span class="nl2">Plate</span></div>
     <div class="nsearch" style="flex:1;max-width:340px">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
       <input type="text" placeholder="Søg opskrifter…" oninput="onSearch()" id="headerSearch">
     </div>
     <div class="nright">
-      <button class="bsm bsm-fav" onclick="requireLogin(()=>switchMenu('favoritter'))">Favoritter</button>
-      <button class="bsm bsm-family" onclick="requireLogin(()=>openFamilySettings())">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <button class="bsm bsm-fav" onclick="requireLogin(()=&gt;switchMenu('favoritter'))">Favoritter</button>
+      <button class="bsm bsm-family" onclick="requireLogin(()=&gt;openFamilySettings())">
+        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
         <span id="familyBtnLbl">Familie</span>
       </button>
-      <button class="bsm bacc bsm-mine" id="btn-mine" onclick="requireLogin(()=>switchMenu('mine'))">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <button class="bsm bacc bsm-mine" id="btn-mine" onclick="requireLogin(()=&gt;switchMenu('mine'))">
+        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
         Mine
       </button>
-      <button class="bsm bsm-cal" onclick="requireLogin(()=>switchMenu('ugeplan'))">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <button class="bsm bsm-cal" onclick="requireLogin(()=&gt;switchMenu('ugeplan'))">
+        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
         Kalender
       </button>
-      <button class="bsm bsm-fridge" id="btn-fridge" onclick="requireLogin(()=>switchMenu('fridge'))">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14"/><path d="M9 6v2M9 14v3"/></svg>
+      <button class="bsm bsm-fridge" id="btn-fridge" onclick="requireLogin(()=&gt;switchMenu('fridge'))">
+        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M5 10h14"></path><path d="M9 6v2M9 14v3"></path></svg>
         Køleskab
       </button>
       <button class="bsm bsm-guide" id="btn-guide" onclick="switchMenu('guide')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10" opacity=".3"/></svg>
+        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"></path><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10" opacity=".3"></circle></svg>
         Guide
       </button>
-      <button id="navLoginBtn" onclick="requireLogin(()=>{})" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:50px;padding:.35rem 1rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer">Log ind</button>
+      <button id="navLoginBtn" onclick="requireLogin(()=&gt;{})" style="display:none;background:var(--accent);color:#fff;border:none;border-radius:50px;padding:.35rem 1rem;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer">Log ind</button>
       <div class="nav-user" id="navUserWrap" style="display:none">
         <button class="nav-user-btn" id="navUserBtn" onclick="toggleUserDrop()">
           <div class="nav-avatar" id="navAvatar"><span class="nav-initials" id="navInitials">?</span></div>
           <span id="navUserName"></span>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          <svg width="12" height="12" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>
         </button>
         <div class="user-drop" id="userDrop">
           <div class="ud-name" id="udName"></div>
@@ -1275,12 +1281,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="mi-sep"></div>
       <div class="mig">
         <button class="mi mi-discover" id="mi-discover" onclick="switchMenu('discover',this)">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
           Ugens opdagelse
         </button>
       </div>
       <div class="mig">
-        <button class="mi" id="mi-morgenmad" onclick="switchMenu('morgenmad',this)">Morgenmad<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="mi" id="mi-morgenmad" onclick="switchMenu('morgenmad',this)">Morgenmad<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('morgenmad','grød')">Grød &amp; bowls</button>
           <button class="mdi" onclick="switchSub('morgenmad','æg')">Æg</button>
@@ -1292,7 +1298,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
       </div>
       <div class="mig">
-        <button class="mi" id="mi-frokost" onclick="switchMenu('frokost',this)">Frokost<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="mi" id="mi-frokost" onclick="switchMenu('frokost',this)">Frokost<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('frokost','sandwich')">Sandwiches &amp; wraps</button>
           <button class="mdi" onclick="switchSub('frokost','salat')">Salater</button>
@@ -1308,7 +1314,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
       </div>
       <div class="mig">
-        <button class="mi" id="mi-aftensmad" onclick="switchMenu('aftensmad',this)">Aftensmad<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="mi" id="mi-aftensmad" onclick="switchMenu('aftensmad',this)">Aftensmad<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('aftensmad','hverdagsret')">Hverdagsretter</button>
           <button class="mdi" onclick="switchSub('aftensmad','kød')">Kødretter</button>
@@ -1329,7 +1335,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
       </div>
       <div class="mig">
-        <button class="mi" id="mi-dessert" onclick="switchMenu('dessert',this)">Dessert<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="mi" id="mi-dessert" onclick="switchMenu('dessert',this)">Dessert<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('dessert','kager')">Kager</button>
           <button class="mdi" onclick="switchSub('dessert','tærter')">Tærter</button>
@@ -1348,7 +1354,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
       </div>
       <div class="mig">
-        <button class="mi" id="mi-snacks" onclick="switchMenu('snacks',this)">Snacks<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="mi" id="mi-snacks" onclick="switchMenu('snacks',this)">Snacks<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('snacks','sund')">Sunde snacks</button>
           <button class="mdi" onclick="switchSub('snacks','sød-snack')">Søde snacks</button>
@@ -1366,7 +1372,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
       </div>
       <div class="mig">
-        <button class="mi" id="mi-drikkevarer" onclick="switchMenu('drikkevarer',this)">Drikkevarer<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></button>
+        <button class="mi" id="mi-drikkevarer" onclick="switchMenu('drikkevarer',this)">Drikkevarer<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('drikkevarer','smoothie')">Smoothies</button>
           <button class="mdi" onclick="switchSub('drikkevarer','juice')">Juice &amp; shots</button>
@@ -1418,14 +1424,14 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   <div style="max-width:1320px;margin:auto;padding:0 2.5rem">
     <div style="display:flex;align-items:flex-start;gap:1rem;flex-wrap:wrap">
       <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       </div>
       <div style="flex:1;min-width:200px">
         <div style="font-family:'Fraunces',serif;font-size:1rem;font-weight:400;color:var(--text)"><span id="importCount">0</span> delte opskrifter venter</div>
         <div style="font-size:.75rem;color:var(--text2);margin-top:.1rem" id="importFrom"></div>
         <button type="button" id="importPreviewToggle" onclick="toggleImportPreview()" style="background:none;border:none;font-family:'Inter',sans-serif;font-size:.72rem;color:var(--accent);cursor:pointer;margin-top:.35rem;padding:0;display:inline-flex;align-items:center;gap:.25rem">
           <span id="importPreviewToggleLbl">Vis opskrifter</span>
-          <svg id="importPreviewChev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg id="importPreviewChev" width="11" height="11" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
       </div>
       <div style="display:flex;gap:.5rem;align-items:flex-start">
@@ -1441,7 +1447,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <div id="filterBar" class="filter-bar">
   <div class="filter-bar-inner">
     <div class="fb-ing fb-ing-multi" id="fbIngBox" onclick="document.getElementById('ingSearch').focus()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:var(--accent2)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:var(--accent2)"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
       <div id="ingTags" class="ing-tags"></div>
       <input type="text" id="ingSearch" placeholder="Tilføj ingrediens…" oninput="onIngInput()" onkeydown="ingKeydown(event)" autocomplete="off" style="min-width:110px;flex:1">
     </div>
@@ -1462,7 +1468,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="diet-tags-box" id="dietTagsBox" onclick="toggleDietDrop()">
         <div id="dietTags" class="allergy-tags"></div>
         <span class="diet-placeholder" id="dietPlaceholder">Vælg kost…</span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--text3);margin-left:auto"><path d="M6 9l6 6 6-6"/></svg>
+        <svg width="10" height="10" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;color:var(--text3);margin-left:auto"><path d="M6 9l6 6 6-6"></path></svg>
       </div>
       <div class="diet-drop" id="dietDrop">
         <div class="diet-drop-inner">
@@ -1501,16 +1507,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div style="display:flex;align-items:baseline;gap:.85rem;flex-wrap:wrap">
           <h2 style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:300;line-height:1.1;letter-spacing:-.01em">Mest gemte <em style="font-style:italic;color:var(--accent)">opskrifter</em></h2>
           <span style="font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.65);border:1px solid rgba(123,94,167,.22);border-radius:50px;padding:.18rem .7rem">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <svg width="10" height="10" viewbox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
             Populært
           </span>
         </div>
         <div style="display:flex;gap:.35rem">
           <button class="pop-arrow" onclick="popSliderScroll(-1)" aria-label="Forrige" type="button">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="15 18 9 12 15 6"></polyline></svg>
           </button>
           <button class="pop-arrow" onclick="popSliderScroll(1)" aria-label="Næste" type="button">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </button>
         </div>
       </div>
@@ -1563,7 +1569,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   <div class="mine-hero">
     <div class="mine-hero-inner">
       <div class="mine-tag">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <svg width="12" height="12" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
         Mine opskrifter
       </div>
       <h2 class="mine-title">Din personlige <em>kogebog</em></h2>
@@ -1571,11 +1577,11 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
     <div style="display:flex;gap:.6rem">
       <button class="mine-add-hero-btn" style="background:var(--surface2);color:var(--text2);border-color:var(--border)" onclick="shareMineOpskrifter()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         Del mine opskrifter
       </button>
       <button class="mine-add-hero-btn" onclick="openRecipeForm()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <svg width="15" height="15" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       Tilføj opskrift
       </button>
     </div>
@@ -1620,7 +1626,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <h3 id="rformTitle">Ny opskrift</h3>
         <p id="rformSub">Udfyld felterne nedenfor</p>
       </div>
-      <button class="mhc" onclick="closeRecipeForm()">&#x2715;</button>
+      <button class="mhc" onclick="closeRecipeForm()">✕</button>
     </div>
     <div class="rform-body">
       <!-- Billede -->
@@ -1689,11 +1695,17 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="rform-row rform-row-halves">
         <div class="rform-field">
           <label class="rfl">Ingredienser <span class="rfl-hint">(én per linje)</span></label>
-          <textarea class="rfi rfi-ta" id="rf-ing" placeholder="200 g mel&#10;3 æg&#10;1 dl mælk&#10;…" rows="7"></textarea>
+          <textarea class="rfi rfi-ta" id="rf-ing" placeholder="200 g mel
+3 æg
+1 dl mælk
+…" rows="7"></textarea>
         </div>
         <div class="rform-field">
           <label class="rfl">Fremgangsmåde <span class="rfl-hint">(ét trin per linje)</span></label>
-          <textarea class="rfi rfi-ta" id="rf-steps" placeholder="Varm ovnen op til 200°C.&#10;Bland mel og æg.&#10;Bag i 25 minutter.&#10;…" rows="7"></textarea>
+          <textarea class="rfi rfi-ta" id="rf-steps" placeholder="Varm ovnen op til 200°C.
+Bland mel og æg.
+Bag i 25 minutter.
+…" rows="7"></textarea>
         </div>
       </div>
       <!-- Kost -->
@@ -1729,7 +1741,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="rform-foot">
       <button class="smb-cancel" onclick="closeRecipeForm()">Annuller</button>
       <button class="rform-save-btn" id="rformSaveBtn" onclick="saveRecipeForm()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
         Gem opskrift
       </button>
     </div>
@@ -1741,7 +1753,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   <div class="fridge-hero">
     <div class="fridge-hero-inner">
       <div class="fridge-tag">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14"/><path d="M9 6v2M9 14v3"/></svg>
+        <svg width="12" height="12" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><path d="M5 10h14"></path><path d="M9 6v2M9 14v3"></path></svg>
         Mit køleskab
       </div>
       <h2 class="fridge-title">Hvad har du <em>hjemme?</em></h2>
@@ -1753,7 +1765,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="fridge-panel">
         <div class="fridge-input-row">
           <div class="fridge-input-wrap">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <input type="text" id="fridgeInput" placeholder="Tilføj ingrediens…" oninput="onFridgeInput()" onkeydown="fridgeKeydown(event)">
           </div>
           <button class="fridge-add-btn" onclick="addFridgeIng()">Tilføj</button>
@@ -1795,9 +1807,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div style="display:flex;gap:.5rem">
         <div style="position:relative" id="insertPlanWrap">
           <button class="copy-week-btn" id="insertPlanBtn" onclick="toggleInsertPlanDrop()" style="display:flex;align-items:center;gap:.4rem">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             Indsæt gemt madplan
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg width="10" height="10" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
           <div id="insertPlanDrop" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(80,50,120,.15);z-index:600;min-width:260px;max-width:340px;max-height:400px;overflow-y:auto;padding:.35rem">
             <div id="insertPlanDropList"></div>
@@ -1811,9 +1823,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="cal-panel">
         <div class="cal-top">
           <div class="cal-nav-left">
-            <button class="cal-nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+            <button class="cal-nav-btn" onclick="changeMonth(-1)">←</button>
             <span class="cal-month-lbl" id="calLbl"></span>
-            <button class="cal-nav-btn" onclick="changeMonth(1)">&#8594;</button>
+            <button class="cal-nav-btn" onclick="changeMonth(1)">→</button>
           </div>
           <div class="cal-legend">
             <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#EFB8A0"></div>Morgenmad</div>
@@ -1834,27 +1846,27 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div class="week-head">
           <div class="week-title" id="weekTitle">Uge</div>
           <div class="week-btns">
-            <button class="bsm" onclick="changeWeek(-7)">&#8592; Forrige</button>
+            <button class="bsm" onclick="changeWeek(-7)">← Forrige</button>
             <button class="bsm" onclick="goToday()">I dag</button>
-            <button class="bsm" onclick="changeWeek(7)">Næste &#8594;</button>
+            <button class="bsm" onclick="changeWeek(7)">Næste →</button>
             <button class="bsm bsm-auto" onclick="openAutoModal()" title="Generer ugeplan automatisk">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
               Auto
             </button>
             <button class="bsm bsm-save-week" onclick="openSaveModal()" title="Gem denne uge som plan">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
               Gem uge
             </button>
             <button class="bsm" onclick="shareWeekPlan()" title="Del ugeplan">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
               Del
             </button>
             <button class="bsm" onclick="exportPDF()" title="Eksporter til PDF">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
               PDF
             </button>
             <button class="bsm" onclick="openHistory()" title="Opskrifthistorik">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               Historik
             </button>
           </div>
@@ -1878,9 +1890,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
               <div class="shop-week-label" id="shopWeekLabel"></div>
             </div>
             <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
-              <button class="bsm" onclick="shopChangeWeek(-7)">&#8592;</button>
+              <button class="bsm" onclick="shopChangeWeek(-7)">←</button>
               <button class="bsm" onclick="shopGoToday()">Denne uge</button>
-              <button class="bsm" onclick="shopChangeWeek(7)">&#8594;</button>
+              <button class="bsm" onclick="shopChangeWeek(7)">→</button>
               <button class="bsm" id="shopModeAlpha" onclick="setShopMode('alpha')" style="font-weight:500;border-color:var(--border2)">A–Z</button>
               <button class="bsm" id="shopModeButik" onclick="setShopMode('butik')">Efter afdeling</button>
               <button class="bsm" onclick="clearChecked()">Fjern afkrydsede</button>
@@ -2011,6 +2023,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
 
     <!-- MÅL -->
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
     <div class="guide-sec" id="gs-maal">
       <div class="guide-sec-head">
         <h2>Mål &amp; <em>omregning</em></h2>
@@ -2112,6 +2130,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
 
     <!-- KERNE -->
+    </div>
+    </div>
     <div class="guide-sec" id="gs-kerne">
       <div class="guide-sec-head">
         <h2><em>Kernetemperaturer</em></h2>
@@ -2245,6 +2265,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
 
     <!-- UDTRYK -->
+    <!-- GRUNDREGLER -->
+    </div>
+    </div>
     <div class="guide-sec" id="gs-udtryk">
       <div class="guide-sec-head">
         <h2>Køkken-<em>udtryk</em></h2>
@@ -2388,7 +2411,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       </div>
     </div>
 
-    <!-- GRUNDREGLER -->
     <div class="guide-sec" id="gs-grund">
       <div class="guide-sec-head">
         <h2>Køkkenets <em>grundregler</em></h2>
@@ -2576,6 +2598,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
 
     <!-- OPBEVARING -->
+    </div>
     <div class="guide-sec" id="gs-opbevaring">
       <div class="guide-sec-head">
         <h2>Opbevaring &amp; <em>holdbarhed</em></h2>
@@ -2880,6 +2903,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
 
     <!-- FEJLSØGNING -->
+    </div>
     <div class="guide-sec" id="gs-fejl">
       <div class="guide-sec-head">
         <h2>Når noget går <em>galt</em></h2>
@@ -3012,6 +3036,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
 
     <!-- FARE -->
+    </div>
+    </div>
     <div class="guide-sec" id="gs-fare">
       <div class="guide-sec-head">
         <h2><em>Fødevaresikkerhed</em></h2>
@@ -3139,20 +3165,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     </div>
     </div>
     </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
 
 <!-- SAVE PLAN MODAL -->
 <div class="save-mo" id="saveMo" onclick="closeSaveBg(event)">
@@ -3181,16 +3193,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="load-week-pick">
       <div class="lwp-label">Vælg hvilken uge planen skal indlæses i</div>
       <div class="lwp-nav">
-        <button class="cal-nav-btn" onclick="loadWeekShift(-7)">&#8592;</button>
+        <button class="cal-nav-btn" onclick="loadWeekShift(-7)">←</button>
         <span class="lwp-title" id="lwpTitle"></span>
-        <button class="cal-nav-btn" onclick="loadWeekShift(7)">&#8594;</button>
+        <button class="cal-nav-btn" onclick="loadWeekShift(7)">→</button>
       </div>
       <div class="lwp-mini-cal" id="lwpMiniCal"></div>
     </div>
     <div class="load-modal-foot">
       <button class="smb-cancel" onclick="closeLoadModal()">Annuller</button>
       <button class="smb-save" onclick="confirmLoadPlan()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
         Indlæs til valgte uge
       </button>
     </div>
@@ -3239,7 +3251,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="rform-foot">
       <button class="smb-cancel" onclick="closeAutoModal()">Annuller</button>
       <button class="rform-save-btn" onclick="runAutoWeekPlan()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         Generer ugeplan
       </button>
     </div>
@@ -3316,7 +3328,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="save-modal-btns">
       <button class="smb-cancel" onclick="closeShareModal()">Luk</button>
       <button class="smb-save" onclick="copyShareText()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         <span id="copyBtnLbl">Kopiér link</span>
       </button>
     </div>
@@ -3342,7 +3354,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <div class="panel" id="panel">
   <div class="phero" id="pHero">
     <div class="pbadges"><span class="pbadge" id="pDiff"></span><span class="pbadge" id="pCat"></span></div>
-    <button class="pclose" onclick="closePanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <button class="pclose" onclick="closePanel()"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>
   </div>
   <div class="panel-timer-bar" id="panelTimerBar"><div><div style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7">Timer</div><div class="ptb-time" id="ptbTime">0:00</div></div><button class="ptb-stop" onclick="stopTimer()">Stop</button></div>
   <div class="pbody" id="pBody"></div>
@@ -3366,9 +3378,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
     <div class="msearch" id="mSW"><input type="text" id="mSearch" placeholder="Søg…" oninput="renderMList()"></div>
     <div class="mfilter" id="mFilter">
       <div class="mfilter-toggle" id="mFilterToggle" onclick="toggleMFilter()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M7 12h10M11 18h6"/></svg>
+        <svg width="12" height="12" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M7 12h10M11 18h6"></path></svg>
         <span id="mFilterToggleLbl">Sammensæt din middag</span>
-        <svg class="mfilter-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg class="mfilter-chev" width="11" height="11" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
       <div class="mfilter-body" id="mFilterBody" style="display:none">
         <div class="mfilter-cat">
@@ -3388,7 +3400,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <div class="mfilter-chips" id="mfc-sauce"></div>
         </div>
         <button class="mfilter-compose" id="mFilterCompose" onclick="composeAsMeal()" style="display:none">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
           Tilføj som eget måltid
         </button>
         <button class="mfilter-reset" id="mFilterReset" onclick="mFilterReset()" style="display:none">Nulstil filter</button>
@@ -4965,6 +4977,27 @@ function renderPanelBody(id){
     <span class="sim-arr">›</span>
   </div>`).join('');
 
+  // Oven symbols (from tags with 'ovn:' prefix)
+  const OVN_SYMBOLS = {
+    'varmluft': {name:'Varmluft', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 6 Q9 8 12 10.5 Q15 8 12 6M18 12 Q16 9 13.5 12 Q16 15 18 12M12 18 Q15 16 12 13.5 Q9 16 12 18M6 12 Q8 15 10.5 12 Q8 9 6 12" fill="currentColor" stroke="none" opacity=".85"/>'},
+    'over-under': {name:'Over- og undervarme', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M5 6h14M5 18h14"/>'},
+    'kun-under': {name:'Kun undervarme', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M5 18h14"/>'},
+    'kun-over': {name:'Kun overvarme', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M5 6h14"/>'},
+    'grill': {name:'Grill', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M5 6 L7 8 L9 6 L11 8 L13 6 L15 8 L17 6 L19 8M5 10 L7 12 L9 10 L11 12 L13 10 L15 12 L17 10 L19 12"/>'},
+    'grill-varmluft': {name:'Grill + varmluft', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M5 6 L7 8 L9 6 L11 8 L13 6 L15 8 L17 6 L19 8"/><circle cx="12" cy="15" r="1" fill="currentColor" stroke="none"/><path d="M12 12v2M15 15h-2M12 18v-2M9 15h2" opacity=".7"/>'},
+    '3d-varmluft': {name:'3D varmluft', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><path d="M12 8 Q10 10 12 12 M16 12 Q14 10 12 12 M12 16 Q14 14 12 12 M8 12 Q10 14 12 12" fill="currentColor" stroke="none" opacity=".7"/>'},
+    'damp': {name:'Damp', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M8 15c0-2 2-2 2-4s-2-2-2-4M12 15c0-2 2-2 2-4s-2-2-2-4M16 15c0-2 2-2 2-4s-2-2-2-4"/>'},
+    'optoning': {name:'Optøning', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M12 7v10M7 12h10M9 9l6 6M15 9l-6 6"/>'},
+    'pizza': {name:'Pizza-funktion', svg:'<rect x="2" y="2" width="20" height="20" rx="1.5"/><path d="M8 18 L12 8 L16 18 Z"/><circle cx="11" cy="14" r=".5" fill="currentColor" stroke="none"/><circle cx="13" cy="15" r=".5" fill="currentColor" stroke="none"/>'}
+  };
+  const ovnPills = (r.tags||[])
+    .filter(t=>t.startsWith('ovn:'))
+    .map(t=>t.slice(4))
+    .filter(id=>OVN_SYMBOLS[id])
+    .map(id=>`<span class="ovn-pill"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">${OVN_SYMBOLS[id].svg}</svg>${OVN_SYMBOLS[id].name}</span>`)
+    .join('');
+  const ovnHTML = ovnPills ? `<div class="ovn-row"><div class="ovn-lbl">Ovnindstilling</div><div class="ovn-pills">${ovnPills}</div></div>` : '';
+
   document.getElementById('pBody').innerHTML=`
     <div class="pcat">${(()=>{const s=getRecipeSubcat(r);return s||r.lbl;})()}</div>
     <div class="ptitle">${r.title}</div>
@@ -4981,6 +5014,7 @@ function renderPanelBody(id){
       </div>
       <div class="pmi"><div class="pmiv">${r.diff}</div><div class="pmil">Sværhed</div></div>
     </div>
+    ${ovnHTML}
     <div class="nutr-row" id="panelNutrRow">
       <div class="nutr-cell"><div class="nutr-val">${ex.kcal?k:'…'}</div><div class="nutr-lbl">Kcal</div></div>
       <div class="nutr-cell"><div class="nutr-val">${ex.kcal?(p+'g'):'…'}</div><div class="nutr-lbl">Protein</div></div>
