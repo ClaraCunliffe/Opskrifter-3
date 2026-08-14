@@ -4349,7 +4349,7 @@ function renderDiscover(){
   const wn=getWeekNum(getMonday(new Date()));
   const yr=new Date().getFullYear();
   document.getElementById('dwWeekTag').textContent=`Uge ${wn} · ${yr}`;
-  document.getElementById('dwLabel').textContent=`${RECIPES.length} opskrifter — 8 udvalgt til dig denne uge`;
+  document.getElementById('dwLabel').textContent=`${allRecipes().length} opskrifter — 8 udvalgt til dig denne uge`;
   // Seed-based shuffle: deterministic for the whole week
   const rand=seededRand(getWeekSeed());
   const shuffled=[...allRecipes()].sort(()=>rand()-.5);
