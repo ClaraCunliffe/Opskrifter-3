@@ -463,8 +463,15 @@ function closeModal(){
   editId=null;uploadedImg=null;rawImgSrc=null;
 }
 
+// Track where mousedown started to prevent accidental close from click-and-drag
+let mDownTarget=null;
+document.getElementById('modal').addEventListener('mousedown',e=>{mDownTarget=e.target;});
 document.getElementById('modal').addEventListener('click',e=>{
-  if(e.target===document.getElementById('modal'))closeModal();
+  // Only close if both mousedown AND click happened directly on backdrop (not drag-out)
+  if(e.target===document.getElementById('modal') && mDownTarget===document.getElementById('modal')){
+    closeModal();
+  }
+  mDownTarget=null;
 });
 
 // IMAGE
