@@ -4297,6 +4297,7 @@ const heroRids={};
 const MEAL_LABELS_HERO={morgenmad:'Morgenmad i dag',frokost:'Frokost i dag',aftensmad:'Aftensmad i dag',snacks:'Snack i dag',dessert:'Dessert i dag',drikkevarer:'Drik i dag'};
 
 function updateHero(){
+  const hCEl=document.getElementById('hC');if(hCEl)hCEl.textContent=allRecipes().length;
   document.getElementById('hF').textContent=saved.size;
   const pc=Object.values(plan).reduce((sum,v)=>sum+(Array.isArray(v)?v.length:v?1:0),0);
   document.getElementById('hP').textContent=pc;
