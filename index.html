@@ -3922,7 +3922,10 @@ async function loadPopularRecipes(retryCount = 0) {
 
 async function loadPublicRecipes() {
   try {
-    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc');
+    // Add explicit limit and range header to fetch ALL rows (default might be 20)
+    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000', {
+      headers: { 'Range': '0-999', 'Prefer': 'count=exact' }
+    });
     if(r.ok && r.data && r.data.length > 0) {
       publicRecipes = r.data.map(r => ({
         id: r.id,
@@ -3935,6 +3938,7 @@ async function loadPublicRecipes() {
         kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat,
         fromSupabase: true
       }));
+      console.log(`Loaded ${publicRecipes.length} public recipes from Supabase`);
     }
   } catch(e) { console.warn('Could not load public recipes:', e.message); }
 }
