@@ -6706,6 +6706,10 @@ function fetchOFFForPanel(ings, recipe) {
 
   // Still detect allergens for warning
   const allergenSet=new Set();
+  // Include manually-set allergens from admin
+  if(recipe && Array.isArray(recipe.allergy)){
+    recipe.allergy.forEach(a=>allergenSet.add(a));
+  }
   (ings||[]).forEach(ing=>{
     const name=ing.replace(/^[\d\s\/.,½¼¾]+\s*(g|kg|ml|l|dl|tsk|spsk|stk|fed|cm|bundt|dåse|pose)?\s*/i,'').split(',')[0].trim().toLowerCase();
     const d=lookupNutr(name);
