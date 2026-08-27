@@ -3939,6 +3939,13 @@ async function loadPublicRecipes() {
         fromSupabase: true
       }));
       console.log(`Loaded ${publicRecipes.length} public recipes from Supabase`);
+      // Update hero count directly (in case updateHero isn't called yet)
+      const hCEl = document.getElementById('hC');
+      if(hCEl) hCEl.textContent = allRecipes().length;
+      // Re-render grid if we're currently on a recipe view
+      if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
+        try { renderGrid(); } catch(e){}
+      }
     }
   } catch(e) { console.warn('Could not load public recipes:', e.message); }
 }
