@@ -1298,10 +1298,26 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .swipe-reset{background:var(--accent);color:#fff;border:none;padding:.7rem 1.5rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s}
 .swipe-reset:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,167,.25)}
 
-/* Compact swipe entry — small icon button in filter bar */
-.swipe-entry-btn{display:inline-flex;align-items:center;gap:.35rem;background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:.4rem .8rem;border-radius:50px;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
-.swipe-entry-btn:hover{background:var(--accent-bg);border-color:var(--accent2);color:var(--accent);transform:translateY(-1px)}
-.swipe-entry-btn svg{color:var(--accent)}
+/* Swipe banner — oblong entry point above recipe grid */
+.swipe-banner{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:linear-gradient(135deg,#D6EEFF 0%,#E8F4FF 35%,#EEF5FF 65%,#E0EFFE 100%);border:1px solid rgba(123,94,167,.15);border-radius:14px;padding:1.1rem 1.4rem;margin:1.2rem 0 1.4rem;cursor:pointer;transition:all .2s;box-shadow:var(--sh)}
+.swipe-banner:hover{transform:translateY(-1px);box-shadow:var(--shm);border-color:rgba(123,94,167,.3)}
+.swipe-banner-content{display:flex;align-items:center;gap:1rem;flex:1;min-width:0}
+.swipe-banner-tag{display:inline-flex;align-items:center;gap:.3rem;background:rgba(255,255,255,.6);border:1px solid rgba(123,94,167,.2);border-radius:50px;padding:.28rem .65rem;font-size:.65rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0}
+.swipe-banner-text{flex:1;min-width:0}
+.swipe-banner-title{font-family:'Fraunces',serif;font-weight:400;font-size:1.15rem;color:var(--text);letter-spacing:-.01em;margin-bottom:.1rem;line-height:1.2}
+.swipe-banner-title em{font-style:italic;color:var(--accent)}
+.swipe-banner-sub{font-size:.75rem;color:var(--text2);font-weight:300;line-height:1.4}
+.swipe-banner-arrow{width:36px;height:36px;border-radius:50%;background:var(--surface);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .2s;box-shadow:var(--sh)}
+.swipe-banner:hover .swipe-banner-arrow{transform:translateX(4px);background:var(--accent);color:#fff}
+
+@media(max-width:640px){
+  .swipe-banner{padding:.9rem 1rem;gap:.7rem}
+  .swipe-banner-content{gap:.7rem}
+  .swipe-banner-tag{display:none}
+  .swipe-banner-title{font-size:1rem}
+  .swipe-banner-sub{font-size:.7rem}
+  .swipe-banner-arrow{width:32px;height:32px}
+}
 
 @media(max-width:640px){
   .swipe-title{font-size:1.7rem}
@@ -1698,7 +1714,24 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="pop-slider" id="popularGrid"></div>
     </div>
   </div>
-  <div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><button class="swipe-entry-btn" onclick="switchMenu('swipe')" title="Bla igennem opskrifter"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 5l7 7-7 7M3 5l7 7-7 7"/></svg>Bla igennem</button><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option></select></div></div><div class="rgrid" id="rGrid"></div></div></div>
+  <div class="page"><div class="shead"><div class="stitle" id="gTitle">Alle opskrifter</div><div style="display:flex;align-items:center;gap:.6rem;margin-left:auto"><span class="scnt" id="gCnt"></span><select class="fridge-sort-sel" id="mainSort" onchange="reRender()" style="font-size:.75rem"><option value="">Standard</option><option value="alpha">A–Z</option><option value="rating">Bedst bedømt</option><option value="time">Hurtigste tid</option></select></div></div>
+    <!-- Swipe banner -->
+    <div class="swipe-banner" onclick="switchMenu('swipe')">
+      <div class="swipe-banner-content">
+        <div class="swipe-banner-tag">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.5 5.8 22l2.4-8.1L2 9.4h7.6z"/></svg>
+          Opdag
+        </div>
+        <div class="swipe-banner-text">
+          <div class="swipe-banner-title">Swipe din <em>middag</em></div>
+          <div class="swipe-banner-sub">Bla igennem opskrifter — swipe til højre for at gemme</div>
+        </div>
+      </div>
+      <div class="swipe-banner-arrow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+    <div class="rgrid" id="rGrid"></div></div></div>
 <!-- FAVORITTER -->
 <div id="view-favoritter" class="view">
   <div class="page">
@@ -2094,8 +2127,8 @@ Bag i 25 minutter.
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.5 5.8 22l2.4-8.1L2 9.4h7.6z"/></svg>
         Opdag
       </div>
-      <h2 class="swipe-title">Bla dine <em>opskrifter</em> igennem</h2>
-      <p class="swipe-sub">Swipe til højre for at gemme — til venstre for at springe over. En rolig måde at finde inspiration.</p>
+      <h2 class="swipe-title">Swipe din <em>middag</em></h2>
+      <p class="swipe-sub">Swipe til højre for at gemme — til venstre for at springe over.</p>
     </div>
   </div>
   <div class="swipe-container">
