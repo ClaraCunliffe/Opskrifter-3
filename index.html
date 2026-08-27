@@ -1251,6 +1251,60 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .guide-cheat{grid-template-columns:repeat(2,1fr)}
   .oven-sym-grid{grid-template-columns:1fr}
 }
+
+/* ─── Swipe view (Tinder-style) ─── */
+.swipe-hero{background:linear-gradient(135deg,#FCE8F0 0%,#FFE1EA 35%,#FFF0F5 65%,#FADCE6 100%);border-bottom:1px solid var(--border);padding:2.2rem 0 2rem}
+.swipe-hero-inner{max-width:640px;margin:0 auto;text-align:center;padding:0 1.2rem}
+.swipe-tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.6);border:1px solid rgba(181,102,122,.25);border-radius:50px;padding:.28rem .75rem;font-size:.7rem;font-weight:600;color:var(--rose);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.9rem}
+.swipe-title{font-family:'Fraunces',serif;font-weight:300;font-size:2rem;letter-spacing:-.02em;margin:0 0 .5rem;color:var(--text)}
+.swipe-title em{font-style:italic;color:var(--rose)}
+.swipe-sub{color:var(--text2);font-size:.88rem;font-weight:300;line-height:1.6;margin:0 auto;max-width:400px}
+
+.swipe-container{max-width:400px;margin:2rem auto 3rem;padding:0 1rem;position:relative;min-height:560px}
+.swipe-stack{position:relative;height:500px;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.swipe-card{position:absolute;inset:0;background:var(--surface);border-radius:20px;box-shadow:0 8px 32px rgba(80,50,120,.15),0 2px 8px rgba(80,50,120,.08);overflow:hidden;cursor:grab;display:flex;flex-direction:column;transition:transform .3s ease-out,opacity .3s ease-out;will-change:transform}
+.swipe-card:active{cursor:grabbing}
+.swipe-card.dragging{transition:none}
+.swipe-card-img{flex:1;min-height:280px;background-size:cover;background-position:center;position:relative}
+.swipe-card-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(0,0,0,.7) 100%);display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem}
+.swipe-card-topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+.swipe-card-cat{background:rgba(255,255,255,.95);color:var(--text);font-size:.68rem;font-weight:600;padding:.28rem .7rem;border-radius:50px;text-transform:uppercase;letter-spacing:.06em}
+.swipe-card-time{background:rgba(0,0,0,.5);color:#fff;font-size:.72rem;font-weight:500;padding:.28rem .7rem;border-radius:50px;backdrop-filter:blur(6px)}
+.swipe-card-body{padding:1.2rem 1.3rem 1.3rem}
+.swipe-card-title{font-family:'Fraunces',serif;font-weight:400;font-size:1.35rem;color:var(--text);margin:0 0 .4rem;letter-spacing:-.01em;line-height:1.25}
+.swipe-card-desc{font-size:.82rem;color:var(--text2);line-height:1.55;font-weight:300;margin:0 0 .6rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.swipe-card-meta{display:flex;gap:.6rem;flex-wrap:wrap;font-size:.72rem;color:var(--text3)}
+.swipe-card-meta span{display:inline-flex;align-items:center;gap:.25rem}
+
+/* Swipe indicators overlay */
+.swipe-indicator{position:absolute;top:2rem;font-family:'Fraunces',serif;font-weight:400;font-size:1.8rem;padding:.5rem 1.2rem;border:3px solid currentColor;border-radius:12px;text-transform:uppercase;letter-spacing:.05em;opacity:0;transition:opacity .1s;pointer-events:none;z-index:10;transform:rotate(-15deg)}
+.swipe-indicator-like{right:2rem;color:#4A9A6F;background:rgba(74,154,111,.1);transform:rotate(15deg)}
+.swipe-indicator-skip{left:2rem;color:var(--rose);background:rgba(181,102,122,.1)}
+
+.swipe-actions{display:flex;justify-content:center;align-items:center;gap:1.2rem;margin-top:1.5rem}
+.swipe-btn{width:60px;height:60px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(80,50,120,.1);transition:all .18s}
+.swipe-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(80,50,120,.15)}
+.swipe-btn-no{color:var(--rose);border-color:rgba(181,102,122,.3)}
+.swipe-btn-no:hover{background:var(--rose-bg);border-color:var(--rose)}
+.swipe-btn-info{width:48px;height:48px;color:var(--accent)}
+.swipe-btn-info:hover{background:var(--accent-bg);border-color:var(--accent2)}
+.swipe-btn-yes{color:#4A9A6F;border-color:rgba(74,154,111,.3)}
+.swipe-btn-yes:hover{background:rgba(74,154,111,.1);border-color:#4A9A6F}
+.swipe-btn:active{transform:scale(.95)}
+
+.swipe-empty{text-align:center;padding:3rem 1rem;color:var(--text2)}
+.swipe-empty-icon{color:var(--rose);opacity:.5;margin-bottom:1rem;display:flex;justify-content:center}
+.swipe-empty h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.4rem;color:var(--text);margin:0 0 .5rem;letter-spacing:-.01em}
+.swipe-empty p{font-size:.9rem;line-height:1.6;color:var(--text3);margin:0 auto 1.5rem;max-width:320px}
+.swipe-reset{background:var(--accent);color:#fff;border:none;padding:.7rem 1.5rem;border-radius:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .18s}
+.swipe-reset:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,167,.25)}
+
+@media(max-width:640px){
+  .swipe-title{font-size:1.7rem}
+  .swipe-container{padding:0 .8rem;min-height:520px}
+  .swipe-stack{height:460px}
+  .swipe-card-img{min-height:240px}
+}
 </style>
 </head>
 <body>
@@ -2024,6 +2078,42 @@ Bag i 25 minutter.
           <div class="sp-body"><div id="savedPlansList"></div></div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SWIPE VIEW -->
+<div id="view-swipe" class="view">
+  <div class="swipe-hero">
+    <div class="swipe-hero-inner">
+      <div class="swipe-tag">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 3l-1 4 4-1M16 21l1-4-4 1M3 8l4 1-1-4M21 16l-4-1 1 4"/><circle cx="12" cy="12" r="3"/></svg>
+        Opdag opskrifter
+      </div>
+      <h2 class="swipe-title">Swipe din <em>middag</em></h2>
+      <p class="swipe-sub">Swipe til højre for at gemme som favorit — til venstre for at springe over.</p>
+    </div>
+  </div>
+  <div class="swipe-container">
+    <div class="swipe-stack" id="swipeStack"></div>
+    <div class="swipe-actions" id="swipeActions">
+      <button class="swipe-btn swipe-btn-no" onclick="swipeAction('skip')" title="Skip">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <button class="swipe-btn swipe-btn-info" onclick="swipeOpenCurrent()" title="Se opskrift">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      </button>
+      <button class="swipe-btn swipe-btn-yes" onclick="swipeAction('like')" title="Gem som favorit">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+    </div>
+    <div class="swipe-empty" id="swipeEmpty" style="display:none">
+      <div class="swipe-empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <h3>Alle opskrifter er set</h3>
+      <p>Du har swipet gennem alle tilgængelige opskrifter i denne omgang.</p>
+      <button class="swipe-reset" onclick="swipeReset()">Start forfra</button>
     </div>
   </div>
 </div>
@@ -4163,6 +4253,7 @@ function switchMenu(id,btn){
   else if(id==='fridge'){renderFridgeView();}
   else if(id==='mine')renderMine();
   else if(id==='guide'){/* static */}
+  else if(id==='swipe'){swipeInit();}
   else renderGrid();
   updateBadges();updateHero();
 }
@@ -4340,6 +4431,13 @@ function updateHero(){
     <div class="hcl">Uge planlagt</div>
     <div class="hcn">${Math.round(pc/42*100)}%</div>
     <div class="hcs">Gå til kalender →</div>
+  </div>`;
+
+  // Add swipe/discover card
+  cardsHtml+=`<div class="hc hc-swipe" onclick="switchMenu('swipe')" style="cursor:pointer;background:linear-gradient(135deg,#FCE8F0,#FADCE6);border-color:rgba(181,102,122,.2)">
+    <div class="hcl" style="color:var(--rose)">Opdag opskrifter</div>
+    <div class="hcn" style="font-size:1.5rem">❤</div>
+    <div class="hcs">Swipe gennem opskrifter →</div>
   </div>`;
 
   container.innerHTML=cardsHtml;
@@ -7444,6 +7542,187 @@ document.addEventListener('DOMContentLoaded', async function() {
   try { await initAuth(); } catch(e) { console.warn('initAuth:', e.message); try { showApp(); } catch(e2) {} }
   try { document.getElementById('filterBar').classList.add('visible'); } catch(e) {}
 });
+
+// ── SWIPE VIEW (Tinder-style for recipes) ──
+let swipeQueue = [];
+let swipeSkipped = new Set();
+
+function swipeInit(){
+  // Load previously skipped from localStorage
+  try {
+    const skipped = JSON.parse(localStorage.getItem(userKey('sv_swipeSkipped'))||'[]');
+    swipeSkipped = new Set(skipped);
+  } catch(e) { swipeSkipped = new Set(); }
+  swipeBuildQueue();
+  swipeRenderStack();
+}
+
+function swipeBuildQueue(){
+  // Get recipes that haven't been saved AND haven't been skipped
+  const all = allRecipes();
+  swipeQueue = all.filter(r => !saved.has(String(r.id)) && !swipeSkipped.has(String(r.id)));
+  // Shuffle for variety
+  swipeQueue.sort(() => Math.random() - 0.5);
+}
+
+function swipeRenderStack(){
+  const stack = document.getElementById('swipeStack');
+  const empty = document.getElementById('swipeEmpty');
+  const actions = document.getElementById('swipeActions');
+  if(!stack) return;
+  
+  if(swipeQueue.length === 0){
+    stack.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    if(actions) actions.style.display = 'none';
+    return;
+  }
+  
+  if(empty) empty.style.display = 'none';
+  if(actions) actions.style.display = 'flex';
+  
+  // Render up to 3 cards stacked (top card is interactive)
+  const toShow = swipeQueue.slice(0, 3);
+  stack.innerHTML = toShow.map((r, i) => swipeCardHTML(r, i)).reverse().join('');
+  swipeAttachDrag();
+}
+
+function swipeCardHTML(r, stackPos){
+  const bg = r.img ? `url('${r.img}')` : r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)';
+  const bgStyle = r.img ? `background-image:url('${r.img}');background-size:cover;background-position:center` : `background:${r.bg||'linear-gradient(160deg,#F2EEF6,#D8C4E8)'}`;
+  const scale = 1 - (stackPos * 0.04);
+  const translateY = stackPos * 10;
+  return `
+    <div class="swipe-card" data-rid="${r.id}" data-stack-pos="${stackPos}" style="transform:translateY(${translateY}px) scale(${scale});z-index:${100-stackPos}">
+      <div class="swipe-indicator swipe-indicator-like">Gem</div>
+      <div class="swipe-indicator swipe-indicator-skip">Skip</div>
+      <div class="swipe-card-img" style="${bgStyle}">
+        <div class="swipe-card-overlay">
+          <div class="swipe-card-topbar">
+            <span class="swipe-card-cat">${r.lbl}</span>
+            <span class="swipe-card-time">⏱ ${r.time}</span>
+          </div>
+        </div>
+      </div>
+      <div class="swipe-card-body">
+        <div class="swipe-card-title">${r.title}</div>
+        <div class="swipe-card-desc">${r.desc||''}</div>
+        <div class="swipe-card-meta">
+          <span>👥 ${r.pers} pers</span>
+          <span>📊 ${r.diff}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function swipeAttachDrag(){
+  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]');
+  if(!topCard) return;
+  
+  let startX = 0, startY = 0, currentX = 0, currentY = 0;
+  let dragging = false;
+  
+  const start = (e) => {
+    // Skip if clicking buttons inside
+    if(e.target.closest('button')) return;
+    dragging = true;
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    startY = (e.touches ? e.touches[0].clientY : e.clientY);
+    topCard.classList.add('dragging');
+  };
+  
+  const move = (e) => {
+    if(!dragging) return;
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX);
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY);
+    currentX = cx - startX;
+    currentY = cy - startY;
+    const rotate = currentX * 0.05;
+    topCard.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
+    // Show like/skip indicators based on direction
+    const likeEl = topCard.querySelector('.swipe-indicator-like');
+    const skipEl = topCard.querySelector('.swipe-indicator-skip');
+    if(likeEl) likeEl.style.opacity = Math.min(currentX / 100, 1);
+    if(skipEl) skipEl.style.opacity = Math.min(-currentX / 100, 1);
+    if(e.cancelable) e.preventDefault();
+  };
+  
+  const end = () => {
+    if(!dragging) return;
+    dragging = false;
+    topCard.classList.remove('dragging');
+    const threshold = 100;
+    if(currentX > threshold){
+      swipeAction('like');
+    } else if(currentX < -threshold){
+      swipeAction('skip');
+    } else {
+      // Snap back
+      topCard.style.transform = '';
+      const likeEl = topCard.querySelector('.swipe-indicator-like');
+      const skipEl = topCard.querySelector('.swipe-indicator-skip');
+      if(likeEl) likeEl.style.opacity = 0;
+      if(skipEl) skipEl.style.opacity = 0;
+    }
+    currentX = 0; currentY = 0;
+  };
+  
+  topCard.addEventListener('mousedown', start);
+  topCard.addEventListener('touchstart', start, {passive: true});
+  document.addEventListener('mousemove', move);
+  document.addEventListener('touchmove', move, {passive: false});
+  document.addEventListener('mouseup', end);
+  document.addEventListener('touchend', end);
+}
+
+function swipeAction(action){
+  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]');
+  if(!topCard) return;
+  const rid = topCard.dataset.rid;
+  
+  // Animate card off-screen
+  const offX = action === 'like' ? window.innerWidth : -window.innerWidth;
+  const rotate = action === 'like' ? 30 : -30;
+  topCard.style.transition = 'transform .4s ease-out, opacity .4s ease-out';
+  topCard.style.transform = `translate(${offX}px, 100px) rotate(${rotate}deg)`;
+  topCard.style.opacity = '0';
+  
+  // Perform action
+  if(action === 'like'){
+    if(!saved.has(String(rid))){
+      saved.add(String(rid));
+      persist();
+      updateBadges();
+      if(currentUser?.sbId) { try { syncFavToCloud(String(rid), true); } catch(e){} }
+      toast('❤️ Gemt som favorit','ok');
+    }
+  } else {
+    swipeSkipped.add(String(rid));
+    try {
+      localStorage.setItem(userKey('sv_swipeSkipped'), JSON.stringify([...swipeSkipped]));
+    } catch(e){}
+  }
+  
+  // Remove from queue and re-render after animation
+  setTimeout(() => {
+    swipeQueue = swipeQueue.filter(r => String(r.id) !== String(rid));
+    swipeRenderStack();
+  }, 400);
+}
+
+function swipeOpenCurrent(){
+  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]');
+  if(!topCard) return;
+  openPanel(topCard.dataset.rid);
+}
+
+function swipeReset(){
+  swipeSkipped = new Set();
+  try { localStorage.removeItem(userKey('sv_swipeSkipped')); } catch(e){}
+  swipeBuildQueue();
+  swipeRenderStack();
+  toast('Nulstillet — start forfra','ok');
+}
 
 function switchGuideTab(id){
   document.querySelectorAll('.guide-tab').forEach(t=>t.classList.toggle('active',t.dataset.gs===id));
