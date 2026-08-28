@@ -7650,7 +7650,12 @@ function swipeAttachDrag(){
   if(!stack) return;
   swipeHandlersAttached = true;
   
-  const getTopCard = () => stack.querySelector('.swipe-card[data-stack-pos="0"]');
+  const getTopCard = () => {
+    // Find the topmost card that hasn't been swiped out (lowest stack-pos)
+    const cards = Array.from(stack.querySelectorAll('.swipe-card:not(.swiped-out)'));
+    cards.sort((a, b) => parseInt(a.dataset.stackPos) - parseInt(b.dataset.stackPos));
+    return cards[0] || null;
+  };
   
   // Use pointer events — unified for mouse + touch, more reliable
   stack.addEventListener('pointerdown', (e) => {
@@ -7713,12 +7718,17 @@ function swipeAttachDrag(){
 }
 
 function swipeAction(action){
-  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]:not(.swiped-out)');
+  // Find topmost card that hasn't been swiped out
+  const cards = Array.from(document.querySelectorAll('.swipe-card:not(.swiped-out)'));
+  cards.sort((a, b) => parseInt(a.dataset.stackPos) - parseInt(b.dataset.stackPos));
+  const topCard = cards[0];
   if(!topCard) return;
   const rid = topCard.dataset.rid;
   
   // Mark as swiped-out so pointer handlers ignore it
   topCard.classList.add('swiped-out');
+  // Promote it above other cards while animating
+  topCard.style.zIndex = '200';
   
   // Animate card off-screen
   const offX = action === 'like' ? window.innerWidth : -window.innerWidth;
@@ -7726,6 +7736,17 @@ function swipeAction(action){
   topCard.style.transition = 'transform .4s ease-out, opacity .4s ease-out';
   topCard.style.transform = `translate(${offX}px, 100px) rotate(${rotate}deg)`;
   topCard.style.opacity = '0';
+  
+  // Immediately promote remaining cards visually so user can swipe next
+  const remaining = cards.slice(1);
+  remaining.forEach((card, i) => {
+    card.dataset.stackPos = String(i);
+    const scale = 1 - (i * 0.04);
+    const translateY = i * 10;
+    card.style.transition = 'transform .3s ease-out';
+    card.style.transform = `translateY(${translateY}px) scale(${scale})`;
+    card.style.zIndex = String(100 - i);
+  });
   
   // Perform action
   if(action === 'like'){
