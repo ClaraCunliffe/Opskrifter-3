@@ -1261,7 +1261,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 .swipe-sub{color:var(--text2);font-size:.88rem;font-weight:300;line-height:1.6;margin:0 auto;max-width:400px}
 
 .swipe-container{max-width:400px;margin:2rem auto 3rem;padding:0 1rem;position:relative;min-height:560px}
-.swipe-stack{position:relative;height:500px;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.swipe-stack{position:relative;height:500px;user-select:none;-webkit-user-select:none;touch-action:none}
 .swipe-card{position:absolute;inset:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 4px 20px rgba(80,50,120,.08),0 1px 4px rgba(80,50,120,.04);overflow:hidden;cursor:grab;display:flex;flex-direction:column;transition:transform .3s ease-out,opacity .3s ease-out;will-change:transform}
 .swipe-card:active{cursor:grabbing}
 .swipe-card.dragging{transition:none}
@@ -7645,7 +7645,6 @@ let swipeDragState = null;
 let swipeHandlersAttached = false;
 
 function swipeAttachDrag(){
-  // Only attach handlers ONCE — they persist across re-renders since they're on the stack container
   if(swipeHandlersAttached) return;
   const stack = document.getElementById('swipeStack');
   if(!stack) return;
@@ -7653,41 +7652,45 @@ function swipeAttachDrag(){
   
   const getTopCard = () => stack.querySelector('.swipe-card[data-stack-pos="0"]');
   
-  const start = (e) => {
+  // Use pointer events — unified for mouse + touch, more reliable
+  stack.addEventListener('pointerdown', (e) => {
     if(e.target.closest('button')) return;
-    const topCard = getTopCard();
+    // Find the top card that's NOT animating away
+    let topCard = getTopCard();
     if(!topCard) return;
-    // Ignore if card is animating out
-    if(topCard.style.opacity === '0') return;
+    // Skip if this card is animating out (during 400ms swipe animation)
+    if(topCard.classList.contains('swiped-out')) return;
+    
     swipeDragState = {
-      startX: e.touches ? e.touches[0].clientX : e.clientX,
-      startY: e.touches ? e.touches[0].clientY : e.clientY,
+      startX: e.clientX,
+      startY: e.clientY,
       currentX: 0,
       currentY: 0,
       topCard: topCard,
+      pointerId: e.pointerId,
     };
     topCard.classList.add('dragging');
-  };
+    // Capture the pointer so we get all events even outside the element
+    try { stack.setPointerCapture(e.pointerId); } catch(err){}
+  });
   
-  const move = (e) => {
-    if(!swipeDragState) return;
-    const cx = (e.touches ? e.touches[0].clientX : e.clientX);
-    const cy = (e.touches ? e.touches[0].clientY : e.clientY);
-    swipeDragState.currentX = cx - swipeDragState.startX;
-    swipeDragState.currentY = cy - swipeDragState.startY;
+  stack.addEventListener('pointermove', (e) => {
+    if(!swipeDragState || e.pointerId !== swipeDragState.pointerId) return;
+    swipeDragState.currentX = e.clientX - swipeDragState.startX;
+    swipeDragState.currentY = e.clientY - swipeDragState.startY;
     const rotate = swipeDragState.currentX * 0.05;
     swipeDragState.topCard.style.transform = `translate(${swipeDragState.currentX}px, ${swipeDragState.currentY}px) rotate(${rotate}deg)`;
     const likeEl = swipeDragState.topCard.querySelector('.swipe-indicator-like');
     const skipEl = swipeDragState.topCard.querySelector('.swipe-indicator-skip');
     if(likeEl) likeEl.style.opacity = Math.min(swipeDragState.currentX / 100, 1);
     if(skipEl) skipEl.style.opacity = Math.min(-swipeDragState.currentX / 100, 1);
-    if(e.cancelable && Math.abs(swipeDragState.currentX) > 5) e.preventDefault();
-  };
+  });
   
-  const end = () => {
-    if(!swipeDragState) return;
+  const finishPointer = (e) => {
+    if(!swipeDragState || e.pointerId !== swipeDragState.pointerId) return;
     const { currentX, topCard } = swipeDragState;
     topCard.classList.remove('dragging');
+    try { stack.releasePointerCapture(e.pointerId); } catch(err){}
     const threshold = 100;
     if(currentX > threshold){
       swipeDragState = null;
@@ -7705,19 +7708,17 @@ function swipeAttachDrag(){
     }
   };
   
-  // Attach to stack container so handlers persist across innerHTML changes
-  stack.addEventListener('mousedown', start);
-  stack.addEventListener('touchstart', start, {passive: true});
-  document.addEventListener('mousemove', move);
-  document.addEventListener('touchmove', move, {passive: false});
-  document.addEventListener('mouseup', end);
-  document.addEventListener('touchend', end);
+  stack.addEventListener('pointerup', finishPointer);
+  stack.addEventListener('pointercancel', finishPointer);
 }
 
 function swipeAction(action){
-  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]');
+  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]:not(.swiped-out)');
   if(!topCard) return;
   const rid = topCard.dataset.rid;
+  
+  // Mark as swiped-out so pointer handlers ignore it
+  topCard.classList.add('swiped-out');
   
   // Animate card off-screen
   const offX = action === 'like' ? window.innerWidth : -window.innerWidth;
