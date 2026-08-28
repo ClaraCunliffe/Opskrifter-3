@@ -51,6 +51,11 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 .rrow{background:#fff;border:1px solid var(--bor);border-radius:10px;display:flex;align-items:center;gap:.85rem;padding:.7rem 1rem;cursor:pointer;transition:border-color .15s}
 .rrow:hover{border-color:var(--acc2);background:var(--sur2)}
 .rdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rorder{display:flex;flex-direction:column;gap:.15rem;flex-shrink:0}
+.rord-btn{width:24px;height:20px;border:1px solid var(--bor);background:#fff;color:var(--txt2);border-radius:4px;cursor:pointer;font-size:.75rem;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;transition:all .12s}
+.rord-btn:hover:not(:disabled){background:var(--acc);color:#fff;border-color:var(--acc)}
+.rord-btn:disabled{opacity:.3;cursor:not-allowed}
+.rord-btn:active:not(:disabled){transform:scale(.9)}
 .rinfo{flex:1;min-width:0}
 .rtitle{font-size:.87rem;font-weight:500}
 .rmeta{font-size:.72rem;color:var(--txt3);margin-top:.08rem}
@@ -314,12 +319,12 @@ let token=null, recipes=[], editId=null, uploadedImg=null;
 const CATS={morgenmad:'#F4C4B4',frokost:'#B4D4F4',aftensmad:'#C4B4F4',dessert:'#F4B4D4',snacks:'#C4F4E4',drikkevarer:'#C4D4F4',suppe:'#F4D4B4','bagværk':'#E8D8B4'};
 const CLBLS={morgenmad:'Morgenmad',frokost:'Frokost',aftensmad:'Aftensmad',dessert:'Dessert',snacks:'Snacks',drikkevarer:'Drikkevarer',suppe:'Suppe','bagværk':'Bagværk'};
 const SUBCATS={
-  morgenmad:[{v:'grød',l:'Grød & bowls'},{v:'æg',l:'Æg'},{v:'brød-morgen',l:'Brød & bagværk'},{v:'sund-morgen',l:'Sund morgenmad'},{v:'hurtig-morgen',l:'Hurtig morgenmad'}],
-  frokost:[{v:'sandwich',l:'Sandwiches & wraps'},{v:'salat',l:'Salater'},{v:'smørrebrød',l:'Rugbrød & smørrebrød'},{v:'bowl',l:'Bowls'},{v:'suppe-frokost',l:'Supper'},{v:'varm-frokost',l:'Varme frokostretter'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Hurtig frokost'},{v:'sund-frokost',l:'Sund frokost'}],
-  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'kød',l:'Kødretter'},{v:'fisk',l:'Fisk & skaldyr'},{v:'vegetar',l:'Vegetarisk'},{v:'pasta',l:'Pasta, ris & nudler'},{v:'kartofler',l:'Kartofler'},{v:'ovn',l:'Ovnbagte retter'},{v:'gryde',l:'Gryderetter'},{v:'suppe-aften',l:'Supper'},{v:'salat-aften',l:'Salater & bowls'},{v:'sides',l:'Sides & tilbehør'},{v:'familie',l:'Familievenlig'},{v:'verden',l:'Verdenskøkken'},{v:'weekend-aften',l:'Weekend & gæstemad'}],
-  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Is & kolde desserter'},{v:'chokolade',l:'Chokolade'},{v:'frugt',l:'Frugtdesserter'},{v:'creme',l:'Creme & mousse'},{v:'småkager',l:'Småkager'},{v:'nem-dessert',l:'Nem dessert'},{v:'fest-dessert',l:'Festdessert'},{v:'sund-dessert',l:'Sundere dessert'}],
-  snacks:[{v:'sund',l:'Sunde snacks'},{v:'sød-snack',l:'Søde snacks'},{v:'salt',l:'Salte snacks'},{v:'dip',l:'Dips & spreads'},{v:'fest-snack',l:'Snacks til gæster'},{v:'hurtig-snack',l:'Hurtige snacks'}],
-  drikkevarer:[{v:'smoothie',l:'Smoothies'},{v:'juice',l:'Juice & shots'},{v:'kaffe',l:'Kaffe'},{v:'te',l:'Te & varme drikke'},{v:'lemonade',l:'Lemonade & iste'},{v:'mocktail',l:'Mocktails'},{v:'cocktail',l:'Cocktails'},{v:'sund-drik',l:'Sunde drikke'}],
+  morgenmad:[{v:'grød',l:'Morgen-boost'},{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch-mode'},{v:'sund-morgen',l:'Fit-morgen'},{v:'hurtig-morgen',l:'Quick'}],
+  frokost:[{v:'sandwich',l:'Lunch-date'},{v:'salat',l:'Green'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'bowl',l:'Insta-worthy'},{v:'suppe-frokost',l:'Sjælevarmer'},{v:'varm-frokost',l:'Boost'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Quick fix'},{v:'sund-frokost',l:'Healthy'}],
+  aftensmad:[{v:'hverdagsret',l:'Hverdags-hits'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Green'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'ovn',l:'Fra ovnen'},{v:'gryde',l:'Comfort'},{v:'suppe-aften',l:'Suppe'},{v:'salat-aften',l:'Bowl'},{v:'sides',l:'On the side'},{v:'familie',l:'Family'},{v:'verden',l:'World tour'},{v:'weekend-aften',l:'Show-off'},{v:'tinderdate',l:'Til tinderdaten'}],
+  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Iskoldt'},{v:'chokolade',l:'Choco'},{v:'frugt',l:'Frugt'},{v:'creme',l:'Silky'},{v:'småkager',l:'Bite-sized'},{v:'nem-dessert',l:'Easy'},{v:'fest-dessert',l:'Show-stopper'},{v:'sund-dessert',l:'Guilt-free'}],
+  snacks:[{v:'sund',l:'Green'},{v:'sød-snack',l:'Sweet'},{v:'salt',l:'Salt'},{v:'dip',l:'Movie-night'},{v:'brød-snack',l:'Finger food'},{v:'protein-snack',l:'Protein-boost'},{v:'børn',l:'Til de små'},{v:'fest-snack',l:'Party vibes'},{v:'hurtig-snack',l:'5-min-fix'}],
+  drikkevarer:[{v:'smoothie',l:'Blend it'},{v:'juice',l:'Fresh boost'},{v:'kaffe',l:'Coffee break'},{v:'te',l:'Warm cup'},{v:'lemonade',l:'Sommer-sips'},{v:'milkshake',l:'Shake it'},{v:'mocktail',l:'Sober fun'},{v:'cocktail',l:'Bar'},{v:'mad-drik',l:'Food pairings'},{v:'sund-drik',l:'Detox'}],
   suppe:[{v:'kraftig',l:'Kraftige supper'},{v:'let-s',l:'Lette supper'}],
   'bagværk':[{v:'brød',l:'Brød'},{v:'sødt',l:'Sødt bagværk'}]
 };
@@ -394,8 +399,12 @@ function renderList(){
   if(q)list=list.filter(r=>r.title.toLowerCase().includes(q)||(r.beskrivelse||'').toLowerCase().includes(q));
   if(cat)list=list.filter(r=>r.cat===cat);
   if(!list.length){document.getElementById('rlist').innerHTML='<div class="empty">Ingen opskrifter.</div>';return;}
-  document.getElementById('rlist').innerHTML=list.map(r=>`
+  document.getElementById('rlist').innerHTML=list.map((r,i)=>`
     <div class="rrow" onclick="openModal('${r.id}')">
+      <div class="rorder">
+        <button class="rord-btn" onclick="event.stopPropagation();moveRecipe('${r.id}',-1)" ${i===0?'disabled':''} title="Flyt op">↑</button>
+        <button class="rord-btn" onclick="event.stopPropagation();moveRecipe('${r.id}',1)" ${i===list.length-1?'disabled':''} title="Flyt ned">↓</button>
+      </div>
       <div class="rdot" style="background:${CATS[r.cat]||'#ccc'}"></div>
       ${r.img_url?`<img src="${r.img_url}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0">`:''}
       <div class="rinfo">
@@ -406,6 +415,52 @@ function renderList(){
       <span class="rbadge">${(r.steps||[]).length} trin</span>
       <button class="btn" onclick="event.stopPropagation();openModal('${r.id}')" style="flex-shrink:0;font-size:.75rem;padding:.35rem .8rem">Rediger</button>
     </div>`).join('');
+}
+
+async function moveRecipe(rid, direction){
+  // Get the current filtered/sorted view (same logic as renderList)
+  const q=document.getElementById('f-search').value.toLowerCase();
+  const cat=document.getElementById('f-cat').value;
+  let list=recipes;
+  if(q)list=list.filter(r=>r.title.toLowerCase().includes(q)||(r.beskrivelse||'').toLowerCase().includes(q));
+  if(cat)list=list.filter(r=>r.cat===cat);
+  
+  const idx = list.findIndex(r => r.id === rid);
+  if(idx < 0) return;
+  const swapIdx = idx + direction;
+  if(swapIdx < 0 || swapIdx >= list.length) return;
+  
+  const current = list[idx];
+  const swap = list[swapIdx];
+  
+  // Swap created_at timestamps
+  const currentTime = current.created_at;
+  const swapTime = swap.created_at;
+  
+  try {
+    // Update both recipes in Supabase
+    await sb(`/rest/v1/public_opskrifter?id=eq.${current.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ created_at: swapTime })
+    });
+    await sb(`/rest/v1/public_opskrifter?id=eq.${swap.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ created_at: currentTime })
+    });
+    
+    // Update local data
+    current.created_at = swapTime;
+    swap.created_at = currentTime;
+    
+    // Re-sort the master array by created_at.asc
+    recipes.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    
+    renderList();
+    toast('Rækkefølge opdateret ✓','ok');
+  } catch(e) {
+    console.error('Failed to reorder:', e);
+    toast('Kunne ikke ændre rækkefølge','err');
+  }
 }
 
 // SUBCATS

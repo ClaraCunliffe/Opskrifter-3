@@ -1479,11 +1479,11 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="mig">
         <button class="mi" id="mi-morgenmad" onclick="switchMenu('morgenmad',this)">Morgenmad<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
-          <button class="mdi" onclick="switchSub('morgenmad','grød')">Grød &amp; bowls</button>
-          <button class="mdi" onclick="switchSub('morgenmad','æg')">Æg</button>
-          <button class="mdi" onclick="switchSub('morgenmad','brød-morgen')">Brød &amp; bagværk</button>
-          <button class="mdi" onclick="switchSub('morgenmad','sund-morgen')">Sund morgenmad</button>
-          <button class="mdi" onclick="switchSub('morgenmad','hurtig-morgen')">Hurtig morgenmad</button>
+          <button class="mdi" onclick="switchSub('morgenmad','grød')">Morgen-boost</button>
+          <button class="mdi" onclick="switchSub('morgenmad','æg')">Klassisk morgenmad</button>
+          <button class="mdi" onclick="switchSub('morgenmad','brød-morgen')">Brunch-mode</button>
+          <button class="mdi" onclick="switchSub('morgenmad','sund-morgen')">Fit-morgen</button>
+          <button class="mdi" onclick="switchSub('morgenmad','hurtig-morgen')">Quick</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('morgenmad',document.getElementById('mi-morgenmad'))">Alle morgenmad</button>
         </div>
@@ -1491,15 +1491,15 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="mig">
         <button class="mi" id="mi-frokost" onclick="switchMenu('frokost',this)">Frokost<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
-          <button class="mdi" onclick="switchSub('frokost','sandwich')">Sandwiches &amp; wraps</button>
-          <button class="mdi" onclick="switchSub('frokost','salat')">Salater</button>
-          <button class="mdi" onclick="switchSub('frokost','smørrebrød')">Rugbrød &amp; smørrebrød</button>
-          <button class="mdi" onclick="switchSub('frokost','bowl')">Bowls</button>
-          <button class="mdi" onclick="switchSub('frokost','suppe-frokost')">Supper</button>
-          <button class="mdi" onclick="switchSub('frokost','varm-frokost')">Varme frokostretter</button>
+          <button class="mdi" onclick="switchSub('frokost','sandwich')">Lunch-date</button>
+          <button class="mdi" onclick="switchSub('frokost','salat')">Green</button>
+          <button class="mdi" onclick="switchSub('frokost','smørrebrød')">Klassisk dansk</button>
+          <button class="mdi" onclick="switchSub('frokost','bowl')">Insta-worthy</button>
+          <button class="mdi" onclick="switchSub('frokost','suppe-frokost')">Sjælevarmer</button>
+          <button class="mdi" onclick="switchSub('frokost','varm-frokost')">Boost</button>
           <button class="mdi" onclick="switchSub('frokost','mealprep')">Meal prep</button>
-          <button class="mdi" onclick="switchSub('frokost','hurtig-frokost')">Hurtig frokost</button>
-          <button class="mdi" onclick="switchSub('frokost','sund-frokost')">Sund frokost</button>
+          <button class="mdi" onclick="switchSub('frokost','hurtig-frokost')">Quick fix</button>
+          <button class="mdi" onclick="switchSub('frokost','sund-frokost')">Healthy</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('frokost',document.getElementById('mi-frokost'))">Alle frokost</button>
         </div>
@@ -1507,20 +1507,21 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="mig">
         <button class="mi" id="mi-aftensmad" onclick="switchMenu('aftensmad',this)">Aftensmad<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
-          <button class="mdi" onclick="switchSub('aftensmad','hverdagsret')">Hverdagsretter</button>
-          <button class="mdi" onclick="switchSub('aftensmad','kød')">Kødretter</button>
-          <button class="mdi" onclick="switchSub('aftensmad','fisk')">Fisk &amp; skaldyr</button>
-          <button class="mdi" onclick="switchSub('aftensmad','vegetar')">Vegetarisk</button>
-          <button class="mdi" onclick="switchSub('aftensmad','pasta')">Pasta, ris &amp; nudler</button>
+          <button class="mdi" onclick="switchSub('aftensmad','hverdagsret')">Hverdags-hits</button>
+          <button class="mdi" onclick="switchSub('aftensmad','kød')">Kød</button>
+          <button class="mdi" onclick="switchSub('aftensmad','fisk')">Fra havet</button>
+          <button class="mdi" onclick="switchSub('aftensmad','vegetar')">Green</button>
+          <button class="mdi" onclick="switchSub('aftensmad','pasta')">Pasta</button>
           <button class="mdi" onclick="switchSub('aftensmad','kartofler')">Kartofler</button>
-          <button class="mdi" onclick="switchSub('aftensmad','ovn')">Ovnbagte retter</button>
-          <button class="mdi" onclick="switchSub('aftensmad','gryde')">Gryderetter</button>
-          <button class="mdi" onclick="switchSub('aftensmad','suppe-aften')">Supper</button>
-          <button class="mdi" onclick="switchSub('aftensmad','salat-aften')">Salater &amp; bowls</button>
-          <button class="mdi" onclick="switchSub('aftensmad','sides')">Sides &amp; tilbehør</button>
-          <button class="mdi" onclick="switchSub('aftensmad','familie')">Familievenlig</button>
-          <button class="mdi" onclick="switchSub('aftensmad','verden')">Verdenskøkken</button>
-          <button class="mdi" onclick="switchSub('aftensmad','weekend-aften')">Weekend &amp; gæstemad</button>
+          <button class="mdi" onclick="switchSub('aftensmad','ovn')">Fra ovnen</button>
+          <button class="mdi" onclick="switchSub('aftensmad','gryde')">Comfort</button>
+          <button class="mdi" onclick="switchSub('aftensmad','suppe-aften')">Suppe</button>
+          <button class="mdi" onclick="switchSub('aftensmad','salat-aften')">Bowl</button>
+          <button class="mdi" onclick="switchSub('aftensmad','sides')">On the side</button>
+          <button class="mdi" onclick="switchSub('aftensmad','familie')">Family</button>
+          <button class="mdi" onclick="switchSub('aftensmad','verden')">World tour</button>
+          <button class="mdi" onclick="switchSub('aftensmad','weekend-aften')">Show-off</button>
+          <button class="mdi" onclick="switchSub('aftensmad','tinderdate')">Til tinderdaten</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('aftensmad',document.getElementById('mi-aftensmad'))">Al aftensmad</button>
         </div>
@@ -1530,16 +1531,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('dessert','kager')">Kager</button>
           <button class="mdi" onclick="switchSub('dessert','tærter')">Tærter</button>
-          <button class="mdi" onclick="switchSub('dessert','is')">Is &amp; kolde desserter</button>
-          <button class="mdi" onclick="switchSub('dessert','chokolade')">Chokolade</button>
-          <button class="mdi" onclick="switchSub('dessert','frugt')">Frugtdesserter</button>
-          <button class="mdi" onclick="switchSub('dessert','creme')">Creme &amp; mousse</button>
-          <button class="mdi" onclick="switchSub('dessert','småkager')">Småkager &amp; søde snacks</button>
-          <button class="mdi" onclick="switchSub('dessert','nem-dessert')">Nem dessert</button>
-          <button class="mdi" onclick="switchSub('dessert','fest-dessert')">Festdessert</button>
-          <button class="mdi" onclick="switchSub('dessert','sund-dessert')">Sundere dessert</button>
+          <button class="mdi" onclick="switchSub('dessert','is')">Iskoldt</button>
+          <button class="mdi" onclick="switchSub('dessert','chokolade')">Choco</button>
+          <button class="mdi" onclick="switchSub('dessert','frugt')">Frugt</button>
+          <button class="mdi" onclick="switchSub('dessert','creme')">Silky</button>
+          <button class="mdi" onclick="switchSub('dessert','småkager')">Bite-sized</button>
+          <button class="mdi" onclick="switchSub('dessert','nem-dessert')">Easy</button>
+          <button class="mdi" onclick="switchSub('dessert','fest-dessert')">Show-stopper</button>
+          <button class="mdi" onclick="switchSub('dessert','sund-dessert')">Guilt-free</button>
           <button class="mdi" onclick="switchSub('dessert','saucer')">Saucer &amp; toppings</button>
-          <button class="mdi" onclick="switchSub('dessert','klassisk')">Klassiske danske desserter</button>
+          <button class="mdi" onclick="switchSub('dessert','klassisk')">Danske klassikere</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('dessert',document.getElementById('mi-dessert'))">Alle desserter</button>
         </div>
@@ -1547,17 +1548,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="mig">
         <button class="mi" id="mi-snacks" onclick="switchMenu('snacks',this)">Snacks<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
-          <button class="mdi" onclick="switchSub('snacks','sund')">Sunde snacks</button>
-          <button class="mdi" onclick="switchSub('snacks','sød-snack')">Søde snacks</button>
-          <button class="mdi" onclick="switchSub('snacks','salt')">Salte snacks</button>
-          <button class="mdi" onclick="switchSub('snacks','dip')">Dips &amp; spreads</button>
-          <button class="mdi" onclick="switchSub('snacks','brød-snack')">Brød &amp; små hapsere</button>
-          <button class="mdi" onclick="switchSub('snacks','grønt-snack')">Grøntsagssnacks</button>
-          <button class="mdi" onclick="switchSub('snacks','protein-snack')">Proteinrige snacks</button>
-          <button class="mdi" onclick="switchSub('snacks','børn')">Snacks til børn</button>
-          <button class="mdi" onclick="switchSub('snacks','fest-snack')">Snacks til gæster</button>
-          <button class="mdi" onclick="switchSub('snacks','hurtig-snack')">Hurtige snacks</button>
-          <button class="mdi" onclick="switchSub('snacks','sprød')">Sprøde snacks</button>
+          <button class="mdi" onclick="switchSub('snacks','sund')">Green</button>
+          <button class="mdi" onclick="switchSub('snacks','sød-snack')">Sweet</button>
+          <button class="mdi" onclick="switchSub('snacks','salt')">Salt</button>
+          <button class="mdi" onclick="switchSub('snacks','dip')">Movie-night</button>
+          <button class="mdi" onclick="switchSub('snacks','brød-snack')">Finger food</button>
+          <button class="mdi" onclick="switchSub('snacks','grønt-snack')">Grønne knasere</button>
+          <button class="mdi" onclick="switchSub('snacks','protein-snack')">Protein-boost</button>
+          <button class="mdi" onclick="switchSub('snacks','børn')">Til de små</button>
+          <button class="mdi" onclick="switchSub('snacks','fest-snack')">Party vibes</button>
+          <button class="mdi" onclick="switchSub('snacks','hurtig-snack')">5-min-fix</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('snacks',document.getElementById('mi-snacks'))">Alle snacks</button>
         </div>
@@ -1565,16 +1565,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
       <div class="mig">
         <button class="mi" id="mi-drikkevarer" onclick="switchMenu('drikkevarer',this)">Drikkevarer<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
-          <button class="mdi" onclick="switchSub('drikkevarer','smoothie')">Smoothies</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','juice')">Juice &amp; shots</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','kaffe')">Kaffe</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','te')">Te &amp; varme drikke</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','lemonade')">Lemonade &amp; iste</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','milkshake')">Milkshakes</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','mocktail')">Mocktails</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','cocktail')">Cocktails</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','mad-drik')">Drinks til mad</button>
-          <button class="mdi" onclick="switchSub('drikkevarer','sund-drik')">Sunde drikke</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','smoothie')">Blend it</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','juice')">Fresh boost</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','kaffe')">Coffee break</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','te')">Warm cup</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','lemonade')">Sommer-sips</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','milkshake')">Shake it</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','mocktail')">Sober fun</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','cocktail')">Bar</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','mad-drik')">Food pairings</button>
+          <button class="mdi" onclick="switchSub('drikkevarer','sund-drik')">Detox</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('drikkevarer',document.getElementById('mi-drikkevarer'))">Alle drikkevarer</button>
         </div>
@@ -3663,32 +3663,32 @@ const SUBCAT_LABELS = {
   'sund-morgen':'Sund morgenmad', 'hurtig-morgen':'Hurtig morgenmad',
   hurtig:'Hurtig morgenmad', weekend:'Weekendmorgenmad',
   // Frokost
-  sandwich:'Sandwiches & wraps', salat:'Salater', smørrebrød:'Rugbrød & smørrebrød',
-  bowl:'Bowls', 'suppe-frokost':'Supper', 'varm-frokost':'Varme frokostretter',
-  mealprep:'Meal prep', 'hurtig-frokost':'Hurtig frokost', 'sund-frokost':'Sund frokost',
+  sandwich:'Lunch-date', salat:'Første-dates-safe', smørrebrød:'Klassisk dansk',
+  bowl:'Insta-worthy', 'suppe-frokost':'Sjælevarmer', 'varm-frokost':'Boost',
+  mealprep:'Meal prep', 'hurtig-frokost':'Quick fix', 'sund-frokost':'Healthy',
   // Aftensmad
-  hverdagsret:'Hverdagsretter', kød:'Kødretter', fisk:'Fisk & skaldyr',
-  vegetar:'Vegetarisk', pasta:'Pasta, ris & nudler', kartofler:'Kartofler',
-  ovn:'Ovnbagte retter', gryde:'Gryderetter', 'suppe-aften':'Supper',
-  'salat-aften':'Salater & bowls', sides:'Sides & tilbehør', familie:'Familievenlig',
-  verden:'Verdenskøkken', 'weekend-aften':'Weekend & gæstemad',
+  hverdagsret:'Hverdags-hits', kød:'Kød', fisk:'Fra havet',
+  vegetar:'Green', pasta:'Pasta', kartofler:'Kartofler',
+  ovn:'Fra ovnen', gryde:'Comfort', 'suppe-aften':'Suppe',
+  'salat-aften':'Bowl', sides:'On the side', familie:'Family',
+  verden:'World tour', 'weekend-aften':'Show-off', tinderdate:'Til tinderdaten',
   // Dessert
-  kager:'Kager', tærter:'Tærter', is:'Is & kolde desserter',
-  chokolade:'Chokolade', frugt:'Frugtdesserter', creme:'Creme & mousse',
-  småkager:'Småkager & søde snacks', 'nem-dessert':'Nem dessert',
-  'fest-dessert':'Festdessert', 'sund-dessert':'Sundere dessert',
-  saucer:'Saucer & toppings', klassisk:'Klassiske danske desserter',
+  kager:'Kager', tærter:'Tærter', is:'Iskoldt',
+  chokolade:'Choco', frugt:'Frugt', creme:'Silky',
+  småkager:'Bite-sized', 'nem-dessert':'Easy',
+  'fest-dessert':'Show-stopper', 'sund-dessert':'Guilt-free',
+  saucer:'Saucer & toppings', klassisk:'Danske klassikere',
   // Snacks
-  sund:'Sunde snacks', 'sød-snack':'Søde snacks', salt:'Salte snacks',
-  dip:'Dips & spreads', 'brød-snack':'Brød & små hapsere',
-  'grønt-snack':'Grøntsagssnacks', 'protein-snack':'Proteinrige snacks',
-  børn:'Snacks til børn', 'fest-snack':'Snacks til gæster',
-  'hurtig-snack':'Hurtige snacks', sprød:'Sprøde snacks',
+  sund:'Green', 'sød-snack':'Sweet', salt:'Salt',
+  dip:'Movie-night', 'brød-snack':'Finger food',
+  'grønt-snack':'Grønne knasere', 'protein-snack':'Protein-boost',
+  børn:'Til de små', 'fest-snack':'Party vibes',
+  'hurtig-snack':'5-min-fix',
   // Drikkevarer
-  smoothie:'Smoothies', juice:'Juice & shots', kaffe:'Kaffe',
-  te:'Te & varme drikke', lemonade:'Lemonade & iste', milkshake:'Milkshakes',
-  mocktail:'Mocktails', cocktail:'Cocktails', 'mad-drik':'Drinks til mad',
-  'sund-drik':'Sunde drikke',
+  smoothie:'Blend it', juice:'Fresh boost', kaffe:'Coffee break',
+  te:'Warm cup', lemonade:'Sommer-sips', milkshake:'Shake it',
+  mocktail:'Sober fun', cocktail:'Bar', 'mad-drik':'Food pairings',
+  'sund-drik':'Detox',
   // Suppe & bagværk
   kraftig:'Kraftige supper', 'let-s':'Lette supper',
   brød:'Brød', sødt:'Sødt bagværk',
@@ -5701,12 +5701,12 @@ function renderMine(){
 let rfUploadedImg=null;
 
 const RF_SUBCATS={
-  morgenmad:[{v:'grød',l:'Grød & bowls'},{v:'æg',l:'Æg'},{v:'brød-morgen',l:'Brød & bagværk'},{v:'sund-morgen',l:'Sund morgenmad'},{v:'hurtig-morgen',l:'Hurtig morgenmad'}],
-  frokost:[{v:'sandwich',l:'Sandwiches & wraps'},{v:'salat',l:'Salater'},{v:'smørrebrød',l:'Rugbrød & smørrebrød'},{v:'bowl',l:'Bowls'},{v:'suppe-frokost',l:'Supper'},{v:'varm-frokost',l:'Varme frokostretter'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Hurtig frokost'}],
-  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'kød',l:'Kødretter'},{v:'fisk',l:'Fisk & skaldyr'},{v:'vegetar',l:'Vegetarisk'},{v:'pasta',l:'Pasta, ris & nudler'},{v:'kartofler',l:'Kartofler'},{v:'ovn',l:'Ovnbagte retter'},{v:'gryde',l:'Gryderetter'},{v:'suppe-aften',l:'Supper'},{v:'familie',l:'Familievenlig'},{v:'verden',l:'Verdenskøkken'}],
-  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Is & kolde desserter'},{v:'chokolade',l:'Chokolade'},{v:'frugt',l:'Frugtdesserter'},{v:'creme',l:'Creme & mousse'},{v:'småkager',l:'Småkager'}],
-  snacks:[{v:'sund',l:'Sunde snacks'},{v:'sød-snack',l:'Søde snacks'},{v:'salt',l:'Salte snacks'},{v:'dip',l:'Dips & spreads'}],
-  drikkevarer:[{v:'smoothie',l:'Smoothies'},{v:'juice',l:'Juice & shots'},{v:'kaffe',l:'Kaffe'},{v:'te',l:'Te'},{v:'mocktail',l:'Mocktails'},{v:'cocktail',l:'Cocktails'}],
+  morgenmad:[{v:'grød',l:'Morgen-boost'},{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch-mode'},{v:'sund-morgen',l:'Fit-morgen'},{v:'hurtig-morgen',l:'Quick'}],
+  frokost:[{v:'sandwich',l:'Lunch-date'},{v:'salat',l:'Første-dates-safe'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'bowl',l:'Insta-worthy'},{v:'suppe-frokost',l:'Sjælevarmer'},{v:'varm-frokost',l:'Boost'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Quick fix'}],
+  aftensmad:[{v:'hverdagsret',l:'Hverdags-hits'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Green'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'ovn',l:'Fra ovnen'},{v:'gryde',l:'Comfort'},{v:'suppe-aften',l:'Suppe'},{v:'familie',l:'Family'},{v:'verden',l:'World tour'},{v:'tinderdate',l:'Til tinderdaten'}],
+  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Iskoldt'},{v:'chokolade',l:'Choco'},{v:'frugt',l:'Frugt'},{v:'creme',l:'Silky'},{v:'småkager',l:'Bite-sized'}],
+  snacks:[{v:'sund',l:'Grønne flexer'},{v:'sød-snack',l:'Sweet'},{v:'salt',l:'Salt-crush'},{v:'dip',l:'Movie-night'}],
+  drikkevarer:[{v:'smoothie',l:'Blend it'},{v:'juice',l:'Fresh boost'},{v:'kaffe',l:'Coffee break'},{v:'te',l:'Warm cup'},{v:'mocktail',l:'Sober fun'},{v:'cocktail',l:'Bar'}],
   suppe:[{v:'kraftig',l:'Kraftige supper'},{v:'let-s',l:'Lette supper'}],
   'bagværk':[{v:'brød',l:'Brød'},{v:'sødt',l:'Sødt bagværk'}]
 };
@@ -7581,6 +7581,7 @@ function swipeInit(){
   } catch(e) { swipeSkipped = new Set(); }
   swipeBuildQueue();
   swipeRenderStack();
+  swipeAttachDrag(); // Attach once, persistent handlers
 }
 
 function swipeBuildQueue(){
@@ -7610,7 +7611,6 @@ function swipeRenderStack(){
   // Render up to 3 cards stacked (top card is interactive)
   const toShow = swipeQueue.slice(0, 3);
   stack.innerHTML = toShow.map((r, i) => swipeCardHTML(r, i)).reverse().join('');
-  swipeAttachDrag();
 }
 
 function swipeCardHTML(r, stackPos){
@@ -7641,60 +7641,73 @@ function swipeCardHTML(r, stackPos){
     </div>`;
 }
 
+let swipeDragState = null;
+let swipeHandlersAttached = false;
+
 function swipeAttachDrag(){
-  const topCard = document.querySelector('.swipe-card[data-stack-pos="0"]');
-  if(!topCard) return;
+  // Only attach handlers ONCE — they persist across re-renders since they're on the stack container
+  if(swipeHandlersAttached) return;
+  const stack = document.getElementById('swipeStack');
+  if(!stack) return;
+  swipeHandlersAttached = true;
   
-  let startX = 0, startY = 0, currentX = 0, currentY = 0;
-  let dragging = false;
+  const getTopCard = () => stack.querySelector('.swipe-card[data-stack-pos="0"]');
   
   const start = (e) => {
-    // Skip if clicking buttons inside
     if(e.target.closest('button')) return;
-    dragging = true;
-    startX = (e.touches ? e.touches[0].clientX : e.clientX);
-    startY = (e.touches ? e.touches[0].clientY : e.clientY);
+    const topCard = getTopCard();
+    if(!topCard) return;
+    // Ignore if card is animating out
+    if(topCard.style.opacity === '0') return;
+    swipeDragState = {
+      startX: e.touches ? e.touches[0].clientX : e.clientX,
+      startY: e.touches ? e.touches[0].clientY : e.clientY,
+      currentX: 0,
+      currentY: 0,
+      topCard: topCard,
+    };
     topCard.classList.add('dragging');
   };
   
   const move = (e) => {
-    if(!dragging) return;
+    if(!swipeDragState) return;
     const cx = (e.touches ? e.touches[0].clientX : e.clientX);
     const cy = (e.touches ? e.touches[0].clientY : e.clientY);
-    currentX = cx - startX;
-    currentY = cy - startY;
-    const rotate = currentX * 0.05;
-    topCard.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${rotate}deg)`;
-    // Show like/skip indicators based on direction
-    const likeEl = topCard.querySelector('.swipe-indicator-like');
-    const skipEl = topCard.querySelector('.swipe-indicator-skip');
-    if(likeEl) likeEl.style.opacity = Math.min(currentX / 100, 1);
-    if(skipEl) skipEl.style.opacity = Math.min(-currentX / 100, 1);
-    if(e.cancelable) e.preventDefault();
+    swipeDragState.currentX = cx - swipeDragState.startX;
+    swipeDragState.currentY = cy - swipeDragState.startY;
+    const rotate = swipeDragState.currentX * 0.05;
+    swipeDragState.topCard.style.transform = `translate(${swipeDragState.currentX}px, ${swipeDragState.currentY}px) rotate(${rotate}deg)`;
+    const likeEl = swipeDragState.topCard.querySelector('.swipe-indicator-like');
+    const skipEl = swipeDragState.topCard.querySelector('.swipe-indicator-skip');
+    if(likeEl) likeEl.style.opacity = Math.min(swipeDragState.currentX / 100, 1);
+    if(skipEl) skipEl.style.opacity = Math.min(-swipeDragState.currentX / 100, 1);
+    if(e.cancelable && Math.abs(swipeDragState.currentX) > 5) e.preventDefault();
   };
   
   const end = () => {
-    if(!dragging) return;
-    dragging = false;
+    if(!swipeDragState) return;
+    const { currentX, topCard } = swipeDragState;
     topCard.classList.remove('dragging');
     const threshold = 100;
     if(currentX > threshold){
+      swipeDragState = null;
       swipeAction('like');
     } else if(currentX < -threshold){
+      swipeDragState = null;
       swipeAction('skip');
     } else {
-      // Snap back
       topCard.style.transform = '';
       const likeEl = topCard.querySelector('.swipe-indicator-like');
       const skipEl = topCard.querySelector('.swipe-indicator-skip');
       if(likeEl) likeEl.style.opacity = 0;
       if(skipEl) skipEl.style.opacity = 0;
+      swipeDragState = null;
     }
-    currentX = 0; currentY = 0;
   };
   
-  topCard.addEventListener('mousedown', start);
-  topCard.addEventListener('touchstart', start, {passive: true});
+  // Attach to stack container so handlers persist across innerHTML changes
+  stack.addEventListener('mousedown', start);
+  stack.addEventListener('touchstart', start, {passive: true});
   document.addEventListener('mousemove', move);
   document.addEventListener('touchmove', move, {passive: false});
   document.addEventListener('mouseup', end);
