@@ -1255,6 +1255,18 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 /* ─── Swipe view (matches site aesthetic) ─── */
 .swipe-hero{background:linear-gradient(135deg,#D6EEFF 0%,#E8F4FF 35%,#EEF5FF 65%,#E0EFFE 100%);border-bottom:1px solid var(--border);padding:2.2rem 0 2rem}
 .swipe-hero-inner{max-width:640px;margin:0 auto;text-align:center;padding:0 1.2rem}
+
+/* Category chips */
+.swipe-cats{display:flex;justify-content:center;flex-wrap:wrap;gap:.35rem;padding:1.2rem 1rem .3rem;max-width:640px;margin:0 auto}
+.swipe-cat{background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:.4rem .9rem;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.swipe-cat:hover{border-color:var(--accent2);color:var(--accent)}
+.swipe-cat.selected{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(123,94,167,.2)}
+
+/* Login gate */
+.swipe-login-gate{max-width:400px;margin:3rem auto;padding:2.5rem 1.5rem;text-align:center;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--sh)}
+.swipe-login-icon{color:var(--accent);opacity:.6;margin-bottom:1rem;display:flex;justify-content:center}
+.swipe-login-gate h3{font-family:'Fraunces',serif;font-weight:400;font-size:1.5rem;color:var(--text);margin:0 0 .6rem;letter-spacing:-.01em}
+.swipe-login-gate p{font-size:.9rem;line-height:1.6;color:var(--text2);margin:0 auto 1.5rem;max-width:320px;font-weight:300}
 .swipe-tag{display:inline-flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.6);border:1px solid rgba(123,94,167,.25);border-radius:50px;padding:.28rem .75rem;font-size:.7rem;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.9rem}
 .swipe-title{font-family:'Fraunces',serif;font-weight:300;font-size:2rem;letter-spacing:-.02em;margin:0 0 .5rem;color:var(--text)}
 .swipe-title em{font-style:italic;color:var(--accent)}
@@ -2127,7 +2139,29 @@ Bag i 25 minutter.
       <p class="swipe-sub">Swipe til højre for at gemme — til venstre for at springe over.</p>
     </div>
   </div>
-  <div class="swipe-container">
+  
+  <!-- Category chips (only shown when logged in) -->
+  <div class="swipe-cats" id="swipeCats" style="display:none">
+    <button class="swipe-cat selected" data-cat="all" onclick="swipeSetCat('all')">Alle</button>
+    <button class="swipe-cat" data-cat="morgenmad" onclick="swipeSetCat('morgenmad')">Morgenmad</button>
+    <button class="swipe-cat" data-cat="frokost" onclick="swipeSetCat('frokost')">Frokost</button>
+    <button class="swipe-cat" data-cat="aftensmad" onclick="swipeSetCat('aftensmad')">Aftensmad</button>
+    <button class="swipe-cat" data-cat="dessert" onclick="swipeSetCat('dessert')">Dessert</button>
+    <button class="swipe-cat" data-cat="snacks" onclick="swipeSetCat('snacks')">Snacks</button>
+    <button class="swipe-cat" data-cat="drikkevarer" onclick="swipeSetCat('drikkevarer')">Drikkevarer</button>
+  </div>
+  
+  <!-- Login gate (shown when not logged in) -->
+  <div class="swipe-login-gate" id="swipeLoginGate" style="display:none">
+    <div class="swipe-login-icon">
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <h3>Log ind for at swipe</h3>
+    <p>For at kunne gemme dine favoritter og huske hvilke opskrifter du har set, skal du være logget ind.</p>
+    <button class="swipe-reset" onclick="switchMenu('alle');setTimeout(()=>{const b=document.getElementById('navLoginBtn');if(b)b.click();},100)">Log ind</button>
+  </div>
+  
+  <div class="swipe-container" id="swipeContainer">
     <div class="swipe-stack" id="swipeStack"></div>
     <div class="swipe-actions" id="swipeActions">
       <button class="swipe-btn swipe-btn-no" onclick="swipeAction('skip')" title="Spring over">
@@ -7572,8 +7606,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 // ── SWIPE VIEW (Tinder-style for recipes) ──
 let swipeQueue = [];
 let swipeSkipped = new Set();
+let swipeCat = 'all';
 
 function swipeInit(){
+  // Check login first
+  const gate = document.getElementById('swipeLoginGate');
+  const container = document.getElementById('swipeContainer');
+  const cats = document.getElementById('swipeCats');
+  
+  if(!currentUser){
+    // Not logged in — show login gate, hide swipe UI
+    if(gate) gate.style.display = 'block';
+    if(container) container.style.display = 'none';
+    if(cats) cats.style.display = 'none';
+    return;
+  }
+  
+  // Logged in — show swipe UI
+  if(gate) gate.style.display = 'none';
+  if(container) container.style.display = 'block';
+  if(cats) cats.style.display = 'flex';
+  
   // Load previously skipped from localStorage
   try {
     const skipped = JSON.parse(localStorage.getItem(userKey('sv_swipeSkipped'))||'[]');
@@ -7581,14 +7634,26 @@ function swipeInit(){
   } catch(e) { swipeSkipped = new Set(); }
   swipeBuildQueue();
   swipeRenderStack();
-  swipeAttachDrag(); // Attach once, persistent handlers
+  swipeAttachDrag();
+}
+
+function swipeSetCat(cat){
+  swipeCat = cat;
+  document.querySelectorAll('.swipe-cat').forEach(el => {
+    el.classList.toggle('selected', el.dataset.cat === cat);
+  });
+  swipeBuildQueue();
+  swipeRenderStack();
 }
 
 function swipeBuildQueue(){
-  // Get recipes that haven't been saved AND haven't been skipped
   const all = allRecipes();
-  swipeQueue = all.filter(r => !saved.has(String(r.id)) && !swipeSkipped.has(String(r.id)));
-  // Shuffle for variety
+  swipeQueue = all.filter(r => {
+    if(saved.has(String(r.id))) return false;
+    if(swipeSkipped.has(String(r.id))) return false;
+    if(swipeCat !== 'all' && r.cat !== swipeCat) return false;
+    return true;
+  });
   swipeQueue.sort(() => Math.random() - 0.5);
 }
 
@@ -7725,9 +7790,11 @@ function swipeAction(action){
   if(!topCard) return;
   const rid = topCard.dataset.rid;
   
+  // Remove from queue immediately
+  swipeQueue = swipeQueue.filter(r => String(r.id) !== String(rid));
+  
   // Mark as swiped-out so pointer handlers ignore it
   topCard.classList.add('swiped-out');
-  // Promote it above other cards while animating
   topCard.style.zIndex = '200';
   
   // Animate card off-screen
@@ -7736,17 +7803,6 @@ function swipeAction(action){
   topCard.style.transition = 'transform .4s ease-out, opacity .4s ease-out';
   topCard.style.transform = `translate(${offX}px, 100px) rotate(${rotate}deg)`;
   topCard.style.opacity = '0';
-  
-  // Immediately promote remaining cards visually so user can swipe next
-  const remaining = cards.slice(1);
-  remaining.forEach((card, i) => {
-    card.dataset.stackPos = String(i);
-    const scale = 1 - (i * 0.04);
-    const translateY = i * 10;
-    card.style.transition = 'transform .3s ease-out';
-    card.style.transform = `translateY(${translateY}px) scale(${scale})`;
-    card.style.zIndex = String(100 - i);
-  });
   
   // Perform action
   if(action === 'like'){
@@ -7764,10 +7820,36 @@ function swipeAction(action){
     } catch(e){}
   }
   
-  // Remove from queue and re-render after animation
+  // Promote remaining visible cards and append a new one at the bottom if queue has more
+  const remaining = cards.slice(1);
+  remaining.forEach((card, i) => {
+    card.dataset.stackPos = String(i);
+    const scale = 1 - (i * 0.04);
+    const translateY = i * 10;
+    card.style.transition = 'transform .3s ease-out';
+    card.style.transform = `translateY(${translateY}px) scale(${scale})`;
+    card.style.zIndex = String(100 - i);
+  });
+  
+  // If we have fewer than 3 visible cards and there are more in queue, append one
+  const visibleCount = remaining.length;
+  if(visibleCount < 3 && swipeQueue.length > visibleCount){
+    const nextRecipe = swipeQueue[visibleCount];
+    if(nextRecipe){
+      const stack = document.getElementById('swipeStack');
+      const newCardHTML = swipeCardHTML(nextRecipe, visibleCount);
+      // Insert at the beginning of stack so it goes behind existing cards visually
+      stack.insertAdjacentHTML('afterbegin', newCardHTML);
+    }
+  }
+  
+  // Remove the swiped card from DOM after animation completes
   setTimeout(() => {
-    swipeQueue = swipeQueue.filter(r => String(r.id) !== String(rid));
-    swipeRenderStack();
+    if(topCard.parentNode) topCard.remove();
+    // If queue is now empty, show empty state
+    if(swipeQueue.length === 0){
+      swipeRenderStack();
+    }
   }, 400);
 }
 
