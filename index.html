@@ -4096,7 +4096,7 @@ async function loadPublicRecipes() {
       console.log(`Loaded ${publicRecipes.length} public recipes from Supabase`);
       // Update hero count directly (in case updateHero isn't called yet)
       const hCEl = document.getElementById('hC');
-      if(hCEl) hCEl.textContent = allRecipes().length;
+      if(hCEl) hCEl.textContent = publicRecipes.length;
       // Re-render grid if we're currently on a recipe view
       if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
         try { renderGrid(); } catch(e){}
@@ -4460,7 +4460,7 @@ const heroRids={};
 const MEAL_LABELS_HERO={morgenmad:'Morgenmad i dag',frokost:'Frokost i dag',aftensmad:'Aftensmad i dag',snacks:'Snack i dag',dessert:'Dessert i dag',drikkevarer:'Drik i dag'};
 
 function updateHero(){
-  const hCEl=document.getElementById('hC');if(hCEl)hCEl.textContent=allRecipes().length;
+  const hCEl=document.getElementById('hC');if(hCEl)hCEl.textContent=publicRecipes.length;
   document.getElementById('hF').textContent=saved.size;
   const pc=Object.values(plan).reduce((sum,v)=>sum+(Array.isArray(v)?v.length:v?1:0),0);
   document.getElementById('hP').textContent=pc;
@@ -4517,7 +4517,7 @@ function renderDiscover(){
   const wn=getWeekNum(getMonday(new Date()));
   const yr=new Date().getFullYear();
   document.getElementById('dwWeekTag').textContent=`Uge ${wn} · ${yr}`;
-  document.getElementById('dwLabel').textContent=`${allRecipes().length} opskrifter — 8 udvalgt til dig denne uge`;
+  document.getElementById('dwLabel').textContent=`${publicRecipes.length} opskrifter — 8 udvalgt til dig denne uge`;
   // Seed-based shuffle: deterministic for the whole week
   const rand=seededRand(getWeekSeed());
   const shuffled=[...allRecipes()].sort(()=>rand()-.5);
