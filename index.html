@@ -1469,8 +1469,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <div class="ud-name" id="udName"></div>
           <div class="ud-user" id="udUser"></div>
           <div class="ud-sep"></div>
-          <button class="ud-item" onclick="switchMenu('favoritter');closeUserDrop()">Favoritter</button>
-          <div class="ud-sep"></div>
           <button class="ud-item ud-logout" onclick="doLogout()">Log ud</button>
         </div>
       </div>
@@ -1736,7 +1734,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         </div>
       </div>
       <div class="swipe-banner-arrow">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <svg width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"></path></svg>
       </div>
     </div>
     <div class="rgrid" id="rGrid"></div></div></div>
@@ -2132,7 +2130,7 @@ Bag i 25 minutter.
   <div class="swipe-hero">
     <div class="swipe-hero-inner">
       <div class="swipe-tag">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.5 5.8 22l2.4-8.1L2 9.4h7.6z"/></svg>
+        <svg width="12" height="12" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.5 5.8 22l2.4-8.1L2 9.4h7.6z"></path></svg>
         Opdag
       </div>
       <h2 class="swipe-title">Swipe din <em>middag</em></h2>
@@ -2154,29 +2152,29 @@ Bag i 25 minutter.
   <!-- Login gate (shown when not logged in) -->
   <div class="swipe-login-gate" id="swipeLoginGate" style="display:none">
     <div class="swipe-login-icon">
-      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <svg width="42" height="42" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
     </div>
     <h3>Log ind for at swipe</h3>
     <p>For at kunne gemme dine favoritter og huske hvilke opskrifter du har set, skal du være logget ind.</p>
-    <button class="swipe-reset" onclick="switchMenu('alle');setTimeout(()=>{const b=document.getElementById('navLoginBtn');if(b)b.click();},100)">Log ind</button>
+    <button class="swipe-reset" onclick="switchMenu('alle');setTimeout(()=&gt;{const b=document.getElementById('navLoginBtn');if(b)b.click();},100)">Log ind</button>
   </div>
   
   <div class="swipe-container" id="swipeContainer">
     <div class="swipe-stack" id="swipeStack"></div>
     <div class="swipe-actions" id="swipeActions">
       <button class="swipe-btn swipe-btn-no" onclick="swipeAction('skip')" title="Spring over">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <svg width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
       </button>
       <button class="swipe-btn swipe-btn-info" onclick="swipeOpenCurrent()" title="Se opskrift">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path></svg>
       </button>
       <button class="swipe-btn swipe-btn-yes" onclick="swipeAction('like')" title="Gem som favorit">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg width="22" height="22" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </button>
     </div>
     <div class="swipe-empty" id="swipeEmpty" style="display:none">
       <div class="swipe-empty-icon">
-        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg width="42" height="42" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </div>
       <h3>Du har set dem alle</h3>
       <p>Du har været igennem alle tilgængelige opskrifter. Nulstil for at bladre igennem igen.</p>
@@ -2293,10 +2291,6 @@ Bag i 25 minutter.
     <!-- MÅL -->
     </div>
     </div>
-    </div>
-    </div>
-    
-    
     <div class="guide-sec" id="gs-maal">
       <div class="guide-sec-head">
         <h2>Mål &amp; <em>omregning</em></h2>
@@ -3432,7 +3426,11 @@ Bag i 25 minutter.
     
     
 
-<!-- SAVE PLAN MODAL -->
+</div>
+    </div>
+    
+    
+    <!-- SAVE PLAN MODAL -->
 <div class="save-mo" id="saveMo" onclick="closeSaveBg(event)">
   <div class="save-modal">
     <h3>Gem ugeplan</h3>
@@ -7627,11 +7625,10 @@ function swipeInit(){
   if(container) container.style.display = 'block';
   if(cats) cats.style.display = 'flex';
   
-  // Load previously skipped from localStorage
-  try {
-    const skipped = JSON.parse(localStorage.getItem(userKey('sv_swipeSkipped'))||'[]');
-    swipeSkipped = new Set(skipped);
-  } catch(e) { swipeSkipped = new Set(); }
+  // Skip list is SESSION-ONLY (resets on page refresh) so old skips don't accumulate
+  // If you want persistent skips, uncomment the localStorage line below
+  swipeSkipped = new Set();
+  
   swipeBuildQueue();
   swipeRenderStack();
   swipeAttachDrag();
@@ -7642,6 +7639,8 @@ function swipeSetCat(cat){
   document.querySelectorAll('.swipe-cat').forEach(el => {
     el.classList.toggle('selected', el.dataset.cat === cat);
   });
+  // Reset skip list when switching category so all recipes are available again
+  swipeSkipped = new Set();
   swipeBuildQueue();
   swipeRenderStack();
 }
@@ -7655,6 +7654,7 @@ function swipeBuildQueue(){
     return true;
   });
   swipeQueue.sort(() => Math.random() - 0.5);
+  console.log(`Swipe queue built: ${swipeQueue.length} recipes (category: ${swipeCat}, total: ${all.length}, saved: ${saved.size})`);
 }
 
 function swipeRenderStack(){
@@ -7815,9 +7815,7 @@ function swipeAction(action){
     }
   } else {
     swipeSkipped.add(String(rid));
-    try {
-      localStorage.setItem(userKey('sv_swipeSkipped'), JSON.stringify([...swipeSkipped]));
-    } catch(e){}
+    // Note: swipeSkipped is session-only, not persisted
   }
   
   // Promote remaining visible cards and append a new one at the bottom if queue has more
@@ -7861,7 +7859,6 @@ function swipeOpenCurrent(){
 
 function swipeReset(){
   swipeSkipped = new Set();
-  try { localStorage.removeItem(userKey('sv_swipeSkipped')); } catch(e){}
   swipeBuildQueue();
   swipeRenderStack();
   toast('Nulstillet — start forfra','ok');
