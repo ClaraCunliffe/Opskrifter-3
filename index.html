@@ -1337,6 +1337,24 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
   .swipe-stack{height:460px}
   .swipe-card-img{min-height:240px}
 }
+
+/* Auto-generate meal plan */
+.ag-cat-pill{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:.7rem .8rem;cursor:pointer;transition:all .15s;text-align:left;display:flex;flex-direction:column;gap:.15rem}
+.ag-cat-pill:hover{border-color:var(--accent2);background:var(--accent-bg)}
+.ag-cat-pill.selected{border-color:var(--accent);background:var(--accent-bg);box-shadow:0 2px 8px rgba(123,94,167,.15)}
+.ag-cat-pill-title{font-family:'Fraunces',serif;font-weight:400;font-size:.95rem;color:var(--text);letter-spacing:-.01em}
+.ag-cat-pill-desc{font-size:.7rem;color:var(--text3);line-height:1.3;font-weight:300}
+.ag-cat-pill.selected .ag-cat-pill-title{color:var(--accent)}
+.ag-meal-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:.4rem .8rem;cursor:pointer;font-size:.78rem;color:var(--text2);font-weight:500;user-select:none;transition:all .15s}
+.ag-meal-pill:hover{border-color:var(--accent2);color:var(--accent)}
+.ag-meal-pill input{accent-color:var(--accent);cursor:pointer}
+.ag-meal-pill:has(input:checked){background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.ag-week-pill{background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:.4rem 1rem;cursor:pointer;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--text2);font-weight:500;transition:all .15s}
+.ag-week-pill:hover{border-color:var(--accent2);color:var(--accent)}
+.ag-week-pill.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ag-generate-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:.85rem 1rem;border-radius:10px;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:all .18s}
+.ag-generate-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(123,94,167,.3)}
+.ag-generate-btn:active{transform:translateY(0)}
 </style>
 </head>
 <body>
@@ -2018,7 +2036,11 @@ Bag i 25 minutter.
   <div class="page">
     <div class="shead" style="margin-bottom:1.2rem">
       <div class="stitle">Kalender</div>
-      <div style="display:flex;gap:.5rem">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="bsm auto-gen-btn" onclick="openAutoGenModal()" style="display:flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,#7B5EA7,#9E7DC8);color:#fff;border:none">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.5 5.8 22l2.4-8.1L2 9.4h7.6z"/></svg>
+          Auto-generer madplan
+        </button>
         <div style="position:relative" id="insertPlanWrap">
           <button class="copy-week-btn" id="insertPlanBtn" onclick="toggleInsertPlanDrop()" style="display:flex;align-items:center;gap:.4rem">
             <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
@@ -2121,6 +2143,39 @@ Bag i 25 minutter.
           <div class="sp-body"><div id="savedPlansList"></div></div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTO-GENERATE MEAL PLAN MODAL -->
+<div class="mo" id="autoGenOv">
+  <div class="modal" style="max-width:520px">
+    <div class="mh">
+      <div>
+        <h3>Auto-generer madplan</h3>
+        <p>Vælg stil og få en madplan for hele ugen</p>
+      </div>
+      <button class="mhc" onclick="closeAutoGen()">✕</button>
+    </div>
+    <div style="padding:1.2rem 1.5rem;overflow-y:auto">
+      <div style="margin-bottom:1.3rem">
+        <div style="font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Vælg madplan</div>
+        <div id="agCatPills" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.4rem"></div>
+      </div>
+      <div style="margin-bottom:1.3rem">
+        <div style="font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Uge</div>
+        <div style="display:flex;gap:.4rem">
+          <button class="ag-week-pill selected" data-week="0" onclick="agSetWeek(0,this)">Denne uge</button>
+          <button class="ag-week-pill" data-week="1" onclick="agSetWeek(1,this)">Næste uge</button>
+        </div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;font-size:.75rem;color:var(--text2);line-height:1.5;margin-bottom:1.3rem">
+        <strong style="color:var(--text)">Sådan virker det:</strong> Vælg en madplan lavet af admin. Alle måltider for den valgte uge fyldes ud med de opskrifter der er valgt i madplanen. Eksisterende opskrifter bliver overskrevet.
+      </div>
+      <button class="ag-generate-btn" onclick="doAutoGenerate()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5L18.2 22 12 17.5 5.8 22l2.4-8.1L2 9.4h7.6z"/></svg>
+        Indsæt madplan
+      </button>
     </div>
   </div>
 </div>
@@ -7861,6 +7916,148 @@ function swipeReset(){
   swipeRenderStack();
   toast('Nulstillet — start forfra','ok');
 }
+
+// ── AUTO-GENERATE MEAL PLAN ──
+let agTemplates = [];
+let agCategories = [];  // Grouped: {name, count, templates[]}
+let agSelectedCat = null;
+let agSelectedWeek = 0;
+
+async function loadAutoGenTemplates(){
+  try {
+    const r = await sbFetch('/rest/v1/madplan_templates?order=created_at.desc');
+    if(r.ok && r.data){
+      agTemplates = r.data;
+    } else {
+      agTemplates = [];
+    }
+  } catch(e){
+    console.warn('Could not load templates:', e.message);
+    agTemplates = [];
+  }
+  // Group by category
+  const grouped = {};
+  agTemplates.forEach(t => {
+    const cat = t.category || 'Generel';
+    if(!grouped[cat]) grouped[cat] = {name: cat, description: t.description, templates: []};
+    grouped[cat].templates.push(t);
+  });
+  agCategories = Object.values(grouped).sort((a,b) => a.name.localeCompare(b.name));
+}
+
+async function openAutoGenModal(){
+  await loadAutoGenTemplates();
+  const container = document.getElementById('agCatPills');
+  if(agCategories.length === 0){
+    container.innerHTML = '<div style="grid-column:1/-1;padding:1.5rem;text-align:center;color:var(--text3);font-size:.85rem;background:var(--surface2);border-radius:10px">Der er endnu ingen madplaner tilgængelige.<br><small style="opacity:.7">Admin kan oprette dem via admin-panelet.</small></div>';
+  } else {
+    if(!agSelectedCat || !agCategories.find(c => c.name === agSelectedCat)){
+      agSelectedCat = agCategories[0].name;
+    }
+    container.innerHTML = agCategories.map(cat => {
+      const varLabel = cat.templates.length > 1 ? ` · ${cat.templates.length} varianter` : '';
+      const desc = cat.description || `${cat.templates[0].plan_data ? Object.values(cat.templates[0].plan_data).reduce((a,d)=>a+Object.keys(d||{}).length,0) : 0} måltider${varLabel}`;
+      const safeName = cat.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      return `<button class="ag-cat-pill${cat.name===agSelectedCat?' selected':''}" data-cat="${cat.name.replace(/"/g,'&quot;')}" onclick="agSetCategory('${safeName}')">
+        <div class="ag-cat-pill-title">${cat.name}</div>
+        <div class="ag-cat-pill-desc">${desc}</div>
+      </button>`;
+    }).join('');
+  }
+  document.querySelectorAll('.ag-week-pill').forEach(el => el.classList.toggle('selected', parseInt(el.dataset.week)===agSelectedWeek));
+  document.getElementById('autoGenOv').classList.add('open');
+}
+
+function closeAutoGen(){
+  document.getElementById('autoGenOv').classList.remove('open');
+}
+
+function agSetCategory(catName){
+  agSelectedCat = catName;
+  document.querySelectorAll('.ag-cat-pill').forEach(el => el.classList.toggle('selected', el.dataset.cat===catName));
+}
+
+function agSetWeek(weekOffset, btn){
+  agSelectedWeek = weekOffset;
+  document.querySelectorAll('.ag-week-pill').forEach(el => el.classList.remove('selected'));
+  if(btn) btn.classList.add('selected');
+}
+
+function doAutoGenerate(){
+  if(!agSelectedCat){
+    toast('Vælg en kategori','err');
+    return;
+  }
+  const category = agCategories.find(c => c.name === agSelectedCat);
+  if(!category || category.templates.length === 0){
+    toast('Ingen madplaner i denne kategori','err');
+    return;
+  }
+  // Pick RANDOM template from category
+  const template = category.templates[Math.floor(Math.random() * category.templates.length)];
+  
+  const weekStart = getMonday(new Date());
+  if(agSelectedWeek === 1) weekStart.setDate(weekStart.getDate() + 7);
+  
+  const planData = template.plan_data || {};
+  let filledCount = 0;
+  const enabledMeals = new Set();
+  
+  for(let d = 0; d < 7; d++){
+    const date = new Date(weekStart);
+    date.setDate(date.getDate() + d);
+    const dateKey = dStr(date);
+    const dayData = planData[d] || planData[String(d)] || {};
+    
+    for(const [mealType, rid] of Object.entries(dayData)){
+      if(!rid) continue;
+      const recipe = allRecipes().find(r => String(r.id) === String(rid));
+      if(!recipe) continue;
+      const key = dateKey + '||' + mealType;
+      plan[key] = [String(rid)];
+      filledCount++;
+      enabledMeals.add(mealType);
+    }
+  }
+  
+  enabledMeals.forEach(m => {
+    if(!visibleMeals.includes(m)){
+      visibleMeals.push(m);
+    }
+  });
+  localStorage.setItem(userKey('dp_visible_meals'), JSON.stringify(visibleMeals));
+  MEALS.forEach(m => {
+    const btn = document.getElementById('mt-' + m.key);
+    if(btn && visibleMeals.includes(m.key)){
+      btn.classList.add('active');
+      btn.textContent = btn.textContent.replace(/^\+\s*/,'');
+    }
+  });
+  
+  selWeekStart = new Date(weekStart);
+  
+  persist();
+  closeAutoGen();
+  renderCal();
+  renderWeekGrid();
+  renderStats();
+  renderShopping();
+  updateBadges();
+  updateHero();
+  
+  const varMsg = category.templates.length > 1 ? ` (variant: ${template.name})` : '';
+  toast(`✨ ${category.name}${varMsg} indsat (${filledCount} måltider)`, 'ok');
+}
+
+// Close on backdrop click
+document.addEventListener('DOMContentLoaded', () => {
+  const ov = document.getElementById('autoGenOv');
+  if(ov){
+    ov.addEventListener('click', e => {
+      if(e.target === ov) closeAutoGen();
+    });
+  }
+});
 
 function switchGuideTab(id){
   document.querySelectorAll('.guide-tab').forEach(t=>t.classList.toggle('active',t.dataset.gs===id));

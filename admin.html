@@ -119,6 +119,34 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 .img-adjust-controls{display:flex;align-items:center;gap:.7rem;margin-top:1rem}
 .img-adjust-controls input[type=range]{flex:1;accent-color:var(--acc)}
 .img-adjust-foot{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem}
+
+/* Admin tabs */
+.admin-tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;border-bottom:1px solid var(--bor)}
+.admin-tab{background:none;border:none;padding:.7rem 1.2rem;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;color:var(--txt2);cursor:pointer;position:relative;margin-bottom:-1px}
+.admin-tab:hover{color:var(--txt)}
+.admin-tab.active{color:var(--acc)}
+.admin-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--acc)}
+.admin-tab-content{display:none}
+.admin-tab-content.active{display:block}
+
+/* Template list */
+.tlist{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+.trow{background:#fff;border:1px solid var(--bor);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:border-color .15s}
+.trow:hover{border-color:var(--acc2);background:var(--sur2)}
+.tinfo{flex:1;min-width:0}
+.ttitle{font-family:'Fraunces',serif;font-weight:400;font-size:1.05rem;color:var(--txt);margin-bottom:.2rem;letter-spacing:-.01em}
+.tdesc{font-size:.78rem;color:var(--txt3);line-height:1.4}
+.tstats{display:flex;gap:.6rem;font-size:.72rem;color:var(--txt3);flex-shrink:0}
+.tstats span{background:var(--sur2);padding:.25rem .55rem;border-radius:50px}
+.tdel{background:none;border:none;color:var(--rose);cursor:pointer;padding:.4rem;border-radius:6px;transition:background .15s;flex-shrink:0}
+.tdel:hover{background:var(--rose-bg)}
+
+/* Template modal */
+.template-grid{display:grid;grid-template-columns:100px 1fr 1fr 1fr;gap:.4rem;padding:.6rem 0;align-items:center}
+.template-grid-head{font-size:.65rem;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em;padding:.4rem 0}
+.template-day-name{font-family:'Fraunces',serif;font-weight:400;font-size:.9rem;color:var(--txt);letter-spacing:-.01em}
+.template-grid select{font-family:'Inter',sans-serif;font-size:.8rem;padding:.45rem .5rem;border:1px solid var(--bor);border-radius:6px;background:var(--sur);color:var(--txt);width:100%;max-width:100%}
+.template-grid select:focus{outline:none;border-color:var(--acc)}
 </style>
 </head>
 <body>
@@ -146,26 +174,45 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 
 <!-- MAIN -->
 <div id="pg-main">
-  <div class="pg-title">Opskriftsstyring</div>
-  <div class="pg-sub">Tilføj, rediger og slet opskrifter — ændringer vises øjeblikkeligt for alle.</div>
-  <div class="stats">
-    <div class="stat"><div class="sn" id="s-total">0</div><div class="sl">Opskrifter</div></div>
-    <div class="stat"><div class="sn" id="s-cats">0</div><div class="sl">Kategorier</div></div>
+  <div class="pg-title">Admin-panel</div>
+  <div class="pg-sub">Administrér opskrifter og madplaner.</div>
+  
+  <!-- Tabs -->
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-tab="recipes" onclick="switchAdminTab('recipes')">Opskrifter</button>
+    <button class="admin-tab" data-tab="templates" onclick="switchAdminTab('templates')">Madplaner</button>
   </div>
-  <button class="new-btn" onclick="openModal(null)">+ Ny opskrift</button>
-  <div class="filters">
-    <input type="text" id="f-search" placeholder="Søg…" oninput="renderList()">
-    <select id="f-cat" onchange="renderList()">
-      <option value="">Alle kategorier</option>
-      <option value="morgenmad">Morgenmad</option>
-      <option value="frokost">Frokost</option>
-      <option value="aftensmad">Aftensmad</option>
-      <option value="dessert">Dessert</option>
-      <option value="snacks">Snacks</option>
-      <option value="drikkevarer">Drikkevarer</option>
-    </select>
+  
+  <!-- RECIPES TAB -->
+  <div id="tab-recipes" class="admin-tab-content active">
+    <div class="stats">
+      <div class="stat"><div class="sn" id="s-total">0</div><div class="sl">Opskrifter</div></div>
+      <div class="stat"><div class="sn" id="s-cats">0</div><div class="sl">Kategorier</div></div>
+    </div>
+    <button class="new-btn" onclick="openModal(null)">+ Ny opskrift</button>
+    <div class="filters">
+      <input type="text" id="f-search" placeholder="Søg…" oninput="renderList()">
+      <select id="f-cat" onchange="renderList()">
+        <option value="">Alle kategorier</option>
+        <option value="morgenmad">Morgenmad</option>
+        <option value="frokost">Frokost</option>
+        <option value="aftensmad">Aftensmad</option>
+        <option value="dessert">Dessert</option>
+        <option value="snacks">Snacks</option>
+        <option value="drikkevarer">Drikkevarer</option>
+      </select>
+    </div>
+    <div class="rlist" id="rlist"><div class="loading">Henter…</div></div>
   </div>
-  <div class="rlist" id="rlist"><div class="loading">Henter…</div></div>
+  
+  <!-- TEMPLATES TAB -->
+  <div id="tab-templates" class="admin-tab-content">
+    <div class="stats">
+      <div class="stat"><div class="sn" id="s-templates">0</div><div class="sl">Madplaner</div></div>
+    </div>
+    <button class="new-btn" onclick="openTemplateModal(null)">+ Ny madplan</button>
+    <div class="tlist" id="tlist"><div class="loading">Henter…</div></div>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -284,6 +331,61 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
   </div>
 </div>
 
+<!-- TEMPLATE MODAL -->
+<div id="templateModal" style="display:none;position:fixed;inset:0;background:rgba(10,5,20,.45);z-index:500;overflow-y:auto;padding:1rem;box-sizing:border-box">
+  <div class="mbox" style="max-width:800px;margin:2rem auto;background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.15);display:flex;flex-direction:column;max-height:calc(100vh - 4rem)">
+    <div class="mhead" style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--bor);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+      <h3 id="template-modal-title" style="margin:0;font-family:'Fraunces',serif;font-weight:400;font-size:1.3rem">Ny madplan</h3>
+      <button class="mclose" onclick="closeTemplateModal()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--txt2)">✕</button>
+    </div>
+    <div class="mbody" style="padding:1.2rem 1.5rem;overflow-y:auto;flex:1">
+      <div class="field">
+        <label>Kategori (samler flere madplaner under samme navn)</label>
+        <input type="text" id="t-category" placeholder="Fx: Vegetar, Højprotein, Nem hverdag, Familievenlig" list="t-category-list">
+        <datalist id="t-category-list"></datalist>
+        <div style="font-size:.72rem;color:var(--txt3);margin-top:.35rem;line-height:1.4">
+          💡 Lav flere madplaner med samme kategori-navn — så vælger systemet én tilfældig når brugeren vælger denne kategori.
+        </div>
+      </div>
+      <div class="field">
+        <label>Navn på madplan (kun til intern reference)</label>
+        <input type="text" id="t-name" placeholder="Fx: Vegetar-uge 1, Vegetar-uge 2">
+      </div>
+      <div class="field">
+        <label>Beskrivelse (valgfri — vises til bruger)</label>
+        <input type="text" id="t-desc" placeholder="Kort beskrivelse af kategorien">
+      </div>
+      <div class="field">
+        <label>Måltider</label>
+        <div id="t-meals" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem">
+          <label class="ag-meal-pill"><input type="checkbox" value="morgenmad" checked onchange="rebuildTemplateGrid()"><span>Morgenmad</span></label>
+          <label class="ag-meal-pill"><input type="checkbox" value="frokost" checked onchange="rebuildTemplateGrid()"><span>Frokost</span></label>
+          <label class="ag-meal-pill"><input type="checkbox" value="aftensmad" checked onchange="rebuildTemplateGrid()"><span>Aftensmad</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ugens opskrifter</label>
+        <div id="template-grid-wrap" style="background:var(--sur2);border:1px solid var(--bor);border-radius:10px;padding:.8rem 1rem;margin-top:.4rem">
+          <div id="template-grid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot" style="padding:1rem 1.5rem;border-top:1px solid var(--bor);display:flex;gap:.5rem;flex-shrink:0">
+      <button class="btn btn-d" id="t-del-btn" onclick="deleteTemplate()" style="display:none;margin-right:auto">Slet madplan</button>
+      <button class="btn" onclick="closeTemplateModal()">Annuller</button>
+      <button class="btn btn-p" onclick="saveTemplate()">Gem madplan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reuse ag-meal-pill styling from index.html -->
+<style>
+.ag-meal-pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--sur);border:1px solid var(--bor);border-radius:50px;padding:.4rem .8rem;cursor:pointer;font-size:.78rem;color:var(--txt2);font-weight:500;user-select:none;transition:all .15s}
+.ag-meal-pill:hover{border-color:var(--acc2);color:var(--acc)}
+.ag-meal-pill input{accent-color:var(--acc);cursor:pointer}
+.ag-meal-pill:has(input:checked){background:var(--acc-bg,#F0EBFA);border-color:var(--acc);color:var(--acc)}
+</style>
+
 <!-- IMAGE ADJUST OVERLAY -->
 <div class="img-adjust-overlay" id="img-adjust-overlay">
   <div class="img-adjust-box">
@@ -390,6 +492,204 @@ async function load(){
   document.getElementById('s-total').textContent=recipes.length;
   document.getElementById('s-cats').textContent=new Set(recipes.map(x=>x.cat)).size;
   renderList();
+}
+
+// ── TEMPLATES / MADPLANER ────────────────────────────────────
+let templates = [];
+let editingTemplateId = null;
+const DAY_NAMES = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
+
+function switchAdminTab(tab){
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-'+tab));
+  if(tab === 'templates') loadTemplates();
+}
+
+async function loadTemplates(){
+  try {
+    const r = await sb('/rest/v1/madplan_templates?order=created_at.desc');
+    if(r.ok){
+      templates = r.data || [];
+      document.getElementById('s-templates').textContent = templates.length;
+      renderTemplateList();
+    } else {
+      document.getElementById('tlist').innerHTML = '<div class="empty" style="padding:2rem;text-align:center;color:var(--txt3)">Kunne ikke hente madplaner.<br><small style="opacity:.7">Har du oprettet <code>madplan_templates</code>-tabellen i Supabase?</small></div>';
+    }
+  } catch(e) {
+    console.error(e);
+    document.getElementById('tlist').innerHTML = '<div class="empty" style="padding:2rem;text-align:center;color:var(--txt3)">Kunne ikke hente madplaner.</div>';
+  }
+}
+
+function renderTemplateList(){
+  if(!templates.length){
+    document.getElementById('tlist').innerHTML = '<div class="empty" style="padding:2rem;text-align:center;color:var(--txt3)">Ingen madplaner endnu. Klik <strong>+ Ny madplan</strong> for at oprette den første.</div>';
+    return;
+  }
+  // Group by category
+  const grouped = {};
+  templates.forEach(t => {
+    const cat = t.category || 'Generel';
+    if(!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(t);
+  });
+  const cats = Object.keys(grouped).sort();
+  document.getElementById('tlist').innerHTML = cats.map(cat => `
+    <div style="margin-bottom:1rem">
+      <div style="font-family:'Fraunces',serif;font-weight:400;font-size:1rem;color:var(--acc);margin:.5rem 0 .4rem;letter-spacing:-.01em;display:flex;align-items:center;gap:.5rem">
+        <span>${cat}</span>
+        <span style="background:var(--acc-bg,#F0EBFA);color:var(--acc);font-size:.65rem;font-weight:600;padding:.15rem .5rem;border-radius:50px;text-transform:uppercase;letter-spacing:.06em">${grouped[cat].length} plan${grouped[cat].length>1?'er':''}</span>
+      </div>
+      ${grouped[cat].map(t => {
+        const data = t.plan_data || {};
+        const filledCount = Object.values(data).reduce((acc, day) => acc + Object.keys(day||{}).length, 0);
+        const mealTypes = new Set();
+        Object.values(data).forEach(day => Object.keys(day||{}).forEach(m => mealTypes.add(m)));
+        return `<div class="trow" onclick="openTemplateModal('${t.id}')">
+          <div class="tinfo">
+            <div class="ttitle">${t.name}</div>
+            <div class="tdesc">${t.description || '—'}</div>
+          </div>
+          <div class="tstats">
+            <span>${filledCount} måltider</span>
+          </div>
+          <button class="tdel" onclick="event.stopPropagation();quickDeleteTemplate('${t.id}')" title="Slet">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+async function quickDeleteTemplate(id){
+  if(!confirm('Slet denne madplan? Kan ikke fortrydes.')) return;
+  try {
+    await sb(`/rest/v1/madplan_templates?id=eq.${id}`, {method:'DELETE'});
+    templates = templates.filter(t => t.id !== id);
+    document.getElementById('s-templates').textContent = templates.length;
+    renderTemplateList();
+    toast('Madplan slettet ✓','ok');
+  } catch(e) {
+    console.error(e);
+    toast('Kunne ikke slette','err');
+  }
+}
+
+function openTemplateModal(id){
+  editingTemplateId = id;
+  const isEdit = !!id;
+  const existing = isEdit ? templates.find(t => t.id === id) : null;
+  document.getElementById('template-modal-title').textContent = isEdit ? 'Rediger madplan' : 'Ny madplan';
+  document.getElementById('t-name').value = existing?.name || '';
+  document.getElementById('t-desc').value = existing?.description || '';
+  document.getElementById('t-category').value = existing?.category || '';
+  // Populate datalist with existing categories
+  const uniqueCats = [...new Set(templates.map(t => t.category).filter(Boolean))];
+  document.getElementById('t-category-list').innerHTML = uniqueCats.map(c => `<option value="${c}">`).join('');
+  document.getElementById('t-del-btn').style.display = isEdit ? 'block' : 'none';
+  const existingMeals = new Set();
+  if(existing?.plan_data){
+    Object.values(existing.plan_data).forEach(day => Object.keys(day||{}).forEach(m => existingMeals.add(m)));
+  }
+  document.querySelectorAll('#t-meals input').forEach(cb => {
+    cb.checked = existingMeals.size > 0 ? existingMeals.has(cb.value) : true;
+  });
+  rebuildTemplateGrid(existing?.plan_data);
+  document.getElementById('templateModal').style.display = 'block';
+}
+
+function closeTemplateModal(){
+  document.getElementById('templateModal').style.display = 'none';
+  editingTemplateId = null;
+}
+
+function rebuildTemplateGrid(existingData){
+  const selectedMeals = [...document.querySelectorAll('#t-meals input:checked')].map(cb => cb.value);
+  const gridEl = document.getElementById('template-grid');
+  if(selectedMeals.length === 0){
+    gridEl.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--txt3);font-size:.85rem">Vælg mindst ét måltid</div>';
+    return;
+  }
+  // Build header
+  const gridCols = `100px repeat(${selectedMeals.length}, 1fr)`;
+  const mealLabels = {morgenmad:'Morgenmad', frokost:'Frokost', aftensmad:'Aftensmad'};
+  let html = `<div class="template-grid" style="grid-template-columns:${gridCols}">
+    <div></div>${selectedMeals.map(m => `<div class="template-grid-head">${mealLabels[m]||m}</div>`).join('')}`;
+  // Filter recipes by category
+  const recipesByCat = {};
+  selectedMeals.forEach(m => {
+    recipesByCat[m] = recipes.filter(r => r.cat === m);
+  });
+  // Build day rows
+  for(let d = 0; d < 7; d++){
+    html += `<div class="template-day-name">${DAY_NAMES[d]}</div>`;
+    selectedMeals.forEach(m => {
+      const savedRid = existingData?.[d]?.[m] || '';
+      const options = ['<option value="">— Ingen —</option>'].concat(
+        recipesByCat[m].map(r => `<option value="${r.id}" ${String(r.id)===String(savedRid)?'selected':''}>${r.title}</option>`)
+      ).join('');
+      html += `<select data-day="${d}" data-meal="${m}">${options}</select>`;
+    });
+  }
+  html += '</div>';
+  gridEl.style.gridTemplateColumns = gridCols;
+  gridEl.innerHTML = html;
+}
+
+async function saveTemplate(){
+  const name = document.getElementById('t-name').value.trim();
+  const desc = document.getElementById('t-desc').value.trim();
+  const category = document.getElementById('t-category').value.trim() || 'Generel';
+  if(!name){
+    toast('Giv madplanen et navn','err');
+    return;
+  }
+  const planData = {};
+  document.querySelectorAll('#template-grid select').forEach(sel => {
+    const day = sel.dataset.day;
+    const meal = sel.dataset.meal;
+    const rid = sel.value;
+    if(rid){
+      if(!planData[day]) planData[day] = {};
+      planData[day][meal] = rid;
+    }
+  });
+  
+  try {
+    if(editingTemplateId){
+      await sb(`/rest/v1/madplan_templates?id=eq.${editingTemplateId}`, {
+        method:'PATCH',
+        body: JSON.stringify({name, description: desc, category, plan_data: planData})
+      });
+      toast('Madplan opdateret ✓','ok');
+    } else {
+      await sb('/rest/v1/madplan_templates', {
+        method:'POST',
+        body: JSON.stringify({name, description: desc, category, plan_data: planData})
+      });
+      toast('Madplan gemt ✓','ok');
+    }
+    closeTemplateModal();
+    loadTemplates();
+  } catch(e) {
+    console.error(e);
+    toast('Kunne ikke gemme madplan','err');
+  }
+}
+
+async function deleteTemplate(){
+  if(!editingTemplateId) return;
+  if(!confirm('Slet denne madplan permanent?')) return;
+  try {
+    await sb(`/rest/v1/madplan_templates?id=eq.${editingTemplateId}`, {method:'DELETE'});
+    closeTemplateModal();
+    loadTemplates();
+    toast('Madplan slettet ✓','ok');
+  } catch(e) {
+    console.error(e);
+    toast('Kunne ikke slette','err');
+  }
 }
 
 function renderList(){
