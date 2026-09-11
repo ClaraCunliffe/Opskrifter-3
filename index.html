@@ -2085,10 +2085,6 @@ Bag i 25 minutter.
             <button class="bsm" onclick="changeWeek(-7)">← Forrige</button>
             <button class="bsm" onclick="goToday()">I dag</button>
             <button class="bsm" onclick="changeWeek(7)">Næste →</button>
-            <button class="bsm bsm-auto" onclick="openAutoModal()" title="Generer ugeplan automatisk">
-              <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              Auto
-            </button>
             <button class="bsm bsm-save-week" onclick="openSaveModal()" title="Gem denne uge som plan">
               <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
               Gem uge
@@ -2163,11 +2159,21 @@ Bag i 25 minutter.
         <div id="agCatPills" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.4rem"></div>
       </div>
       <div style="margin-bottom:1.3rem">
-        <div style="font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Uge</div>
-        <div style="display:flex;gap:.4rem">
-          <button class="ag-week-pill selected" data-week="0" onclick="agSetWeek(0,this)">Denne uge</button>
-          <button class="ag-week-pill" data-week="1" onclick="agSetWeek(1,this)">Næste uge</button>
+        <div style="font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Måltider</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.4rem" id="agMealPills">
+          <label class="ag-meal-pill"><input type="checkbox" value="morgenmad" checked><span>Morgenmad</span></label>
+          <label class="ag-meal-pill"><input type="checkbox" value="frokost" checked><span>Frokost</span></label>
+          <label class="ag-meal-pill"><input type="checkbox" value="aftensmad" checked><span>Aftensmad</span></label>
         </div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:.4rem;line-height:1.4">
+          Fravælg måltider du ikke vil have indsat — så bevares dine eksisterende opskrifter i de slots.
+        </div>
+      </div>
+      <div style="margin-bottom:1.3rem">
+        <div style="font-size:.68rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Vælg uge</div>
+        <select id="agWeekSelect" onchange="agSetWeekFromSelect()" style="width:100%;padding:.65rem .85rem;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-family:'Inter',sans-serif;font-size:.85rem;cursor:pointer">
+          <!-- Populated dynamically -->
+        </select>
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;font-size:.75rem;color:var(--text2);line-height:1.5;margin-bottom:1.3rem">
         <strong style="color:var(--text)">Sådan virker det:</strong> Vælg en madplan lavet af admin. Alle måltider for den valgte uge fyldes ud med de opskrifter der er valgt i madplanen. Eksisterende opskrifter bliver overskrevet.
@@ -7964,7 +7970,27 @@ async function openAutoGenModal(){
       </button>`;
     }).join('');
   }
-  document.querySelectorAll('.ag-week-pill').forEach(el => el.classList.toggle('selected', parseInt(el.dataset.week)===agSelectedWeek));
+  // Populate week dropdown with next 12 weeks
+  const sel = document.getElementById('agWeekSelect');
+  if(sel){
+    const monthNames = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+    const today = getMonday(new Date());
+    let options = '';
+    for(let i = 0; i < 12; i++){
+      const start = new Date(today);
+      start.setDate(start.getDate() + i * 7);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 6);
+      const weekNum = getWeekNum(start);
+      let label;
+      if(i === 0) label = 'Denne uge';
+      else if(i === 1) label = 'Næste uge';
+      else label = `Om ${i} uger`;
+      const dateRange = `${start.getDate()}. ${monthNames[start.getMonth()]} – ${end.getDate()}. ${monthNames[end.getMonth()]}`;
+      options += `<option value="${i}" ${i===agSelectedWeek?'selected':''}>${label} (uge ${weekNum} · ${dateRange})</option>`;
+    }
+    sel.innerHTML = options;
+  }
   document.getElementById('autoGenOv').classList.add('open');
 }
 
@@ -7977,10 +8003,9 @@ function agSetCategory(catName){
   document.querySelectorAll('.ag-cat-pill').forEach(el => el.classList.toggle('selected', el.dataset.cat===catName));
 }
 
-function agSetWeek(weekOffset, btn){
-  agSelectedWeek = weekOffset;
-  document.querySelectorAll('.ag-week-pill').forEach(el => el.classList.remove('selected'));
-  if(btn) btn.classList.add('selected');
+function agSetWeekFromSelect(){
+  const sel = document.getElementById('agWeekSelect');
+  agSelectedWeek = parseInt(sel.value) || 0;
 }
 
 function doAutoGenerate(){
@@ -7993,11 +8018,18 @@ function doAutoGenerate(){
     toast('Ingen madplaner i denne kategori','err');
     return;
   }
+  // Get selected meal types from checkboxes
+  const selectedMeals = new Set([...document.querySelectorAll('#agMealPills input:checked')].map(cb => cb.value));
+  if(selectedMeals.size === 0){
+    toast('Vælg mindst ét måltid','err');
+    return;
+  }
+  
   // Pick RANDOM template from category
   const template = category.templates[Math.floor(Math.random() * category.templates.length)];
   
   const weekStart = getMonday(new Date());
-  if(agSelectedWeek === 1) weekStart.setDate(weekStart.getDate() + 7);
+  weekStart.setDate(weekStart.getDate() + agSelectedWeek * 7);
   
   const planData = template.plan_data || {};
   let filledCount = 0;
@@ -8011,6 +8043,8 @@ function doAutoGenerate(){
     
     for(const [mealType, rid] of Object.entries(dayData)){
       if(!rid) continue;
+      // Skip if user didn't select this meal type
+      if(!selectedMeals.has(mealType)) continue;
       const recipe = allRecipes().find(r => String(r.id) === String(rid));
       if(!recipe) continue;
       const key = dateKey + '||' + mealType;
@@ -8045,6 +8079,10 @@ function doAutoGenerate(){
   updateBadges();
   updateHero();
   
+  if(filledCount === 0){
+    toast(`Ingen matchende måltider i "${category.name}"`,'err');
+    return;
+  }
   const varMsg = category.templates.length > 1 ? ` (variant: ${template.name})` : '';
   toast(`✨ ${category.name}${varMsg} indsat (${filledCount} måltider)`, 'ok');
 }
