@@ -2051,7 +2051,7 @@ Bag i 25 minutter.
             <div id="insertPlanDropList"></div>
           </div>
         </div>
-        <button class="bsm" onclick="clearPlan()">Ryd alt</button>
+        <button class="bsm" onclick="clearPlan()">Ryd uge</button>
       </div>
     </div>
     <div class="plan-full">
@@ -2114,7 +2114,7 @@ Bag i 25 minutter.
           <button class="mt-pill" id="mt-drikkevarer" onclick="toggleMealRow('drikkevarer',this)">+ Drikkevarer</button>
         </div>
         <div class="wg-scroll"><div class="week-grid" id="weekGrid"></div></div>
-        <div class="stats-row" id="planStats"></div>
+        <div class="stats-row" id="planStats" style="display:none"></div>
         <div class="shop-wrap">
           <div class="shop-top">
             <div>
@@ -4364,8 +4364,9 @@ function switchMenu(id,btn){
   }
   // Show filter bar only on recipe views
   const recipeViews=['alle','morgenmad','frokost','aftensmad','dessert','salater','suppe','bagværk','snacks','drikkevarer','favoritter','discover','fridge','mine'];
-  // Mine has its own search/filter controls — don't show the global filter bar there
-  document.getElementById('filterBar').classList.toggle('visible',recipeViews.includes(id)&&id!=='fridge'&&id!=='mine');
+  // Mine has its own search/filter controls; ugeplan (Kalender), swipe and guide don't need the filter bar
+  const showFilter = recipeViews.includes(id) && id!=='fridge' && id!=='mine' && id!=='ugeplan' && id!=='swipe' && id!=='guide';
+  document.getElementById('filterBar').classList.toggle('visible', showFilter);
   // Highlight fridge button
   document.getElementById('btn-fridge').classList.toggle('active-btn',id==='fridge');
   document.getElementById('btn-mine').classList.toggle('active-btn',id==='mine');
@@ -4918,7 +4919,30 @@ function getWeekNum(d){const onejan=new Date(d.getFullYear(),0,1);return Math.ce
 
 function rmSlotOne(e,ds,m,rid){e.stopPropagation();planRemoveOne(ds+'||'+m,rid);if(typeof slotRoles!=='undefined')delete slotRoles[ds+'||'+m+'||'+rid];persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
 function rmSlot(e,ds,m){e.stopPropagation();delete plan[ds+'||'+m];persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}
-function clearPlan(){if(confirm('Ryd al planlagt mad?')){plan={};persist();renderCal();renderWeekGrid();renderStats();renderShopping();updateBadges();updateHero();}}
+function clearPlan(){
+  const weekStart = selWeekStart ? new Date(selWeekStart) : getMonday(new Date());
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekNum = getWeekNum(weekStart);
+  if(!confirm(`Ryd alle måltider i uge ${weekNum}?`)) return;
+  // Only remove plan entries where the date is within the current week
+  Object.keys(plan).forEach(key => {
+    const dateStr = key.split('||')[0];
+    if(!dateStr) return;
+    const d = new Date(dateStr);
+    if(d >= weekStart && d < weekEnd){
+      delete plan[key];
+    }
+  });
+  persist();
+  renderCal();
+  renderWeekGrid();
+  renderStats();
+  renderShopping();
+  updateBadges();
+  updateHero();
+  toast(`Uge ${weekNum} ryddet ✓`,'ok');
+}
 
 function renderStats(){
   const weekDates=Array.from({length:7},(_,i)=>addDays(selWeekStart,i));
