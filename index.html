@@ -3654,7 +3654,7 @@ Bag i 25 minutter.
 <div class="panel-overlay" id="pOv" onclick="closePanelBg(event)"></div>
 <div class="panel" id="panel">
   <div class="phero" id="pHero">
-    <div class="pbadges"><span class="pbadge" id="pDiff"></span><span class="pbadge" id="pCat"></span></div>
+    <div class="pbadges"><span class="pbadge" id="pDiff"></span><span class="pbadge" id="pCat"></span><span class="pbadge" id="pCat2" style="display:none"></span></div>
     <button class="pclose" onclick="closePanel()"><svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>
   </div>
   <div class="panel-timer-bar" id="panelTimerBar"><div><div style="font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;opacity:.7">Timer</div><div class="ptb-time" id="ptbTime">0:00</div></div><button class="ptb-stop" onclick="stopTimer()">Stop</button></div>
@@ -4576,6 +4576,7 @@ function cardHTML(r,i){
       <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
+        ${r.cat2?`<span class="ccat-badge">${CLBLS[r.cat2]||r.cat2}</span>`:''}
         ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700">${dietMap[d]}</span>`:'';})()}
       </div>
       <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
@@ -5244,6 +5245,13 @@ function renderPanelBody(id){
   }
   document.getElementById('pDiff').textContent=r.diff;
   document.getElementById('pCat').textContent=r.lbl;
+  const pCat2El = document.getElementById('pCat2');
+  if(r.cat2){
+    pCat2El.textContent = CLBLS[r.cat2] || r.cat2;
+    pCat2El.style.display = '';
+  } else {
+    pCat2El.style.display = 'none';
+  }
   // Add diet and allergen badges next to MIDDEL/AFTENSMAD
   const pbadges=document.querySelector('.pbadges');
   // Remove old extra badges
@@ -5756,6 +5764,7 @@ function renderMine(){
         <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
+        ${r.cat2?`<span class="ccat-badge">${CLBLS[r.cat2]||r.cat2}</span>`:''}
         ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700">${dietMap[d]}</span>`:'';})()}
       </div>
         ${(()=>{const s=curSeason();const ex=rx(r.id);const seas={forår:'🌱 Forår',sommer:'☀️ Sommer',efterår:'🍂 Efterår',vinter:'❄️ Vinter'};return ex.season&&!ex.season.includes('all')&&ex.season.includes(s)?`<span class="season-badge">${seas[s]||''}</span>`:''})()}
