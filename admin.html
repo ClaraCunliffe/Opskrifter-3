@@ -498,15 +498,27 @@ async function goMain(email){
   await load();
 }
 
-// LOAD
+// LOAD — exclude img_url from list fetch for speed (images are huge base64 strings)
 async function load(){
   document.getElementById('rlist').innerHTML='<div class="loading">Henter opskrifter…</div>';
-  const r=await sb('/rest/v1/public_opskrifter?order=created_at.desc');
+  const selectCols = 'id,title,cat,cat2,lbl,diff,tid,pers,beskrivelse,ing,steps,tags,allergy,bg,kcal,protein,carbs,fat,created_at';
+  const r=await sb('/rest/v1/public_opskrifter?order=created_at.desc&select='+selectCols);
   if(!r.ok){document.getElementById('rlist').innerHTML=`<div class="empty">Fejl: ${JSON.stringify(r.data)}</div>`;return;}
   recipes=r.data||[];
   document.getElementById('s-total').textContent=recipes.length;
   document.getElementById('s-cats').textContent=new Set(recipes.map(x=>x.cat)).size;
   renderList();
+}
+
+// Lazy-fetch img_url for a specific recipe when opening it for edit
+async function ensureImgLoaded(id){
+  const r = recipes.find(x=>x.id===id);
+  if(!r || r.img_url !== undefined) return r; // already loaded
+  const resp = await sb(`/rest/v1/public_opskrifter?id=eq.${id}&select=img_url`);
+  if(resp.ok && resp.data && resp.data[0]){
+    r.img_url = resp.data[0].img_url;
+  }
+  return r;
 }
 
 // ── TEMPLATES / MADPLANER ────────────────────────────────────
@@ -721,7 +733,7 @@ function renderList(){
         <button class="rord-btn" onclick="event.stopPropagation();moveRecipe('${r.id}',1)" ${i===list.length-1?'disabled':''} title="Flyt ned">↓</button>
       </div>
       <div class="rdot" style="background:${CATS[r.cat]||'#ccc'}"></div>
-      ${r.img_url?`<img src="${r.img_url}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0">`:''}
+      <div style="width:44px;height:44px;border-radius:6px;flex-shrink:0;background:${r.bg||'linear-gradient(160deg,#F2EEF6,#D8C4E8)'}"></div>
       <div class="rinfo">
         <div class="rtitle">${r.title}</div>
         <div class="rmeta">${CLBLS[r.cat]||r.cat} · ${r.diff} · ${r.tid||'–'}</div>
@@ -794,10 +806,11 @@ function loadSubcats2(){
 }
 
 // MODAL
-function openModal(id){
+async function openModal(id){
   editId=id;
   uploadedImg=null;
-  const r=id?recipes.find(x=>x.id===id):null;
+  // Lazy-load img_url if opening existing recipe
+  const r = id ? await ensureImgLoaded(id) : null;
   document.getElementById('m-title').textContent=r?'Rediger opskrift':'Ny opskrift';
   document.getElementById('del-btn').style.display=r?'':'none';
   document.getElementById('save-btn').textContent=r?'Gem ændringer':'Opret opskrift';
