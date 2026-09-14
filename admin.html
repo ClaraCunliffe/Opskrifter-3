@@ -826,7 +826,15 @@ function openModal(id){
   document.getElementById('ef-fat').value=r?.fat||'';
   document.getElementById('ef-ing').value=(r?.ing||[]).join('\n');
   document.getElementById('ef-steps').value=(r?.steps||[]).join('\n');
-  document.getElementById('ef-imgurl').value=r?.img_url||'';
+  // Only put HTTP URLs in the input field — never long base64 data URLs
+  const existingImg = r?.img_url || '';
+  if(existingImg.startsWith('data:')){
+    // It's an uploaded base64 image — show placeholder, keep raw data in rawImgSrc
+    const sizeKB = Math.round(existingImg.length * 0.75 / 1024);
+    document.getElementById('ef-imgurl').value = `(billede uploadet — ${sizeKB} KB)`;
+  } else {
+    document.getElementById('ef-imgurl').value = existingImg;
+  }
   // Image preview
   const prev=document.getElementById('img-prev');
   const lbl=document.getElementById('img-lbl');
@@ -1052,7 +1060,21 @@ async function saveRecipe(){
   const ovnSyms=[...document.querySelectorAll('#oven-pills input:checked')].map(c=>'ovn:'+c.value);
   tags.push(...ovnSyms);
   const allergy=[...document.querySelectorAll('#allergy-pills input:checked')].map(c=>c.value);
-  const imgUrl=uploadedImg==='REMOVE'?null:(uploadedImg||document.getElementById('ef-imgurl').value.trim()||null);
+  // Determine final image URL — priority: REMOVE flag → new upload → raw source (existing base64) → typed URL
+  let imgUrl;
+  if(uploadedImg === 'REMOVE'){
+    imgUrl = null;
+  } else if(uploadedImg){
+    imgUrl = uploadedImg;
+  } else {
+    const inputVal = document.getElementById('ef-imgurl').value.trim();
+    if(inputVal.startsWith('(billede')){
+      // Placeholder text — use the raw source (existing base64 data)
+      imgUrl = rawImgSrc || null;
+    } else {
+      imgUrl = inputVal || null;
+    }
+  }
   const catBgMap={morgenmad:'#FDF0EC,#F4CEC4',frokost:'#EDF2FC,#C4D4F4',aftensmad:'#F4ECFA,#D8C4F0',dessert:'#FAECF4,#F0C4DC',snacks:'#EDFDF4,#B8EDD4',drikkevarer:'#EDF2FC,#C4D4F4',suppe:'#FAF4EC,#F0D4B8','bagværk':'#FAF4E8,#E8D8B4'};
   const payload={
     title, cat, cat2, lbl:CLBLS[cat]||cat,
