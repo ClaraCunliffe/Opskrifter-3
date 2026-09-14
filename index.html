@@ -1524,9 +1524,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <button class="mi" id="mi-frokost" onclick="switchMenu('frokost',this)">Frokost<svg viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg></button>
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('frokost','salat')">Salat</button>
-          <button class="mdi" onclick="switchSub('frokost','smørrebrød')">Klassisk dansk</button>
+          <button class="mdi" onclick="switchSub('frokost','sandwich')">Sandwich</button>
+          <button class="mdi" onclick="switchSub('frokost','madpakke')">Madpakke</button>
           <button class="mdi" onclick="switchSub('frokost','mealprep')">Meal prep</button>
-          <button class="mdi" onclick="switchSub('frokost','sund-frokost')">Sundt</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('frokost',document.getElementById('mi-frokost'))">Alle frokost</button>
         </div>
@@ -3735,7 +3735,7 @@ const SUBCAT_LABELS = {
   'sund-morgen':'Sund morgenmad', 'hurtig-morgen':'Nemt',
   hurtig:'Hurtig morgenmad', weekend:'Weekendmorgenmad',
   // Frokost
-  salat:'Salat', smørrebrød:'Klassisk dansk',
+  salat:'Salat', sandwich:'Sandwich', madpakke:'Madpakke', smørrebrød:'Klassisk dansk',
   bowl:'Flot',
   mealprep:'Meal prep', 'sund-frokost':'Sundt',
   // Aftensmad
@@ -5790,7 +5790,7 @@ let rfUploadedImg=null;
 
 const RF_SUBCATS={
   morgenmad:[{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch'},{v:'sund-morgen',l:'Sund morgen'}],
-  frokost:[{v:'salat',l:'Første-dates-safe'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'mealprep',l:'Meal prep'}],
+  frokost:[{v:'salat',l:'Salat'},{v:'sandwich',l:'Sandwich'},{v:'madpakke',l:'Madpakke'},{v:'mealprep',l:'Meal prep'}],
   aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'forret',l:'Forret'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Salat'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'suppe-aften',l:'Suppe'}],
   dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Iskoldt'}],
   snacks:[{v:'sund',l:'Grønne flexer'},{v:'sød-snack',l:'Sødt'},{v:'salt',l:'Salt-crush'},{v:'dip',l:'Filmaften'}],
