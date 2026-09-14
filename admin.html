@@ -421,12 +421,12 @@ let token=null, recipes=[], editId=null, uploadedImg=null;
 const CATS={morgenmad:'#F4C4B4',frokost:'#B4D4F4',aftensmad:'#C4B4F4',dessert:'#F4B4D4',snacks:'#C4F4E4',drikkevarer:'#C4D4F4',suppe:'#F4D4B4','bagværk':'#E8D8B4'};
 const CLBLS={morgenmad:'Morgenmad',frokost:'Frokost',aftensmad:'Aftensmad',dessert:'Dessert',snacks:'Snacks',drikkevarer:'Drikkevarer',suppe:'Suppe','bagværk':'Bagværk'};
 const SUBCATS={
-  morgenmad:[{v:'grød',l:'Morgen-boost'},{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch-mode'},{v:'sund-morgen',l:'Fit-morgen'},{v:'hurtig-morgen',l:'Nem'}],
-  frokost:[{v:'sandwich',l:'Lunch-date'},{v:'salat',l:'Green'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'bowl',l:'Insta-worthy'},{v:'varm-frokost',l:'Boost'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Nem'},{v:'sund-frokost',l:'Healthy'}],
-  aftensmad:[{v:'hverdagsret',l:'Hverdags-hits'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Salat'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'gryde',l:'Comfort'},{v:'suppe-aften',l:'Suppe'},{v:'familie',l:'Family'},{v:'weekend-aften',l:'Show-off'},{v:'tinderdate',l:'Til tinderdaten'}],
-  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Iskoldt'},{v:'chokolade',l:'Choco'},{v:'frugt',l:'Frugt'},{v:'nem-dessert',l:'Nem'},{v:'fest-dessert',l:'Show-stopper'},{v:'sund-dessert',l:'Guilt-free'}],
-  snacks:[{v:'sund',l:'Green'},{v:'sød-snack',l:'Sweet'},{v:'salt',l:'Salt'},{v:'dip',l:'Movie-night'},{v:'brød-snack',l:'Finger food'},{v:'protein-snack',l:'Protein-boost'},{v:'børn',l:'Til de små'},{v:'fest-snack',l:'Party vibes'},{v:'hurtig-snack',l:'Nem'}],
-  drikkevarer:[{v:'smoothie',l:'Smoothie og juice'},{v:'kaffe',l:'Coffee break'},{v:'te',l:'Varme drikke'},{v:'lemonade',l:'Sommer-sips'},{v:'mocktail',l:'Sober fun'},{v:'cocktail',l:'Cocktails'}],
+  morgenmad:[{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch'},{v:'sund-morgen',l:'Sund morgen'},{v:'hurtig-morgen',l:'Nem'}],
+  frokost:[{v:'salat',l:'Salat'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'bowl',l:'Flot'},{v:'mealprep',l:'Forberedt'},{v:'hurtig-frokost',l:'Nem'},{v:'sund-frokost',l:'Sund'}],
+  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'forret',l:'Forret'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Salat'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'gryde',l:'Comfort food'},{v:'suppe-aften',l:'Suppe'},{v:'familie',l:'Familie'},{v:'weekend-aften',l:'Show-off'}],
+  dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Iskoldt'},{v:'frugt',l:'Frugt'},{v:'nem-dessert',l:'Nem'},{v:'fest-dessert',l:'Imponerende'},{v:'sund-dessert',l:'Guilt-free'}],
+  snacks:[{v:'sund',l:'Green'},{v:'sød-snack',l:'Sødt'},{v:'salt',l:'Salt'},{v:'dip',l:'Filmaften'},{v:'brød-snack',l:'Fingermad'},{v:'protein-snack',l:'Protein'},{v:'børn',l:'Til de små'},{v:'fest-snack',l:'Festmad'},{v:'hurtig-snack',l:'Nem'}],
+  drikkevarer:[{v:'smoothie',l:'Smoothie og juice'},{v:'kaffe',l:'Kaffepause'},{v:'te',l:'Varme drikke'},{v:'lemonade',l:'Sommerdrikke'},{v:'mocktail',l:'Alkoholfri'},{v:'cocktail',l:'Cocktails'}],
   suppe:[{v:'kraftig',l:'Kraftige supper'},{v:'let-s',l:'Lette supper'}],
   'bagværk':[{v:'brød',l:'Brød'},{v:'sødt',l:'Sødt bagværk'}]
 };
