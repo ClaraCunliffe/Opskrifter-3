@@ -4112,8 +4112,9 @@ async function loadPopularRecipes(retryCount = 0) {
 
 async function loadPublicRecipes() {
   try {
-    // Add explicit limit and range header to fetch ALL rows (default might be 20)
-    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000', {
+    // PHASE 1: Fetch essentials WITHOUT the huge img_url field (much faster)
+    const selectCols = 'id,title,cat,cat2,lbl,diff,tid,pers,beskrivelse,bg,ing,steps,tags,allergy,kcal,protein,carbs,fat';
+    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000&select='+selectCols, {
       headers: { 'Range': '0-999', 'Prefer': 'count=exact' }
     });
     if(r.ok && r.data && r.data.length > 0) {
@@ -4122,22 +4123,49 @@ async function loadPublicRecipes() {
         title: r.title, cat: r.cat, cat2: r.cat2 || null, lbl: r.lbl, diff: r.diff,
         time: r.tid, pers: r.pers, desc: r.beskrivelse,
         bg: r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
-        img: r.img_url || null,
+        img: null, // Loaded lazily below
         ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
         allergy: r.allergy || [],
         kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat,
         fromSupabase: true
       }));
-      console.log(`Loaded ${publicRecipes.length} public recipes from Supabase`);
+      console.log(`Loaded ${publicRecipes.length} public recipes (phase 1 — no images)`);
       // Update hero count directly (in case updateHero isn't called yet)
       const hCEl = document.getElementById('hC');
       if(hCEl) hCEl.textContent = publicRecipes.length;
-      // Re-render grid if we're currently on a recipe view
+      // Re-render grid immediately with placeholder gradients
       if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
         try { renderGrid(); } catch(e){}
       }
+      // PHASE 2: Fetch images in background, in small chunks
+      loadImagesLazily();
     }
   } catch(e) { console.warn('Could not load public recipes:', e.message); }
+}
+
+// Load images in background chunks so the UI stays responsive
+async function loadImagesLazily(){
+  const chunkSize = 8; // 8 recipes at a time
+  for(let i = 0; i < publicRecipes.length; i += chunkSize){
+    const chunk = publicRecipes.slice(i, i + chunkSize);
+    const ids = chunk.map(r => r.id).join(',');
+    try {
+      const resp = await sbFetch(`/rest/v1/public_opskrifter?id=in.(${ids})&select=id,img_url`);
+      if(resp.ok && resp.data){
+        resp.data.forEach(row => {
+          const target = publicRecipes.find(r => String(r.id) === String(row.id));
+          if(target && row.img_url) target.img = row.img_url;
+        });
+        // Re-render grid to show new images
+        if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
+          try { renderGrid(); } catch(e){}
+        }
+      }
+    } catch(e) {
+      console.warn('Could not load image chunk:', e.message);
+    }
+  }
+  console.log('All images loaded');
 }
 
 async function syncUserRecipes() {
