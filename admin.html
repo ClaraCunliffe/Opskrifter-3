@@ -251,6 +251,17 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
             <option value="drikkevarer">Drikkevarer</option>
           </select>
         </div>
+        <div class="field"><label>Kategori 2 (valgfri)</label>
+          <select id="ef-cat2">
+            <option value="">— Ingen —</option>
+            <option value="morgenmad">Morgenmad</option>
+            <option value="frokost">Frokost</option>
+            <option value="aftensmad">Aftensmad</option>
+            <option value="dessert">Dessert</option>
+            <option value="snacks">Snacks</option>
+            <option value="drikkevarer">Drikkevarer</option>
+          </select>
+        </div>
         <div class="field"><label>Underkategori</label><select id="ef-subcat"><option value="">Ingen</option></select></div>
         <div class="field"><label>Sværhed</label>
           <select id="ef-diff"><option value="Let">Let</option><option value="Middel">Middel</option><option value="Svær">Svær</option></select>
@@ -782,6 +793,7 @@ function openModal(id){
   // Fill fields
   document.getElementById('ef-title').value=r?.title||'';
   document.getElementById('ef-cat').value=r?.cat||'aftensmad';
+  document.getElementById('ef-cat2').value=r?.cat2||'';
   loadSubcats();
   const subs=SUBCATS[r?.cat||'aftensmad']||[];
   const existSub=(r?.tags||[]).find(t=>subs.some(s=>s.v===t));
@@ -1012,6 +1024,7 @@ async function saveRecipe(){
   if(!title){toast('Titel er påkrævet','err');return;}
   document.getElementById('save-btn').textContent='Gemmer…';
   const cat=document.getElementById('ef-cat').value;
+  const cat2=document.getElementById('ef-cat2').value||null;
   const subcat=document.getElementById('ef-subcat').value;
   const tags=[...document.querySelectorAll('#diet-pills input:checked')].map(c=>c.value);
   if(subcat)tags.unshift(subcat);
@@ -1022,7 +1035,7 @@ async function saveRecipe(){
   const imgUrl=uploadedImg==='REMOVE'?null:(uploadedImg||document.getElementById('ef-imgurl').value.trim()||null);
   const catBgMap={morgenmad:'#FDF0EC,#F4CEC4',frokost:'#EDF2FC,#C4D4F4',aftensmad:'#F4ECFA,#D8C4F0',dessert:'#FAECF4,#F0C4DC',snacks:'#EDFDF4,#B8EDD4',drikkevarer:'#EDF2FC,#C4D4F4',suppe:'#FAF4EC,#F0D4B8','bagværk':'#FAF4E8,#E8D8B4'};
   const payload={
-    title, cat, lbl:CLBLS[cat]||cat,
+    title, cat, cat2, lbl:CLBLS[cat]||cat,
     diff:document.getElementById('ef-diff').value,
     tid:document.getElementById('ef-time').value.trim()||'–',
     pers:document.getElementById('ef-pers').value.trim()||'–',

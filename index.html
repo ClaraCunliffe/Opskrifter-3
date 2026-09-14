@@ -4119,7 +4119,7 @@ async function loadPublicRecipes() {
     if(r.ok && r.data && r.data.length > 0) {
       publicRecipes = r.data.map(r => ({
         id: r.id,
-        title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
+        title: r.title, cat: r.cat, cat2: r.cat2 || null, lbl: r.lbl, diff: r.diff,
         time: r.tid, pers: r.pers, desc: r.beskrivelse,
         bg: r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
         img: r.img_url || null,
@@ -4600,7 +4600,7 @@ function getFiltered(pool){
   let list=src.filter(r=>{
     let okCat=true;
     if(!pool&&activeView&&activeView!=='alle'&&activeView!=='favoritter'&&activeView!=='discover'){
-      okCat=r.cat===activeView;
+      okCat=r.cat===activeView||r.cat2===activeView;
       if(okCat&&activeSub){const fn=SUBCATS[activeView]&&SUBCATS[activeView][activeSub];if(fn)okCat=fn(r);}
     }
     const okQ=!globalQ||r.title.toLowerCase().includes(globalQ)||r.desc.toLowerCase().includes(globalQ);
