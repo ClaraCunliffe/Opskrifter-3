@@ -38,6 +38,12 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 /* FILTER BAR */
 .filter-bar{background:#F6FAFE;border-bottom:1px solid var(--border);padding:.55rem 0;display:none}
 .filter-bar.visible{display:block}
+/* Guaranteed hide on views that don't need filter */
+body:has(#view-ugeplan.active) #filterBar,
+body:has(#view-swipe.active) #filterBar,
+body:has(#view-guide.active) #filterBar,
+body:has(#view-fridge.active) #filterBar,
+body:has(#view-mine.active) #filterBar { display: none !important; }
 .filter-bar-inner{max-width:1320px;margin:auto;padding:0 2.5rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;overflow:visible}
 .fb-ing{display:flex;align-items:center;gap:.5rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:50px;padding:.38rem .85rem;transition:all .2s;min-width:200px}
 .fb-ing:focus-within{background:var(--surface);border-color:var(--accent2);box-shadow:0 0 0 3px rgba(123,94,167,.08)}
