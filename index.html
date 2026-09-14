@@ -1516,7 +1516,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchSub('morgenmad','æg')">Klassisk morgenmad</button>
           <button class="mdi" onclick="switchSub('morgenmad','brød-morgen')">Brunch</button>
           <button class="mdi" onclick="switchSub('morgenmad','sund-morgen')">Sund morgen</button>
-          <button class="mdi" onclick="switchSub('morgenmad','hurtig-morgen')">Nem</button>
+          <button class="mdi" onclick="switchSub('morgenmad','hurtig-morgen')">Nemt</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('morgenmad',document.getElementById('mi-morgenmad'))">Alle morgenmad</button>
         </div>
@@ -1526,9 +1526,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <div class="mdrop">
           <button class="mdi" onclick="switchSub('frokost','salat')">Salat</button>
           <button class="mdi" onclick="switchSub('frokost','smørrebrød')">Klassisk dansk</button>
-          <button class="mdi" onclick="switchSub('frokost','bowl')">Flot</button>
-          <button class="mdi" onclick="switchSub('frokost','mealprep')">Forberedt</button>
-          <button class="mdi" onclick="switchSub('frokost','hurtig-frokost')">Nem</button>
+          <button class="mdi" onclick="switchSub('frokost','mealprep')">Meal prep</button>
+          <button class="mdi" onclick="switchSub('frokost','hurtig-frokost')">Nemt</button>
           <button class="mdi" onclick="switchSub('frokost','sund-frokost')">Sund</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('frokost',document.getElementById('mi-frokost'))">Alle frokost</button>
@@ -1544,7 +1543,6 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchSub('aftensmad','vegetar')">Salat</button>
           <button class="mdi" onclick="switchSub('aftensmad','pasta')">Pasta</button>
           <button class="mdi" onclick="switchSub('aftensmad','kartofler')">Kartofler</button>
-          <button class="mdi" onclick="switchSub('aftensmad','gryde')">Comfort food</button>
           <button class="mdi" onclick="switchSub('aftensmad','suppe-aften')">Suppe</button>
           <button class="mdi" onclick="switchSub('aftensmad','familie')">Familie</button>
           <button class="mdi" onclick="switchSub('aftensmad','weekend-aften')">Show-off</button>
@@ -1559,8 +1557,8 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchSub('dessert','tærter')">Tærter</button>
           <button class="mdi" onclick="switchSub('dessert','is')">Iskoldt</button>
           <button class="mdi" onclick="switchSub('dessert','frugt')">Frugt</button>
-          <button class="mdi" onclick="switchSub('dessert','nem-dessert')">Nem</button>
-          <button class="mdi" onclick="switchSub('dessert','fest-dessert')">Imponerende</button>
+          <button class="mdi" onclick="switchSub('dessert','nem-dessert')">Nemt</button>
+          <button class="mdi" onclick="switchSub('dessert','fest-dessert')">Show-off</button>
           <button class="mdi" onclick="switchSub('dessert','sund-dessert')">Guilt-free</button>
           <button class="mdi" onclick="switchSub('dessert','klassisk')">Danske klassikere</button>
           <div class="mds"></div>
@@ -1575,9 +1573,9 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchSub('snacks','dip')">Filmaften</button>
           <button class="mdi" onclick="switchSub('snacks','brød-snack')">Fingermad</button>
           <button class="mdi" onclick="switchSub('snacks','protein-snack')">Protein</button>
-          <button class="mdi" onclick="switchSub('snacks','børn')">Til de små</button>
+          <button class="mdi" onclick="switchSub('snacks','børn')">Børn</button>
           <button class="mdi" onclick="switchSub('snacks','fest-snack')">Festmad</button>
-          <button class="mdi" onclick="switchSub('snacks','hurtig-snack')">Nem</button>
+          <button class="mdi" onclick="switchSub('snacks','hurtig-snack')">Nemt</button>
           <div class="mds"></div>
           <button class="mdi" onclick="switchMenu('snacks',document.getElementById('mi-snacks'))">Alle snacks</button>
         </div>
@@ -3741,30 +3739,30 @@ const SHAPES={
 const SUBCAT_LABELS = {
   // Morgenmad
   grød:'Grød & bowls', æg:'Æg', 'brød-morgen':'Brød & bagværk',
-  'sund-morgen':'Sund morgenmad', 'hurtig-morgen':'Nem',
+  'sund-morgen':'Sund morgenmad', 'hurtig-morgen':'Nemt',
   hurtig:'Hurtig morgenmad', weekend:'Weekendmorgenmad',
   // Frokost
   salat:'Salat', smørrebrød:'Klassisk dansk',
   bowl:'Flot',
-  mealprep:'Forberedt', 'hurtig-frokost':'Nem', 'sund-frokost':'Sund',
+  mealprep:'Meal prep', 'hurtig-frokost':'Nemt', 'sund-frokost':'Sund',
   // Aftensmad
   hverdagsret:'Hverdagsretter', forret:'Forret', kød:'Kød', fisk:'Fra havet',
   vegetar:'Salat', pasta:'Pasta', kartofler:'Kartofler',
-  gryde:'Comfort food', 'suppe-aften':'Suppe',
+  'suppe-aften':'Suppe',
   familie:'Familie',
   'weekend-aften':'Show-off',
   // Dessert
   kager:'Kager', tærter:'Tærter', is:'Iskoldt',
   frugt:'Frugt',
-  'nem-dessert':'Nem',
-  'fest-dessert':'Imponerende', 'sund-dessert':'Guilt-free',
+  'nem-dessert':'Nemt',
+  'fest-dessert':'Show-off', 'sund-dessert':'Guilt-free',
   klassisk:'Danske klassikere',
   // Snacks
   'sød-snack':'Sødt', salt:'Salt',
   dip:'Filmaften', 'brød-snack':'Fingermad',
   'protein-snack':'Protein',
-  børn:'Til de små', 'fest-snack':'Festmad',
-  'hurtig-snack':'Nem',
+  børn:'Børn', 'fest-snack':'Festmad',
+  'hurtig-snack':'Nemt',
   // Drikkevarer
   smoothie:'Smoothie og juice', kaffe:'Kaffepause',
   te:'Varme drikke', lemonade:'Sommerdrikke',
@@ -5798,9 +5796,9 @@ function renderMine(){
 let rfUploadedImg=null;
 
 const RF_SUBCATS={
-  morgenmad:[{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch'},{v:'sund-morgen',l:'Sund morgen'},{v:'hurtig-morgen',l:'Nem'}],
-  frokost:[{v:'salat',l:'Første-dates-safe'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'bowl',l:'Flot'},{v:'mealprep',l:'Forberedt'},{v:'hurtig-frokost',l:'Nem'}],
-  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'forret',l:'Forret'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Salat'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'gryde',l:'Comfort food'},{v:'suppe-aften',l:'Suppe'},{v:'familie',l:'Familie'}],
+  morgenmad:[{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch'},{v:'sund-morgen',l:'Sund morgen'},{v:'hurtig-morgen',l:'Nemt'}],
+  frokost:[{v:'salat',l:'Første-dates-safe'},{v:'smørrebrød',l:'Klassisk dansk'},{v:'mealprep',l:'Meal prep'},{v:'hurtig-frokost',l:'Nemt'}],
+  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'forret',l:'Forret'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Salat'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'suppe-aften',l:'Suppe'},{v:'familie',l:'Familie'}],
   dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Iskoldt'},{v:'frugt',l:'Frugt'}],
   snacks:[{v:'sund',l:'Grønne flexer'},{v:'sød-snack',l:'Sødt'},{v:'salt',l:'Salt-crush'},{v:'dip',l:'Filmaften'}],
   drikkevarer:[{v:'smoothie',l:'Smoothie og juice'},{v:'kaffe',l:'Kaffepause'},{v:'te',l:'Varme drikke'},{v:'mocktail',l:'Alkoholfri'},{v:'cocktail',l:'Cocktails'}],
