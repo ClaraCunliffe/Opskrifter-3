@@ -251,8 +251,15 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
             <option value="drikkevarer">Drikkevarer</option>
           </select>
         </div>
+        <div class="field"><label>Underkategori</label><select id="ef-subcat"><option value="">Ingen</option></select></div>
+        <div class="field"><label>Sværhed</label>
+          <select id="ef-diff"><option value="Let">Let</option><option value="Middel">Middel</option><option value="Svær">Svær</option></select>
+        </div>
+      </div>
+      <!-- Kategori 2 + Underkategori 2 (valgfri) -->
+      <div class="frow">
         <div class="field"><label>Kategori 2 (valgfri)</label>
-          <select id="ef-cat2">
+          <select id="ef-cat2" onchange="loadSubcats2()">
             <option value="">— Ingen —</option>
             <option value="morgenmad">Morgenmad</option>
             <option value="frokost">Frokost</option>
@@ -262,10 +269,7 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
             <option value="drikkevarer">Drikkevarer</option>
           </select>
         </div>
-        <div class="field"><label>Underkategori</label><select id="ef-subcat"><option value="">Ingen</option></select></div>
-        <div class="field"><label>Sværhed</label>
-          <select id="ef-diff"><option value="Let">Let</option><option value="Middel">Middel</option><option value="Svær">Svær</option></select>
-        </div>
+        <div class="field"><label>Underkategori 2 (valgfri)</label><select id="ef-subcat2"><option value="">— Ingen —</option></select></div>
       </div>
       <!-- Tid + Portioner -->
       <div class="frow">
@@ -782,6 +786,13 @@ function loadSubcats(){
   sel.innerHTML='<option value="">Ingen underkategori</option>'+subs.map(s=>`<option value="${s.v}">${s.l}</option>`).join('');
 }
 
+function loadSubcats2(){
+  const cat=document.getElementById('ef-cat2').value;
+  const sel=document.getElementById('ef-subcat2');
+  const subs=cat?(SUBCATS[cat]||[]):[];
+  sel.innerHTML='<option value="">— Ingen —</option>'+subs.map(s=>`<option value="${s.v}">${s.l}</option>`).join('');
+}
+
 // MODAL
 function openModal(id){
   editId=id;
@@ -795,9 +806,16 @@ function openModal(id){
   document.getElementById('ef-cat').value=r?.cat||'aftensmad';
   document.getElementById('ef-cat2').value=r?.cat2||'';
   loadSubcats();
+  loadSubcats2();
   const subs=SUBCATS[r?.cat||'aftensmad']||[];
   const existSub=(r?.tags||[]).find(t=>subs.some(s=>s.v===t));
   document.getElementById('ef-subcat').value=existSub||'';
+  // subcat2 (find a tag matching a subcat in cat2)
+  if(r?.cat2){
+    const subs2=SUBCATS[r.cat2]||[];
+    const existSub2=(r.tags||[]).find(t=>t!==existSub&&subs2.some(s=>s.v===t));
+    document.getElementById('ef-subcat2').value=existSub2||'';
+  }
   document.getElementById('ef-diff').value=r?.diff||'Middel';
   document.getElementById('ef-time').value=r?.tid||'';
   document.getElementById('ef-pers').value=r?.pers||'';
@@ -1026,8 +1044,10 @@ async function saveRecipe(){
   const cat=document.getElementById('ef-cat').value;
   const cat2=document.getElementById('ef-cat2').value||null;
   const subcat=document.getElementById('ef-subcat').value;
+  const subcat2=document.getElementById('ef-subcat2').value;
   const tags=[...document.querySelectorAll('#diet-pills input:checked')].map(c=>c.value);
   if(subcat)tags.unshift(subcat);
+  if(subcat2&&subcat2!==subcat)tags.unshift(subcat2);
   // Add oven symbols to tags with 'ovn:' prefix
   const ovnSyms=[...document.querySelectorAll('#oven-pills input:checked')].map(c=>'ovn:'+c.value);
   tags.push(...ovnSyms);
