@@ -4577,7 +4577,7 @@ function cardHTML(r,i){
       <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
-        ${r.cat2?`<span class="ccat-badge">${CLBLS[r.cat2]||r.cat2}</span>`:''}
+        ${r.cat2?`<span class="ccat-badge">${CAT_LABELS[r.cat2]||r.cat2}</span>`:''}
         ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700">${dietMap[d]}</span>`:'';})()}
       </div>
       <button class="cfav${sv?' saved':''}" onclick="toggleSave('${r.id}',event)">
@@ -5248,7 +5248,7 @@ function renderPanelBody(id){
   document.getElementById('pCat').textContent=r.lbl;
   const pCat2El = document.getElementById('pCat2');
   if(r.cat2){
-    pCat2El.textContent = CLBLS[r.cat2] || r.cat2;
+    pCat2El.textContent = CAT_LABELS[r.cat2] || r.cat2;
     pCat2El.style.display = '';
   } else {
     pCat2El.style.display = 'none';
@@ -5765,7 +5765,7 @@ function renderMine(){
         <div class="cbadges">
         <span class="cdiff">${r.diff}</span>
         <span class="ccat-badge">${r.lbl}</span>
-        ${r.cat2?`<span class="ccat-badge">${CLBLS[r.cat2]||r.cat2}</span>`:''}
+        ${r.cat2?`<span class="ccat-badge">${CAT_LABELS[r.cat2]||r.cat2}</span>`:''}
         ${(()=>{const ex=rx(r.id);const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};const allDiet=[...( ex.diet||[]),...(r.tags||[])];const d=Object.keys(dietMap).find(k=>allDiet.includes(k));return d?`<span class="ccat-badge" style="background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700">${dietMap[d]}</span>`:'';})()}
       </div>
         ${(()=>{const s=curSeason();const ex=rx(r.id);const seas={forår:'🌱 Forår',sommer:'☀️ Sommer',efterår:'🍂 Efterår',vinter:'❄️ Vinter'};return ex.season&&!ex.season.includes('all')&&ex.season.includes(s)?`<span class="season-badge">${seas[s]||''}</span>`:''})()}
