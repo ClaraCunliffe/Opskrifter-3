@@ -4112,87 +4112,32 @@ async function loadPopularRecipes(retryCount = 0) {
 
 async function loadPublicRecipes() {
   try {
-    // PHASE 1: Fetch essentials without img_url and without cat2 (safer — cat2 may not exist)
-    const selectCols = 'id,title,cat,lbl,diff,tid,pers,beskrivelse,bg,ing,steps,tags,allergy,kcal,protein,carbs,fat';
-    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000&select='+selectCols, {
-      headers: { 'Range': '0-999' }
+    // Add explicit limit and range header to fetch ALL rows (default might be 20)
+    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000', {
+      headers: { 'Range': '0-999', 'Prefer': 'count=exact' }
     });
-    if(!r.ok || !r.data){
-      console.error('Failed to load recipes. Status:', r.status, 'Data:', r.data);
-      return;
-    }
-    if(r.data.length === 0){
-      console.warn('No recipes in database');
-      return;
-    }
-    publicRecipes = r.data.map(row => ({
-      id: row.id,
-      title: row.title, cat: row.cat, cat2: null, lbl: row.lbl, diff: row.diff,
-      time: row.tid, pers: row.pers, desc: row.beskrivelse,
-      bg: row.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
-      img: null, // Loaded lazily
-      ing: row.ing || [], steps: row.steps || [], tags: row.tags || [],
-      allergy: row.allergy || [],
-      kcal: row.kcal, protein: row.protein, carbs: row.carbs, fat: row.fat,
-      fromSupabase: true
-    }));
-    console.log(`Loaded ${publicRecipes.length} public recipes (phase 1 — essentials)`);
-    // Update hero count and render grid immediately
-    const hCEl = document.getElementById('hC');
-    if(hCEl) hCEl.textContent = publicRecipes.length;
-    if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
-      try { renderGrid(); } catch(e){}
-    }
-    // PHASE 2: Lazy-load images AND cat2 in background chunks
-    loadImagesLazily();
-  } catch(e) { console.warn('Could not load public recipes:', e.message); }
-}
-
-async function loadImagesLazily(){
-  const chunkSize = 8;
-  let totalWithImages = 0;
-  for(let i = 0; i < publicRecipes.length; i += chunkSize){
-    const chunk = publicRecipes.slice(i, i + chunkSize);
-    const ids = chunk.map(r => `"${r.id}"`).join(',');
-    try {
-      const resp = await sbFetch(`/rest/v1/public_opskrifter?id=in.(${ids})&select=id,img_url`);
-      if(resp.ok && Array.isArray(resp.data)){
-        let chunkWithImg = 0;
-        resp.data.forEach(row => {
-          const target = publicRecipes.find(r => String(r.id) === String(row.id));
-          if(target && row.img_url){
-            target.img = row.img_url;
-            chunkWithImg++;
-            totalWithImages++;
-          }
-        });
-        console.log(`Chunk ${Math.floor(i/chunkSize)+1}: ${resp.data.length} rows, ${chunkWithImg} with images`);
-        if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
-          try { renderGrid(); } catch(e){}
-        }
-      } else {
-        console.warn(`Chunk fetch failed:`, resp.status, resp.data);
-      }
-    } catch(e) {
-      console.warn('Chunk error:', e.message);
-    }
-  }
-  console.log(`All images loaded — ${totalWithImages}/${publicRecipes.length} recipes have images`);
-  // Also load cat2 in a separate call
-  try {
-    const catResp = await sbFetch(`/rest/v1/public_opskrifter?select=id,cat2&limit=1000`, {
-      headers: { 'Range': '0-999' }
-    });
-    if(catResp.ok && Array.isArray(catResp.data)){
-      catResp.data.forEach(row => {
-        const target = publicRecipes.find(r => String(r.id) === String(row.id));
-        if(target) target.cat2 = row.cat2 || null;
-      });
+    if(r.ok && r.data && r.data.length > 0) {
+      publicRecipes = r.data.map(r => ({
+        id: r.id,
+        title: r.title, cat: r.cat, cat2: r.cat2 || null, lbl: r.lbl, diff: r.diff,
+        time: r.tid, pers: r.pers, desc: r.beskrivelse,
+        bg: r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
+        img: r.img_url || null,
+        ing: r.ing || [], steps: r.steps || [], tags: r.tags || [],
+        allergy: r.allergy || [],
+        kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat,
+        fromSupabase: true
+      }));
+      console.log(`Loaded ${publicRecipes.length} public recipes from Supabase`);
+      // Update hero count directly (in case updateHero isn't called yet)
+      const hCEl = document.getElementById('hC');
+      if(hCEl) hCEl.textContent = publicRecipes.length;
+      // Re-render grid if we're currently on a recipe view
       if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
         try { renderGrid(); } catch(e){}
       }
     }
-  } catch(e){ console.warn('cat2 fetch failed (column may not exist):', e.message); }
+  } catch(e) { console.warn('Could not load public recipes:', e.message); }
 }
 
 // Load images in background chunks so the UI stays responsive
