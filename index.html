@@ -4113,10 +4113,19 @@ async function loadPopularRecipes(retryCount = 0) {
 async function loadPublicRecipes() {
   try {
     // PHASE 1: Fetch essentials WITHOUT the huge img_url field (much faster)
-    const selectCols = 'id,title,cat,cat2,lbl,diff,tid,pers,beskrivelse,bg,ing,steps,tags,allergy,kcal,protein,carbs,fat';
-    const r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000&select='+selectCols, {
+    // Try with cat2 first; fall back to without if column doesn't exist
+    let selectCols = 'id,title,cat,cat2,lbl,diff,tid,pers,beskrivelse,bg,ing,steps,tags,allergy,kcal,protein,carbs,fat';
+    let r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000&select='+selectCols, {
       headers: { 'Range': '0-999', 'Prefer': 'count=exact' }
     });
+    // If cat2 column doesn't exist, retry without it
+    if(!r.ok || !r.data){
+      console.warn('cat2 column may not exist, retrying without it');
+      selectCols = 'id,title,cat,lbl,diff,tid,pers,beskrivelse,bg,ing,steps,tags,allergy,kcal,protein,carbs,fat';
+      r = await sbFetch('/rest/v1/public_opskrifter?order=created_at.asc&limit=1000&select='+selectCols, {
+        headers: { 'Range': '0-999', 'Prefer': 'count=exact' }
+      });
+    }
     if(r.ok && r.data && r.data.length > 0) {
       publicRecipes = r.data.map(r => ({
         id: r.id,
@@ -4130,15 +4139,14 @@ async function loadPublicRecipes() {
         fromSupabase: true
       }));
       console.log(`Loaded ${publicRecipes.length} public recipes (phase 1 — no images)`);
-      // Update hero count directly (in case updateHero isn't called yet)
       const hCEl = document.getElementById('hC');
       if(hCEl) hCEl.textContent = publicRecipes.length;
-      // Re-render grid immediately with placeholder gradients
       if(typeof renderGrid === 'function' && document.getElementById('rGrid')) {
         try { renderGrid(); } catch(e){}
       }
-      // PHASE 2: Fetch images in background, in small chunks
       loadImagesLazily();
+    } else {
+      console.warn('Failed to load recipes:', r);
     }
   } catch(e) { console.warn('Could not load public recipes:', e.message); }
 }
