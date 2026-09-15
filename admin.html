@@ -190,6 +190,7 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
       <div class="stat"><div class="sn" id="s-cats">0</div><div class="sl">Kategorier</div></div>
     </div>
     <button class="new-btn" onclick="openModal(null)">+ Ny opskrift</button>
+    <button class="new-btn" onclick="migrateImagesToStorage()" id="migrate-btn" style="background:#F5E8D0;color:#8B6914;border:1px solid #E5C480;margin-left:.5rem">🔄 Migrer eksisterende billeder til Storage</button>
     <div class="filters">
       <input type="text" id="f-search" placeholder="Søg…" oninput="renderList()">
       <select id="f-cat" onchange="renderList()">
@@ -430,6 +431,45 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 <script>
 const SB_URL='https://dwvlhzvjaxojexufuagd.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3dmxoenZqYXhvamV4dWZ1YWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5NzYwNjQsImV4cCI6MjA5NTU1MjA2NH0.ibx0CrO-q1cUjh4CJYHhy0BKCf0kG98WMwut0L58QcQ';
+const STORAGE_BUCKET = 'recipe-images';
+
+// Convert base64 data URL to Blob
+function base64ToBlob(dataUrl){
+  const [meta, base64] = dataUrl.split(',');
+  const mime = meta.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+  const bytes = atob(base64);
+  const buf = new Uint8Array(bytes.length);
+  for(let i = 0; i < bytes.length; i++) buf[i] = bytes.charCodeAt(i);
+  return new Blob([buf], {type: mime});
+}
+
+// Upload base64 image to Supabase Storage, return public URL
+async function uploadImageToStorage(dataUrl){
+  const blob = base64ToBlob(dataUrl);
+  const ext = blob.type.split('/')[1] || 'jpg';
+  // Generate unique filename
+  const uid = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2));
+  const fileName = `${uid}.${ext}`;
+  const path = fileName;
+  const uploadUrl = `${SB_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`;
+  const token = localStorage.getItem('sb_token') || SB_KEY;
+  const resp = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'apikey': SB_KEY,
+      'Content-Type': blob.type,
+      'x-upsert': 'true'
+    },
+    body: blob
+  });
+  if(!resp.ok){
+    const errText = await resp.text();
+    throw new Error(`Upload failed (${resp.status}): ${errText}`);
+  }
+  // Return public URL
+  return `${SB_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+}
 const ADMIN='moegelbergclara@gmail.com';
 let token=null, recipes=[], editId=null, uploadedImg=null;
 
@@ -1058,6 +1098,65 @@ function applyImgAdjust(){
 }
 
 // SAVE
+// Migrate existing base64 images to Supabase Storage
+async function migrateImagesToStorage(){
+  if(!confirm('Migrer alle base64-billeder til Storage? Dette kan tage flere minutter og ændrer alle opskrifter.')) return;
+  const btn = document.getElementById('migrate-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Henter opskrifter…';
+  
+  try {
+    // Fetch all recipes WITH img_url (need the base64 data)
+    const r = await sb('/rest/v1/public_opskrifter?select=id,img_url&limit=1000', {
+      headers: { 'Range': '0-999' }
+    });
+    if(!r.ok){
+      toast('Kunne ikke hente opskrifter','err');
+      btn.disabled = false;
+      btn.textContent = '🔄 Migrer eksisterende billeder til Storage';
+      return;
+    }
+    const withBase64 = (r.data||[]).filter(row => row.img_url && row.img_url.startsWith('data:'));
+    const skipped = (r.data||[]).length - withBase64.length;
+    
+    if(withBase64.length === 0){
+      toast('Ingen base64-billeder at migrere','ok');
+      btn.disabled = false;
+      btn.textContent = '🔄 Migrer eksisterende billeder til Storage';
+      return;
+    }
+    
+    let done = 0, failed = 0;
+    for(const row of withBase64){
+      btn.textContent = `⏳ Migrerer ${done+1}/${withBase64.length}…`;
+      try {
+        const newUrl = await uploadImageToStorage(row.img_url);
+        // Update the recipe with the new URL
+        const patchResp = await sb(`/rest/v1/public_opskrifter?id=eq.${row.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ img_url: newUrl })
+        });
+        if(patchResp.ok) done++;
+        else failed++;
+      } catch(e){
+        console.error('Failed for recipe', row.id, e);
+        failed++;
+      }
+    }
+    
+    btn.disabled = false;
+    btn.textContent = '🔄 Migrer eksisterende billeder til Storage';
+    toast(`Migration færdig: ${done} lykkedes, ${failed} fejlede${skipped ? `, ${skipped} sprunget over` : ''} ✓`,'ok');
+    // Reload recipes to show new state
+    await load();
+  } catch(e){
+    console.error(e);
+    toast('Migration fejlede: ' + e.message, 'err');
+    btn.disabled = false;
+    btn.textContent = '🔄 Migrer eksisterende billeder til Storage';
+  }
+}
+
 async function saveRecipe(){
   const title=document.getElementById('ef-title').value.trim();
   if(!title){toast('Titel er påkrævet','err');return;}
@@ -1086,6 +1185,17 @@ async function saveRecipe(){
       imgUrl = rawImgSrc || null;
     } else {
       imgUrl = inputVal || null;
+    }
+  }
+  // If imgUrl is a base64 data URL, upload it to Supabase Storage
+  if(imgUrl && imgUrl.startsWith('data:')){
+    try {
+      toast('Uploader billede…','ok');
+      imgUrl = await uploadImageToStorage(imgUrl);
+    } catch(e){
+      console.error('Storage upload failed:', e);
+      toast('Kunne ikke uploade billede: ' + e.message, 'err');
+      return;
     }
   }
   const catBgMap={morgenmad:'#FDF0EC,#F4CEC4',frokost:'#EDF2FC,#C4D4F4',aftensmad:'#F4ECFA,#D8C4F0',dessert:'#FAECF4,#F0C4DC',snacks:'#EDFDF4,#B8EDD4',drikkevarer:'#EDF2FC,#C4D4F4',suppe:'#FAF4EC,#F0D4B8','bagværk':'#FAF4E8,#E8D8B4'};
