@@ -447,16 +447,16 @@ function base64ToBlob(dataUrl){
 async function uploadImageToStorage(dataUrl){
   const blob = base64ToBlob(dataUrl);
   const ext = blob.type.split('/')[1] || 'jpg';
-  // Generate unique filename
   const uid = crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(36).slice(2));
   const fileName = `${uid}.${ext}`;
   const path = fileName;
   const uploadUrl = `${SB_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`;
-  const token = localStorage.getItem('sb_token') || SB_KEY;
+  // Use the admin's logged-in token (stored under 'adm_tok'), not the anon key
+  const authToken = token || localStorage.getItem('adm_tok') || SB_KEY;
   const resp = await fetch(uploadUrl, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${authToken}`,
       'apikey': SB_KEY,
       'Content-Type': blob.type,
       'x-upsert': 'true'
@@ -467,7 +467,6 @@ async function uploadImageToStorage(dataUrl){
     const errText = await resp.text();
     throw new Error(`Upload failed (${resp.status}): ${errText}`);
   }
-  // Return public URL
   return `${SB_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
 }
 const ADMIN='moegelbergclara@gmail.com';
@@ -1127,6 +1126,7 @@ async function migrateImagesToStorage(){
     }
     
     let done = 0, failed = 0;
+    const errors = [];
     for(const row of withBase64){
       btn.textContent = `⏳ Migrerer ${done+1}/${withBase64.length}…`;
       try {
@@ -1136,17 +1136,29 @@ async function migrateImagesToStorage(){
           method: 'PATCH',
           body: JSON.stringify({ img_url: newUrl })
         });
-        if(patchResp.ok) done++;
-        else failed++;
+        if(patchResp.ok){
+          done++;
+          console.log(`✓ Migrated recipe ${row.id} → ${newUrl}`);
+        } else {
+          failed++;
+          errors.push(`PATCH failed for ${row.id}: ${JSON.stringify(patchResp.data)}`);
+          console.error(`✗ PATCH failed for ${row.id}:`, patchResp);
+        }
       } catch(e){
         console.error('Failed for recipe', row.id, e);
         failed++;
+        errors.push(`Upload failed for ${row.id}: ${e.message}`);
       }
     }
     
     btn.disabled = false;
     btn.textContent = '🔄 Migrer eksisterende billeder til Storage';
-    toast(`Migration færdig: ${done} lykkedes, ${failed} fejlede${skipped ? `, ${skipped} sprunget over` : ''} ✓`,'ok');
+    if(errors.length){
+      console.log('Migration errors:', errors);
+      toast(`Migration: ${done} lykkedes, ${failed} fejlede — se F12 console`,'err');
+    } else {
+      toast(`Migration færdig: ${done} lykkedes ✓`,'ok');
+    }
     // Reload recipes to show new state
     await load();
   } catch(e){
