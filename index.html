@@ -7936,8 +7936,12 @@ function swipeAction(action){
   const cards = Array.from(document.querySelectorAll('.swipe-card:not(.swiped-out)'));
   cards.sort((a, b) => parseInt(a.dataset.stackPos) - parseInt(b.dataset.stackPos));
   const topCard = cards[0];
-  if(!topCard) return;
+  if(!topCard){
+    console.log('SWIPE: No top card found, aborting');
+    return;
+  }
   const rid = topCard.dataset.rid;
+  console.log(`SWIPE ${action}: rid=${rid}, ${cards.length} visible cards, ${swipeQueue.length} in queue before filter`);
   
   // Remove from queue immediately
   swipeQueue = swipeQueue.filter(r => String(r.id) !== String(rid));
@@ -7964,10 +7968,9 @@ function swipeAction(action){
     }
   } else {
     swipeSkipped.add(String(rid));
-    // Note: swipeSkipped is session-only, not persisted
   }
   
-  // Promote remaining visible cards and append a new one at the bottom if queue has more
+  // Promote remaining visible cards
   const remaining = cards.slice(1);
   remaining.forEach((card, i) => {
     card.dataset.stackPos = String(i);
@@ -7976,26 +7979,30 @@ function swipeAction(action){
     card.style.transition = 'transform .3s ease-out';
     card.style.transform = `translateY(${translateY}px) scale(${scale})`;
     card.style.zIndex = String(100 - i);
+    // IMPORTANT: reset opacity in case a previous drag left something bad
+    card.style.opacity = '1';
   });
   
-  // If we have fewer than 3 visible cards and there are more in queue, append one
+  // Determine how many more we need to reach 3 visible cards
   const visibleCount = remaining.length;
-  if(visibleCount < 3 && swipeQueue.length > visibleCount){
-    const nextRecipe = swipeQueue[visibleCount];
-    if(nextRecipe){
-      const stack = document.getElementById('swipeStack');
-      const newCardHTML = swipeCardHTML(nextRecipe, visibleCount);
-      // Insert at the beginning of stack so it goes behind existing cards visually
-      stack.insertAdjacentHTML('afterbegin', newCardHTML);
-    }
-  }
+  const stack = document.getElementById('swipeStack');
+  // Get IDs of cards currently in DOM (not swiped)
+  const visibleRids = new Set(remaining.map(c => c.dataset.rid));
+  // Find next recipe from queue that isn't already visible
+  const toAdd = swipeQueue.filter(r => !visibleRids.has(String(r.id))).slice(0, 3 - visibleCount);
+  console.log(`SWIPE: ${remaining.length} promoted, appending ${toAdd.length} new: [${toAdd.map(r=>r.id).join(',')}]`);
+  
+  toAdd.forEach((recipe, idx) => {
+    const pos = visibleCount + idx;
+    const newCardHTML = swipeCardHTML(recipe, pos);
+    stack.insertAdjacentHTML('afterbegin', newCardHTML);
+  });
   
   // Remove the swiped card from DOM after animation completes
   setTimeout(() => {
     if(topCard.parentNode) topCard.remove();
-    // If queue is now empty, show empty state
-    if(swipeQueue.length === 0){
-      swipeRenderStack();
+    if(swipeQueue.length === 0 && document.querySelectorAll('.swipe-card:not(.swiped-out)').length === 0){
+      swipeRenderStack(); // Shows empty state
     }
   }, 400);
 }
