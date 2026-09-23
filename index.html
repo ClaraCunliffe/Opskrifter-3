@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>DailyPlate</title>
+<title>Meals with Clara</title>
 <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" type="text/javascript"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
 <style>
@@ -681,8 +681,13 @@ body:has(#view-mine.active) #filterBar { display: none !important; }
 .login-screen{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#C8E8FF 0%,#DCF0FF 30%,#E8EAFF 60%,#EDE6FA 100%);z-index:1000;align-items:center;justify-content:center;padding:1rem}
 .login-screen.hidden{display:none}
 .login-card{background:#fff;border-radius:20px;padding:2.4rem 2.6rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(100,60,160,.16);border:1px solid var(--border)}
-.login-logo{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:300;color:var(--text);margin-bottom:.2rem;letter-spacing:-.02em}
-.login-logo strong{font-weight:400;color:var(--accent)}
+.login-logo{margin-bottom:.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.login-logo-icon{width:80px;height:80px;background:#fff;border:2px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);box-shadow:0 6px 24px rgba(123,94,167,.15);position:relative}
+.login-logo-mono{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:3rem;letter-spacing:-.04em;line-height:1;transform:translateY(-.03em)}
+.login-logo-text{display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:'Fraunces',serif}
+.llog1{color:var(--text);font-weight:400;font-style:italic;font-size:2rem;letter-spacing:-.02em;line-height:1;white-space:nowrap}
+.llog2{color:var(--text3);font-weight:500;font-size:.7rem;text-transform:uppercase;letter-spacing:.22em;font-family:'Inter',sans-serif;font-style:normal;line-height:1.3;text-align:center;max-width:280px}
+.login-logo-divider{width:32px;height:1px;background:var(--accent);opacity:.35;margin:.1rem 0}
 .login-tagline{font-size:.78rem;color:var(--text3);margin-bottom:.6rem}
 .login-hint{font-size:.78rem;color:var(--accent);background:var(--accent-bg);border-radius:8px;padding:.5rem .8rem;margin-bottom:1rem;text-align:center}
 .login-tabs{display:flex;background:var(--surface2);border-radius:8px;padding:3px;gap:2px;margin-bottom:1.5rem}
@@ -710,9 +715,12 @@ body:has(#view-mine.active) #filterBar { display: none !important; }
 .l-acc-user{font-size:.7rem;color:var(--text3)}
 /* User button in nav */
 .ntop{max-width:1320px;margin:auto;padding:.6rem 2.5rem;display:flex;align-items:center;gap:1rem}
-.nlogo{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;cursor:pointer;flex-shrink:0;letter-spacing:-.01em;display:flex;align-items:center}
-.nl1{color:var(--accent);font-weight:600}
-.nl2{color:var(--text)}
+.nlogo{cursor:pointer;flex-shrink:0;display:flex;align-items:center;gap:.7rem;line-height:1;text-decoration:none}
+.nlogo-icon{width:44px;height:44px;background:#fff;border:1.5px solid var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0;position:relative;box-shadow:0 2px 10px rgba(123,94,167,.12)}
+.nlogo-mono{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:1.55rem;letter-spacing:-.04em;line-height:1;transform:translateY(-.03em)}
+.nlogo-text{display:flex;flex-direction:column;gap:.15rem;font-family:'Fraunces',serif}
+.nl1{color:var(--text);font-weight:400;font-style:italic;font-size:1.25rem;letter-spacing:-.01em;line-height:1}
+.nl2{color:var(--text3);font-weight:500;font-size:.55rem;text-transform:uppercase;letter-spacing:.2em;font-family:'Inter',sans-serif;font-style:normal;line-height:1;padding-left:.05rem}
 header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
 .nav-user{position:relative}
 .nav-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent-bg);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
@@ -1344,29 +1352,29 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 }
 
 @media(max-width:640px){
-  .swipe-hero{padding:1.2rem 0 1rem}
-  .swipe-title{font-size:1.4rem;margin-bottom:.3rem}
-  .swipe-sub{font-size:.75rem;padding:0 .5rem}
-  .swipe-tag{font-size:.6rem;margin-bottom:.5rem}
-  .swipe-cats{padding:.7rem .8rem .2rem;gap:.3rem}
-  .swipe-cat{padding:.35rem .7rem;font-size:.7rem}
-  .swipe-container{padding:0 .8rem;min-height:auto;margin:.8rem auto 1.5rem;max-width:100%}
-  .swipe-stack{height:calc(100vh - 340px);min-height:340px;max-height:520px}
-  .swipe-card-img{min-height:0;flex:1 1 60%}
-  .swipe-card-body{padding:.7rem .9rem .8rem}
-  .swipe-card-title{font-size:1.1rem;margin-bottom:.2rem;line-height:1.2}
-  .swipe-card-desc{font-size:.75rem;line-height:1.4;margin-bottom:.35rem;-webkit-line-clamp:2}
-  .swipe-card-meta{font-size:.65rem;gap:.4rem}
-  .swipe-card-cat,.swipe-card-time{font-size:.6rem;padding:.2rem .5rem}
-  .swipe-card-overlay{padding:.6rem}
-  .swipe-indicator{top:.8rem;font-size:1.2rem;padding:.3rem .8rem}
-  .swipe-indicator-like{right:.8rem}
-  .swipe-indicator-skip{left:.8rem}
-  .swipe-actions{gap:.7rem;margin-top:.9rem}
-  .swipe-btn{width:44px;height:44px}
-  .swipe-btn-info{width:38px;height:38px}
-  .swipe-btn svg{width:18px;height:18px}
-  .swipe-btn-info svg{width:16px;height:16px}
+  .swipe-hero{padding:.8rem 0 .7rem}
+  .swipe-title{font-size:1.25rem;margin-bottom:.2rem}
+  .swipe-sub{font-size:.7rem;padding:0 .5rem;margin:0}
+  .swipe-tag{font-size:.58rem;margin-bottom:.35rem;padding:.2rem .55rem}
+  .swipe-cats{padding:.5rem .8rem .1rem;gap:.25rem}
+  .swipe-cat{padding:.28rem .6rem;font-size:.65rem}
+  .swipe-container{padding:0 .7rem;min-height:auto;margin:.5rem auto 1rem;max-width:100%}
+  .swipe-stack{height:calc(100dvh - 300px);min-height:300px;max-height:480px}
+  .swipe-card-img{min-height:0;flex:1 1 55%}
+  .swipe-card-body{padding:.55rem .8rem .65rem}
+  .swipe-card-title{font-size:1rem;margin-bottom:.15rem;line-height:1.2}
+  .swipe-card-desc{font-size:.7rem;line-height:1.35;margin-bottom:.3rem;-webkit-line-clamp:2}
+  .swipe-card-meta{font-size:.62rem;gap:.4rem}
+  .swipe-card-cat,.swipe-card-time{font-size:.58rem;padding:.18rem .45rem}
+  .swipe-card-overlay{padding:.5rem}
+  .swipe-indicator{top:.7rem;font-size:1.1rem;padding:.25rem .7rem}
+  .swipe-indicator-like{right:.7rem}
+  .swipe-indicator-skip{left:.7rem}
+  .swipe-actions{gap:.6rem;margin-top:.7rem}
+  .swipe-btn{width:42px;height:42px}
+  .swipe-btn-info{width:36px;height:36px}
+  .swipe-btn svg{width:17px;height:17px}
+  .swipe-btn-info svg{width:15px;height:15px}
 }
 
 /* Auto-generate meal plan */
@@ -1410,7 +1418,16 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
-    <div class="login-logo"><span class="llog1">Daily</span><span class="llog2">Plate</span></div>
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <span class="login-logo-mono">M</span>
+      </div>
+      <div class="login-logo-text">
+        <span class="llog1">Meals with Clara</span>
+        <div class="login-logo-divider"></div>
+        <span class="llog2">Recipes, meal plans &amp; everyday food</span>
+      </div>
+    </div>
     <div class="login-tagline">Din daglige inspiration</div>
     <div id="loginHint" class="login-hint" style="display:none">Log ind for at bruge favoritter, kalender, mine opskrifter og køleskab</div>
 
@@ -1497,7 +1514,15 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
 <!-- HEADER -->
 <header>
   <div class="ntop">
-    <div class="nlogo" onclick="switchMenu('alle')"><span class="nl1">Daily</span><span class="nl2">Plate</span></div>
+    <div class="nlogo" onclick="switchMenu('alle')">
+      <div class="nlogo-icon">
+        <span class="nlogo-mono">M</span>
+      </div>
+      <div class="nlogo-text">
+        <span class="nl1">Meals with Clara</span>
+        <span class="nl2">Recipes · Meal plans · Everyday food</span>
+      </div>
+    </div>
     <div class="nsearch" style="flex:1;max-width:340px">
       <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
       <input type="text" placeholder="Søg opskrifter…" oninput="onSearch()" id="headerSearch">
@@ -1580,7 +1605,7 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
           <button class="mdi" onclick="switchSub('aftensmad','forret')">Forret</button>
           <button class="mdi" onclick="switchSub('aftensmad','kød')">Kød</button>
           <button class="mdi" onclick="switchSub('aftensmad','fisk')">Fra havet</button>
-          <button class="mdi" onclick="switchSub('aftensmad','vegetar')">Salat og grønt</button>
+          <button class="mdi" onclick="switchSub('aftensmad','groent')">Salat og grønt</button>
           <button class="mdi" onclick="switchSub('aftensmad','pasta')">Pasta</button>
           <button class="mdi" onclick="switchSub('aftensmad','kartofler')">Kartofler</button>
           <button class="mdi" onclick="switchSub('aftensmad','suppe-aften')">Suppe</button>
@@ -3779,7 +3804,7 @@ const SUBCAT_LABELS = {
   mealprep:'Meal prep', 'sund-frokost':'Sundt',
   // Aftensmad
   hverdagsret:'Hverdagsretter', forret:'Forret', kød:'Kød', fisk:'Fra havet',
-  vegetar:'Salat og grønt', pasta:'Pasta', kartofler:'Kartofler',
+  groent:'Salat og grønt', pasta:'Pasta', kartofler:'Kartofler',
   'suppe-aften':'Suppe',
   familie:'Familie',
   'weekend-aften':'Show-off',
@@ -3824,7 +3849,7 @@ function getRecipeSubcat(r) {
 const SUBCATS={
   morgenmad:{hurtig:r=>r.tags.includes('hurtig'),weekend:r=>r.tags.includes('weekend')},
   frokost:{'smørrebrød':r=>r.tags.includes('smørrebrød'),salat:r=>r.tags.includes('salat')||r.subcat==='salat'},
-  aftensmad:{pasta:r=>r.tags.includes('pasta'),asiatisk:r=>r.tags.includes('asiatisk'),vegetar:r=>r.tags.includes('vegetar'),kylling:r=>r.tags.includes('kylling'),salat:r=>r.tags.includes('salat')||r.subcat==='salat'},
+  aftensmad:{pasta:r=>r.tags.includes('pasta'),asiatisk:r=>r.tags.includes('asiatisk'),groent:r=>r.tags.includes('groent')||r.tags.includes('vegetar'),kylling:r=>r.tags.includes('kylling'),salat:r=>r.tags.includes('salat')||r.subcat==='salat'},
   dessert:{chokolade:r=>r.tags.includes('chokolade'),let:r=>r.tags.includes('let-d')},
   suppe:{kraftig:r=>r.tags.includes('kraftig'),let:r=>r.tags.includes('let-s')},
   bagværk:{brød:r=>r.tags.includes('brød'),sødt:r=>r.tags.includes('sødt')},
@@ -5904,7 +5929,7 @@ let rfUploadedImg=null;
 const RF_SUBCATS={
   morgenmad:[{v:'æg',l:'Klassisk morgenmad'},{v:'brød-morgen',l:'Brunch'},{v:'sund-morgen',l:'Sund morgen'}],
   frokost:[{v:'salat',l:'Salat og grønt'},{v:'sandwich',l:'Sandwich'},{v:'madpakke',l:'Madpakke'},{v:'mealprep',l:'Meal prep'}],
-  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'forret',l:'Forret'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'vegetar',l:'Salat og grønt'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'suppe-aften',l:'Suppe'}],
+  aftensmad:[{v:'hverdagsret',l:'Hverdagsretter'},{v:'forret',l:'Forret'},{v:'kød',l:'Kød'},{v:'fisk',l:'Fra havet'},{v:'groent',l:'Salat og grønt'},{v:'pasta',l:'Pasta'},{v:'kartofler',l:'Kartofler'},{v:'suppe-aften',l:'Suppe'}],
   dessert:[{v:'kager',l:'Kager'},{v:'tærter',l:'Tærter'},{v:'is',l:'Koldt'}],
   snacks:[{v:'sund',l:'Grønne flexer'},{v:'sød-snack',l:'Sødt'},{v:'salt',l:'Salt-crush'},{v:'dip',l:'Filmaften'}],
   drikkevarer:[{v:'smoothie',l:'Smoothie og juice'},{v:'kaffe',l:'Kaffepause'},{v:'te',l:'Varme drikke'},{v:'mocktail',l:'Alkoholfri'},{v:'cocktail',l:'Cocktails'}],
@@ -6707,7 +6732,7 @@ function exportPDF(){
   const shopHTML=shopItems.length?'<h2>Indkøbsliste</h2><div class="shop-col">'+
     shopItems.map(i=>'<div class="shop-item">&#9744; '+(i.qty>0?i.qty+(i.unit?' '+i.unit:''):'')+' '+i.name+'</div>').join('')+'</div>':'';
 
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>DailyPlate \u2013 Ugeplan</title>'+
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Meals with Clara \u2013 Ugeplan</title>'+
     '<style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;color:#222;font-size:13pt}'+
     'h1{font-size:22pt;font-weight:400;margin-bottom:4px}p{color:#666;font-size:10pt;margin-bottom:24px}'+
     'h2{font-size:14pt;font-weight:400;margin:24px 0 12px;border-bottom:1px solid #ddd;padding-bottom:6px}'+
@@ -6717,7 +6742,7 @@ function exportPDF(){
     'td:first-child{font-weight:600;color:#555;width:80px}'+
     '.shop-col{columns:3;column-gap:24px}.shop-item{font-size:10pt;padding:3px 0;break-inside:avoid}'+
     '@media print{body{margin:20px}}</style></head><body>'+
-    '<h1>DailyPlate \u2014 Ugeplan</h1>'+
+    '<h1>Meals with Clara \u2014 Ugeplan</h1>'+
     '<p>'+fmt(weekDates[0])+' \u2013 '+fmt(weekDates[6])+'</p>'+
     '<h2>M\xe5ltider</h2>'+
     '<table><thead><tr><th>Dag</th><th>Morgenmad</th><th>Frokost</th><th>Aftensmad</th><th>Snack</th><th>Dessert</th><th>Drik</th></tr></thead>'+
@@ -7982,7 +8007,7 @@ function swipeAction(action){
       saved.add(String(rid));
       persist();
       updateBadges();
-      if(currentUser?.sbId) { try { syncFavToCloud(String(rid), true); } catch(e){} }
+      if(currentUser?.sbId) { try { saveFavoriteToCloud(String(rid), true); } catch(e){ console.error('Cloud sync failed:', e); } }
       toast('❤️ Gemt som favorit','ok');
     }
   } else {
