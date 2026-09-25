@@ -7832,7 +7832,7 @@ function swipeSetCat(cat){
 function swipeBuildQueue(){
   const all = allRecipes();
   swipeQueue = all.filter(r => {
-    if(saved.has(String(r.id))) return false;
+    // Only exclude ones skipped this session — keep saved ones so all recipes always appear
     if(swipeSkipped.has(String(r.id))) return false;
     // Category filter — match both primary cat and secondary cat2
     if(swipeCat !== 'all' && r.cat !== swipeCat && r.cat2 !== swipeCat) return false;
