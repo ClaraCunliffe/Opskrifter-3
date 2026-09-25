@@ -57,7 +57,13 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
 .filters select{background:#fff;border:1px solid var(--bor);border-radius:8px;padding:.42rem .7rem;font-family:'Inter',sans-serif;font-size:.82rem;color:var(--txt);outline:none;cursor:pointer}
 
 .rlist{display:flex;flex-direction:column;gap:.4rem}
-.rrow{background:#fff;border:1px solid var(--bor);border-radius:10px;display:flex;align-items:center;gap:.85rem;padding:.7rem 1rem;cursor:pointer;transition:border-color .15s}
+.rrow{background:#fff;border:1px solid var(--bor);border-radius:10px;display:flex;align-items:center;gap:.85rem;padding:.7rem 1rem;cursor:pointer;transition:all .15s}
+.rrow.draggable{cursor:grab}
+.rrow.dragging{opacity:.4;background:#F5F0FA}
+.rrow.drag-over{border-color:var(--acc);border-width:2px;background:#FAF6FE;transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,167,.15)}
+.rdrag-handle{color:var(--txt3);font-size:1rem;padding:0 .3rem;cursor:grab;user-select:none;letter-spacing:-2px;flex-shrink:0;font-weight:700;line-height:1}
+.rdrag-handle:hover{color:var(--acc)}
+.rrow.dragging .rdrag-handle{cursor:grabbing}
 .rrow:hover{border-color:var(--acc2);background:var(--sur2)}
 .rdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .rorder{display:flex;flex-direction:column;gap:.15rem;flex-shrink:0}
@@ -571,7 +577,7 @@ async function goMain(email){
 // LOAD — exclude img_url from list fetch for speed (images are huge base64 strings)
 async function load(){
   document.getElementById('rlist').innerHTML='<div class="loading">Henter opskrifter…</div>';
-  const selectCols = 'id,title,cat,cat2,lbl,diff,tid,pers,beskrivelse,ing,steps,tags,allergy,bg,kcal,protein,carbs,fat,created_at';
+  const selectCols = 'id,title,cat,cat2,lbl,diff,tid,pers,beskrivelse,ing,steps,tags,allergy,bg,kcal,protein,carbs,fat,created_at,img_url';
   const r=await sb('/rest/v1/public_opskrifter?order=created_at.desc&select='+selectCols);
   if(!r.ok){document.getElementById('rlist').innerHTML=`<div class="empty">Fejl: ${JSON.stringify(r.data)}</div>`;return;}
   recipes=r.data||[];
@@ -884,14 +890,15 @@ function renderList(){
   if(q)list=list.filter(r=>r.title.toLowerCase().includes(q)||(r.beskrivelse||'').toLowerCase().includes(q));
   if(cat)list=list.filter(r=>r.cat===cat);
   if(!list.length){document.getElementById('rlist').innerHTML='<div class="empty">Ingen opskrifter.</div>';return;}
+  const dragEnabled = !q && !cat; // only allow drag when unfiltered
   document.getElementById('rlist').innerHTML=list.map((r,i)=>`
-    <div class="rrow" onclick="openModal('${r.id}')">
-      <div class="rorder">
+    <div class="rrow ${dragEnabled?'draggable':''}" data-rid="${r.id}" ${dragEnabled?`draggable="true" ondragstart="handleDragStart(event,'${r.id}')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event,'${r.id}')" ondragend="handleDragEnd(event)"`:''} onclick="openModal('${r.id}')">
+      ${dragEnabled ? `<div class="rdrag-handle" onclick="event.stopPropagation()" title="Træk for at flytte">⋮⋮</div>` : `<div class="rorder">
         <button class="rord-btn" onclick="event.stopPropagation();moveRecipe('${r.id}',-1)" ${i===0?'disabled':''} title="Flyt op">↑</button>
         <button class="rord-btn" onclick="event.stopPropagation();moveRecipe('${r.id}',1)" ${i===list.length-1?'disabled':''} title="Flyt ned">↓</button>
-      </div>
+      </div>`}
       <div class="rdot" style="background:${CATS[r.cat]||'#ccc'}"></div>
-      <div style="width:44px;height:44px;border-radius:6px;flex-shrink:0;background:${r.bg||'linear-gradient(160deg,#F2EEF6,#D8C4E8)'}"></div>
+      ${r.img_url ? `<img src="${r.img_url}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0" loading="lazy">` : `<div style="width:44px;height:44px;border-radius:6px;flex-shrink:0;background:${r.bg||'linear-gradient(160deg,#F2EEF6,#D8C4E8)'}"></div>`}
       <div class="rinfo">
         <div class="rtitle">${r.title}</div>
         <div class="rmeta">${CLBLS[r.cat]||r.cat} · ${r.diff} · ${r.tid||'–'}</div>
@@ -900,6 +907,71 @@ function renderList(){
       <span class="rbadge">${(r.steps||[]).length} trin</span>
       <button class="btn" onclick="event.stopPropagation();openModal('${r.id}')" style="flex-shrink:0;font-size:.75rem;padding:.35rem .8rem">Rediger</button>
     </div>`).join('');
+}
+
+// ── DRAG & DROP REORDERING ───────────────────────
+let draggedRid = null;
+
+function handleDragStart(e, rid){
+  draggedRid = rid;
+  e.dataTransfer.effectAllowed = 'move';
+  e.target.classList.add('dragging');
+}
+
+function handleDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const row = e.currentTarget;
+  if(row.dataset.rid !== draggedRid){
+    row.classList.add('drag-over');
+  }
+}
+
+function handleDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDragEnd(e){
+  document.querySelectorAll('.dragging').forEach(el => el.classList.remove('dragging'));
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+
+async function handleDrop(e, targetRid){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!draggedRid || draggedRid === targetRid) return;
+
+  const dragged = recipes.find(r => String(r.id) === String(draggedRid));
+  const target = recipes.find(r => String(r.id) === String(targetRid));
+  if(!dragged || !target) return;
+
+  // Swap their created_at timestamps to change order
+  const draggedTime = dragged.created_at;
+  const targetTime = target.created_at;
+
+  toast('Flytter…', 'ok');
+  try {
+    await Promise.all([
+      sb(`/rest/v1/public_opskrifter?id=eq.${draggedRid}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ created_at: targetTime })
+      }),
+      sb(`/rest/v1/public_opskrifter?id=eq.${targetRid}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ created_at: draggedTime })
+      })
+    ]);
+    // Update local state and re-render
+    dragged.created_at = targetTime;
+    target.created_at = draggedTime;
+    recipes.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    renderList();
+    toast('Rækkefølge opdateret ✓', 'ok');
+  } catch(err){
+    console.error(err);
+    toast('Fejl ved flytning', 'err');
+  }
+  draggedRid = null;
 }
 
 async function moveRecipe(rid, direction){
