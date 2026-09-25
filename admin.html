@@ -277,8 +277,8 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
         <div class="field"><label>Tilberedningstid</label><input type="text" id="ef-time" placeholder="F.eks. 30 min"></div>
         <div class="field"><label>Portioner</label><input type="text" id="ef-pers" placeholder="F.eks. 4 pers."></div>
       </div>
-      <!-- Beskrivelse -->
-      <div class="field"><label>Kort beskrivelse</label><input type="text" id="ef-desc" placeholder="En sætning om retten…"></div>
+      <!-- Hidden field kept for backward compatibility (form still reads this) -->
+      <input type="hidden" id="ef-desc" value="">
       <!-- Næringsindhold (manuelt) -->
       <div class="field">
         <label>Næringsindhold per portion <span style="font-weight:400;text-transform:none;letter-spacing:0">(valgfri — overskriver automatisk beregning)</span></label>
