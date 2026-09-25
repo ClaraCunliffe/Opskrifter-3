@@ -1536,6 +1536,10 @@ header{background:rgba(255,255,255,.93);backdrop-filter:blur(20px);border-bottom
         <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
         Mine
       </button>
+      <button class="bsm bsm-friends" id="btn-friends" onclick="requireLogin(()=&gt;switchMenu('friends'))">
+        <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 11h-6M22 8v6"></path></svg>
+        Venner
+      </button>
       <button class="bsm bsm-cal" onclick="requireLogin(()=&gt;switchMenu('ugeplan'))">
         <svg width="14" height="14" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
         Kalender
@@ -2018,6 +2022,51 @@ Bag i 25 minutter.
         <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
         Gem opskrift
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- VENNER -->
+<div id="view-friends" class="view">
+  <div class="mine-hero">
+    <div class="mine-hero-inner">
+      <div class="mine-tag">
+        <svg width="12" height="12" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 11h-6M22 8v6"></path></svg>
+        Venner
+      </div>
+      <h2 class="mine-title">Dine <em>venners</em> opskrifter</h2>
+      <p class="mine-sub">Del din delelink med dine venner og se hinandens hjemmelavede opskrifter.</p>
+    </div>
+    <div style="display:flex;gap:.6rem">
+      <button class="mine-add-hero-btn" style="background:var(--surface2);color:var(--text2);border-color:var(--border)" onclick="openMyShareLink()">
+        <svg width="13" height="13" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        Del min profil
+      </button>
+    </div>
+  </div>
+  <div class="page" style="padding-top:2rem">
+    <div id="friendsListContainer">
+      <div style="text-align:center;padding:3rem 1rem;color:var(--text3)">
+        <div style="font-size:3rem;margin-bottom:1rem;opacity:.4">👥</div>
+        <div style="font-size:1rem;color:var(--text2);margin-bottom:.5rem">Ingen venner endnu</div>
+        <div style="font-size:.85rem;max-width:400px;margin:0 auto">Klik <strong>"Del min profil"</strong> for at få din delelink — send den til en ven, så de kan tilføje dig og se dine opskrifter.</div>
+      </div>
+    </div>
+    <div id="friendRecipesContainer" style="display:none"></div>
+  </div>
+</div>
+
+<!-- Share link modal -->
+<div id="shareLinkMo" class="share-modal" style="display:none;position:fixed;inset:0;background:rgba(20,10,30,.55);z-index:800;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--surface);border-radius:14px;padding:1.75rem;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(60,30,100,.25)">
+    <h3 style="font-family:'Fraunces',serif;font-weight:400;font-size:1.5rem;margin-bottom:.35rem">Del din profil</h3>
+    <p style="font-size:.82rem;color:var(--text3);margin-bottom:1.2rem">Send dette link til en ven, så kan de tilføje dig og se dine opskrifter.</p>
+    <div style="display:flex;gap:.5rem;margin-bottom:1.2rem">
+      <input type="text" id="shareLinkInput" readonly style="flex:1;padding:.6rem .8rem;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-family:'Inter',sans-serif;font-size:.8rem;color:var(--text2)">
+      <button onclick="copyShareLink()" style="padding:.6rem 1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer">Kopiér</button>
+    </div>
+    <div style="display:flex;justify-content:flex-end">
+      <button onclick="closeShareLinkModal()" style="padding:.55rem 1.2rem;background:none;border:1px solid var(--border);color:var(--text2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;cursor:pointer">Luk</button>
     </div>
   </div>
 </div>
@@ -4207,6 +4256,288 @@ async function loadPublicRecipes() {
 }
 
 // Load images in background chunks so the UI stays responsive
+// ── FRIENDS / SHARED PROFILES ───────────────────────
+let myShareId = null;
+let followedUsers = [];
+let currentFriendViewing = null; // {id, name, email} when viewing a friend
+
+async function ensureMyShareId(){
+  if(!currentUser?.sbId) return null;
+  if(myShareId) return myShareId;
+  try {
+    const r = await sbFetch(`/rest/v1/profiles?select=share_id&id=eq.${currentUser.sbId}`);
+    if(r.ok && r.data?.[0]?.share_id){
+      myShareId = r.data[0].share_id;
+      return myShareId;
+    }
+  } catch(e){ console.warn('Kunne ikke hente share_id:', e); }
+  return null;
+}
+
+async function openMyShareLink(){
+  if(!currentUser?.sbId){ requireLogin(openMyShareLink); return; }
+  const sid = await ensureMyShareId();
+  if(!sid){ toast('Kunne ikke hente delelink. Har du kørt SQL for profil-delingen?', 'err'); return; }
+  const url = `${location.origin}${location.pathname}?ven=${sid}`;
+  document.getElementById('shareLinkInput').value = url;
+  document.getElementById('shareLinkMo').style.display = 'flex';
+}
+
+function closeShareLinkModal(){
+  document.getElementById('shareLinkMo').style.display = 'none';
+}
+
+function copyShareLink(){
+  const inp = document.getElementById('shareLinkInput');
+  inp.select();
+  try {
+    navigator.clipboard.writeText(inp.value);
+    toast('Link kopieret ✓', 'ok');
+  } catch(e){
+    document.execCommand('copy');
+    toast('Link kopieret ✓', 'ok');
+  }
+}
+
+async function loadFollowedUsers(){
+  if(!currentUser?.sbId) return;
+  try {
+    const r = await sbFetch(`/rest/v1/followed_users?select=followed_id,added_at&follower_id=eq.${currentUser.sbId}`);
+    if(!r.ok || !r.data?.length){ followedUsers = []; return; }
+    // Fetch profile details for each followed user
+    const ids = r.data.map(f => `"${f.followed_id}"`).join(',');
+    const p = await sbFetch(`/rest/v1/profiles?select=id,email,full_name,display_name&id=in.(${ids})`);
+    if(p.ok && p.data){
+      followedUsers = r.data.map(f => {
+        const prof = p.data.find(x => x.id === f.followed_id);
+        return { id: f.followed_id, added_at: f.added_at, email: prof?.email, name: prof?.display_name || prof?.full_name || prof?.email };
+      });
+    }
+  } catch(e){ console.warn('Kunne ikke hente venner:', e); }
+}
+
+async function renderFriends(){
+  if(!currentUser?.sbId){ requireLogin(() => switchMenu('friends')); return; }
+
+  // Check if URL has ?ven= parameter — visiting a friend's profile
+  const params = new URLSearchParams(location.search);
+  const venShareId = params.get('ven');
+
+  if(venShareId){
+    await viewFriendProfile(venShareId);
+    return;
+  }
+
+  // Otherwise show list of followed friends
+  currentFriendViewing = null;
+  document.getElementById('friendRecipesContainer').style.display = 'none';
+  document.getElementById('friendsListContainer').style.display = '';
+
+  await loadFollowedUsers();
+  const container = document.getElementById('friendsListContainer');
+
+  if(followedUsers.length === 0){
+    container.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;color:var(--text3)">
+        <div style="font-size:3rem;margin-bottom:1rem;opacity:.4">👥</div>
+        <div style="font-size:1rem;color:var(--text2);margin-bottom:.5rem">Ingen venner endnu</div>
+        <div style="font-size:.85rem;max-width:400px;margin:0 auto">Klik <strong>"Del min profil"</strong> for at få din delelink — send den til en ven, så de kan tilføje dig og se dine opskrifter.<br><br>Har du fået en delelink? Klik på den for at tilføje personen som ven.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
+      ${followedUsers.map(u => {
+        const initials = (u.name || u.email || '?').split(/[\s@.]/).filter(Boolean).slice(0,2).map(s=>s[0].toUpperCase()).join('');
+        return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem;cursor:pointer;transition:all .15s" onclick="openFriendById('${u.id}')" onmouseover="this.style.borderColor='var(--accent2)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
+          <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.9rem">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-size:1.05rem;font-weight:400;font-style:italic;flex-shrink:0">${initials}</div>
+            <div style="min-width:0;flex:1">
+              <div style="font-size:.95rem;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.name}</div>
+              <div style="font-size:.72rem;color:var(--text3)">${u.email || ''}</div>
+            </div>
+          </div>
+          <button onclick="event.stopPropagation();unfollowUser('${u.id}')" style="width:100%;background:none;border:1px solid var(--border);color:var(--text3);padding:.45rem;border-radius:6px;font-family:'Inter',sans-serif;font-size:.75rem;cursor:pointer">Fjern ven</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+async function openFriendById(userId){
+  // View a followed user's recipes
+  const friend = followedUsers.find(u => u.id === userId);
+  if(!friend) return;
+  currentFriendViewing = friend;
+  await displayFriendRecipes(userId, friend.name);
+}
+
+async function viewFriendProfile(shareId){
+  // Someone opened a share link — look up user by share_id
+  try {
+    const r = await sbFetch(`/rest/v1/profiles?select=id,email,full_name,display_name&share_id=eq.${shareId}`);
+    if(!r.ok || !r.data?.length){
+      document.getElementById('friendsListContainer').innerHTML = `<div style="text-align:center;padding:3rem;color:var(--text3)">Delelinken er ugyldig eller udløbet.</div>`;
+      return;
+    }
+    const prof = r.data[0];
+    const friend = { id: prof.id, name: prof.display_name || prof.full_name || prof.email, email: prof.email };
+    currentFriendViewing = friend;
+
+    // Check if already following
+    await loadFollowedUsers();
+    const isFollowing = followedUsers.some(u => u.id === friend.id);
+    const isSelf = friend.id === currentUser?.sbId;
+
+    if(isSelf){
+      toast('Det er din egen profil ✓', 'ok');
+      // Clear the URL param
+      history.replaceState(null, '', location.pathname);
+      return renderFriends();
+    }
+
+    // Show a follow prompt + recipes
+    await displayFriendRecipes(friend.id, friend.name, !isFollowing);
+    // Clear URL param so refresh doesn't re-trigger
+    history.replaceState(null, '', location.pathname);
+  } catch(e){
+    console.error(e);
+    toast('Kunne ikke åbne delelink', 'err');
+  }
+}
+
+async function displayFriendRecipes(userId, name, offerFollow = false){
+  document.getElementById('friendsListContainer').style.display = 'none';
+  const container = document.getElementById('friendRecipesContainer');
+  container.style.display = '';
+  container.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--text3)">Henter ${name}s opskrifter…</div>`;
+
+  try {
+    const r = await sbFetch(`/rest/v1/opskrifter?select=*&user_id=eq.${userId}&order=created_at.desc`);
+    const recs = r.ok ? (r.data || []) : [];
+
+    const initials = (name || '?').split(/[\s@.]/).filter(Boolean).slice(0,2).map(s=>s[0].toUpperCase()).join('');
+
+    container.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Fraunces',serif;font-size:1.3rem;font-style:italic;flex-shrink:0">${initials}</div>
+          <div>
+            <div style="font-family:'Fraunces',serif;font-size:1.5rem;font-weight:300;color:var(--text)">${name}</div>
+            <div style="font-size:.82rem;color:var(--text3)">${recs.length} opskrift${recs.length===1?'':'er'}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          ${offerFollow ? `<button onclick="followUser('${userId}','${(name||'').replace(/'/g,"\\'")}')" style="padding:.55rem 1.1rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer">+ Tilføj som ven</button>` : ''}
+          <button onclick="backToFriendsList()" style="padding:.55rem 1.1rem;background:none;border:1px solid var(--border);color:var(--text2);border-radius:8px;font-family:'Inter',sans-serif;font-size:.82rem;cursor:pointer">← Tilbage</button>
+        </div>
+      </div>
+      ${recs.length === 0
+        ? `<div style="text-align:center;padding:3rem;color:var(--text3)">${name} har ikke oprettet nogen opskrifter endnu.</div>`
+        : `<div class="rgrid">${recs.map((r,i) => friendRecipeCard(r, i)).join('')}</div>`}`;
+  } catch(e){
+    console.error(e);
+    container.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--rose)">Fejl: ${e.message}</div>`;
+  }
+}
+
+function friendRecipeCard(r, i){
+  return `<div class="rc" style="animation-delay:${i*25}ms" onclick="openFriendRecipe('${r.id}',${JSON.stringify(r).replace(/"/g,'&quot;')})">
+    <div class="cimg" style="background:${r.bg||'linear-gradient(160deg,#F2EEF6,#D8C4E8)'}">
+      ${r.img_url ? `<img src="${r.img_url}" alt="${r.title}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0">` : ''}
+      <div class="cbadges">
+        <span class="cdiff">${r.diff||'Middel'}</span>
+        <span class="ccat-badge">${r.lbl||r.cat}</span>
+      </div>
+    </div>
+    <div class="cbody">
+      <div class="ctitle">${r.title}</div>
+      <div class="cmeta"><span>${r.tid||'–'}</span><span>${r.pers||'–'}</span></div>
+    </div>
+  </div>`;
+}
+
+function openFriendRecipe(rid, dataAttr){
+  // Just open panel — the recipe data is embedded in the card's data attr
+  // For simplicity, decode and add to a temp list, then open
+  try {
+    const r = typeof dataAttr === 'string' ? JSON.parse(dataAttr.replace(/&quot;/g,'"')) : dataAttr;
+    const recipe = {
+      id: r.id, title: r.title, cat: r.cat, lbl: r.lbl, diff: r.diff,
+      time: r.tid, pers: r.pers, desc: r.beskrivelse,
+      bg: r.bg || 'linear-gradient(160deg,#F2EEF6,#D8C4E8)',
+      img: r.img_url, ing: r.ing||[], steps: r.steps||[], tags: r.tags||[],
+      allergy: r.allergy||[], kcal: r.kcal, protein: r.protein, carbs: r.carbs, fat: r.fat,
+      friendOwned: true
+    };
+    // Ensure allRecipes finds it
+    if(!window._friendRecipes) window._friendRecipes = [];
+    if(!window._friendRecipes.find(x => x.id === r.id)){
+      window._friendRecipes.push(recipe);
+    }
+    openPanel(rid);
+  } catch(e){ console.error(e); toast('Kunne ikke åbne opskrift', 'err'); }
+}
+
+async function followUser(userId, name){
+  if(!currentUser?.sbId){ requireLogin(() => followUser(userId, name)); return; }
+  try {
+    const r = await sbFetch('/rest/v1/followed_users', {
+      method: 'POST',
+      body: JSON.stringify({ follower_id: currentUser.sbId, followed_id: userId })
+    });
+    if(r.ok || r.status === 201){
+      toast(`${name} er nu din ven ✓`, 'ok');
+      await loadFollowedUsers();
+      // Re-render to remove the "add friend" button
+      const friend = followedUsers.find(u => u.id === userId);
+      if(friend) currentFriendViewing = friend;
+      await displayFriendRecipes(userId, name, false);
+    } else {
+      toast('Kunne ikke tilføje ven', 'err');
+    }
+  } catch(e){
+    console.error(e);
+    toast('Fejl: ' + e.message, 'err');
+  }
+}
+
+async function unfollowUser(userId){
+  if(!confirm('Fjern denne ven?')) return;
+  try {
+    const r = await sbFetch(`/rest/v1/followed_users?follower_id=eq.${currentUser.sbId}&followed_id=eq.${userId}`, {
+      method: 'DELETE'
+    });
+    if(r.ok){
+      toast('Ven fjernet ✓', 'ok');
+      await loadFollowedUsers();
+      renderFriends();
+    }
+  } catch(e){ console.error(e); toast('Fejl: ' + e.message, 'err'); }
+}
+
+function backToFriendsList(){
+  currentFriendViewing = null;
+  renderFriends();
+}
+
+// Auto-check for ?ven= param on load and go straight to friends view
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(location.search);
+  if(params.get('ven')){
+    // Wait a bit for auth to load
+    setTimeout(() => {
+      if(currentUser?.sbId){
+        switchMenu('friends');
+      } else {
+        // Not logged in — save link and redirect after login
+        sessionStorage.setItem('pendingFriendLink', params.get('ven'));
+        toast('Log ind for at tilføje venner', 'ok');
+      }
+    }, 800);
+  }
+});
+
 async function syncUserRecipes() {
   if(!currentUser?.sbId) return;
   try {
@@ -4288,7 +4619,7 @@ let pSlot=null,pRid=null,panelRid=null;
 let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
 let selWeekStart=getMonday(new Date());
 
-function allRecipes(){return[...publicRecipes,...userRecipes];}
+function allRecipes(){return[...publicRecipes,...userRecipes,...(window._friendRecipes||[])];}
 function persistUser(){localStorage.setItem(userKey('sv_userrecipes'),JSON.stringify(userRecipes));}
 
 function loadPlan(){
@@ -4431,6 +4762,7 @@ function switchMenu(id,btn){
   else if(id==='mine')renderMine();
   else if(id==='guide'){/* static */}
   else if(id==='swipe'){swipeInit();}
+  else if(id==='friends'){renderFriends();}
   else renderGrid();
   updateBadges();updateHero();
 }
