@@ -182,6 +182,7 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
     <button class="admin-tab active" data-tab="recipes" onclick="switchAdminTab('recipes')">Opskrifter</button>
     <button class="admin-tab" data-tab="templates" onclick="switchAdminTab('templates')">Madplaner</button>
     <button class="admin-tab" data-tab="users" onclick="switchAdminTab('users')">Brugere</button>
+    <button class="admin-tab" data-tab="stats" onclick="switchAdminTab('stats')">Statistik</button>
   </div>
   
   <!-- RECIPES TAB -->
@@ -233,6 +234,38 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
       </select>
     </div>
     <div id="ulist"><div class="loading">Henter brugere…</div></div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div id="tab-stats" class="admin-tab-content">
+    <div class="stats" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat"><div class="sn" id="st-recipes">0</div><div class="sl">Opskrifter i alt</div></div>
+      <div class="stat"><div class="sn" id="st-users">0</div><div class="sl">Brugere i alt</div></div>
+      <div class="stat"><div class="sn" id="st-favorites">0</div><div class="sl">Favoritter (samlet)</div></div>
+      <div class="stat"><div class="sn" id="st-templates">0</div><div class="sl">Madplaner</div></div>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(4,1fr);margin-top:.7rem">
+      <div class="stat"><div class="sn" id="st-new-users-7d">0</div><div class="sl">Nye brugere (7 dage)</div></div>
+      <div class="stat"><div class="sn" id="st-new-users-30d">0</div><div class="sl">Nye brugere (30 dage)</div></div>
+      <div class="stat"><div class="sn" id="st-active">0</div><div class="sl">Aktive brugere</div></div>
+      <div class="stat"><div class="sn" id="st-avg-favs">0</div><div class="sl">Fav. pr. bruger (gns)</div></div>
+    </div>
+
+    <div style="margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:1.25rem">
+        <div style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2);margin-bottom:1rem">Mest populære opskrifter</div>
+        <div id="st-top-recipes"><div class="loading">Henter…</div></div>
+      </div>
+      <div style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:1.25rem">
+        <div style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2);margin-bottom:1rem">Fordeling pr. kategori</div>
+        <div id="st-cat-breakdown"><div class="loading">Henter…</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;background:var(--sur);border:1px solid var(--bor);border-radius:8px;padding:1.25rem">
+      <div style="font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--txt2);margin-bottom:1rem">Seneste 5 nye brugere</div>
+      <div id="st-recent-users"><div class="loading">Henter…</div></div>
+    </div>
   </div>
 </div>
 
@@ -590,6 +623,110 @@ function switchAdminTab(tab){
   document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-'+tab));
   if(tab === 'templates') loadTemplates();
   if(tab === 'users') loadUsers();
+  if(tab === 'stats') loadFullStats();
+}
+
+// ── FULL STATISTICS ────────────────────────────────
+async function loadFullStats(){
+  const CAT_LABELS_LOCAL = {morgenmad:'Morgenmad',frokost:'Frokost',aftensmad:'Aftensmad',dessert:'Dessert',snacks:'Snacks',drikkevarer:'Drikkevarer'};
+  try {
+    // Fetch users
+    const uResp = await sb('/rest/v1/profiles?select=id,email,full_name,created_at&order=created_at.desc&limit=1000', { headers: { 'Range': '0-999' } });
+    const users = uResp.ok ? (uResp.data || []) : [];
+
+    // Fetch favorites
+    const fResp = await sb('/rest/v1/favorites?select=user_id,recipe_id&limit=10000', { headers: { 'Range': '0-9999' } });
+    const favs = fResp.ok ? (fResp.data || []) : [];
+
+    // Fetch templates
+    const tResp = await sb('/rest/v1/madplan_templates?select=id&limit=1000', { headers: { 'Range': '0-999' } });
+    const tpls = tResp.ok ? (tResp.data || []) : [];
+
+    // Recipes are already loaded in `recipes` variable
+    const totalRecipes = recipes.length;
+
+    // Compute stats
+    const weekAgo = new Date(Date.now() - 7*24*60*60*1000);
+    const monthAgo = new Date(Date.now() - 30*24*60*60*1000);
+    const newUsers7d = users.filter(u => new Date(u.created_at) > weekAgo).length;
+    const newUsers30d = users.filter(u => new Date(u.created_at) > monthAgo).length;
+
+    const favByUser = {};
+    const favByRecipe = {};
+    favs.forEach(f => {
+      favByUser[f.user_id] = (favByUser[f.user_id] || 0) + 1;
+      favByRecipe[f.recipe_id] = (favByRecipe[f.recipe_id] || 0) + 1;
+    });
+    const activeUsers = Object.keys(favByUser).length;
+    const avgFavs = activeUsers ? (favs.length / activeUsers).toFixed(1) : '0';
+
+    // Fill top stats
+    document.getElementById('st-recipes').textContent = totalRecipes;
+    document.getElementById('st-users').textContent = users.length;
+    document.getElementById('st-favorites').textContent = favs.length;
+    document.getElementById('st-templates').textContent = tpls.length;
+    document.getElementById('st-new-users-7d').textContent = newUsers7d;
+    document.getElementById('st-new-users-30d').textContent = newUsers30d;
+    document.getElementById('st-active').textContent = activeUsers;
+    document.getElementById('st-avg-favs').textContent = avgFavs;
+
+    // Top recipes
+    const topRecipes = Object.entries(favByRecipe)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(([rid, count]) => {
+        const rec = recipes.find(r => String(r.id) === String(rid));
+        return { title: rec?.title || '(slettet)', cat: rec?.lbl || '', count };
+      });
+    document.getElementById('st-top-recipes').innerHTML = topRecipes.length
+      ? topRecipes.map((r,i) => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--bor);gap:.5rem">
+          <div style="display:flex;align-items:center;gap:.7rem;min-width:0;flex:1">
+            <span style="width:24px;height:24px;background:var(--acc-bg);color:var(--acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:600;flex-shrink:0">${i+1}</span>
+            <div style="min-width:0">
+              <div style="font-size:.85rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
+              <div style="font-size:.7rem;color:var(--txt3)">${r.cat}</div>
+            </div>
+          </div>
+          <span style="font-size:.85rem;font-weight:600;color:var(--acc);flex-shrink:0">${r.count} ♥</span>
+        </div>`).join('')
+      : '<div style="color:var(--txt3);font-size:.85rem">Ingen data endnu</div>';
+
+    // Category breakdown
+    const catCounts = {};
+    recipes.forEach(r => {
+      catCounts[r.cat] = (catCounts[r.cat] || 0) + 1;
+    });
+    const maxCat = Math.max(1, ...Object.values(catCounts));
+    document.getElementById('st-cat-breakdown').innerHTML = Object.entries(catCounts)
+      .sort((a,b) => b[1] - a[1])
+      .map(([cat, count]) => {
+        const pct = Math.round(count / totalRecipes * 100);
+        const barPct = count / maxCat * 100;
+        return `<div style="margin-bottom:.7rem">
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.25rem"><span style="color:var(--txt)">${CAT_LABELS_LOCAL[cat] || cat}</span><span style="color:var(--txt3)">${count} · ${pct}%</span></div>
+          <div style="height:8px;background:var(--acc-bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${barPct}%;background:var(--acc);transition:width .3s"></div></div>
+        </div>`;
+      }).join('') || '<div style="color:var(--txt3);font-size:.85rem">Ingen data</div>';
+
+    // Recent users
+    const recentUsers = users.slice(0, 5);
+    document.getElementById('st-recent-users').innerHTML = recentUsers.length
+      ? recentUsers.map(u => {
+        const created = new Date(u.created_at).toLocaleDateString('da-DK', {year:'numeric',month:'short',day:'numeric'});
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--bor)">
+          <div style="min-width:0;flex:1">
+            <div style="font-size:.85rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.email || '(ingen email)'}</div>
+            <div style="font-size:.7rem;color:var(--txt3)">${u.full_name || '—'}</div>
+          </div>
+          <div style="font-size:.75rem;color:var(--txt3);flex-shrink:0;margin-left:1rem">${created}</div>
+        </div>`;
+      }).join('')
+      : '<div style="color:var(--txt3);font-size:.85rem">Ingen brugere endnu</div>';
+
+  } catch(e){
+    console.error('Stats fejl:', e);
+  }
 }
 
 // ── USERS ──────────────────────────────────────────
