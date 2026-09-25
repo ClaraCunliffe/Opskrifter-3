@@ -181,6 +181,7 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
   <div class="admin-tabs">
     <button class="admin-tab active" data-tab="recipes" onclick="switchAdminTab('recipes')">Opskrifter</button>
     <button class="admin-tab" data-tab="templates" onclick="switchAdminTab('templates')">Madplaner</button>
+    <button class="admin-tab" data-tab="users" onclick="switchAdminTab('users')">Brugere</button>
   </div>
   
   <!-- RECIPES TAB -->
@@ -213,6 +214,25 @@ header{background:#fff;border-bottom:1px solid var(--bor);padding:.8rem 2rem;dis
     </div>
     <button class="new-btn" onclick="openTemplateModal(null)">+ Ny madplan</button>
     <div class="tlist" id="tlist"><div class="loading">Henter…</div></div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div id="tab-users" class="admin-tab-content">
+    <div class="stats">
+      <div class="stat"><div class="sn" id="s-users">0</div><div class="sl">Brugere i alt</div></div>
+      <div class="stat"><div class="sn" id="s-users-active">0</div><div class="sl">Aktive (favoritter)</div></div>
+      <div class="stat"><div class="sn" id="s-users-new">0</div><div class="sl">Nye seneste 7 dage</div></div>
+    </div>
+    <div class="filters">
+      <input type="text" id="u-search" placeholder="Søg efter email eller navn…" oninput="renderUsers()">
+      <select id="u-sort" onchange="renderUsers()">
+        <option value="newest">Nyeste først</option>
+        <option value="oldest">Ældste først</option>
+        <option value="active">Mest aktive</option>
+        <option value="email">Email A-Z</option>
+      </select>
+    </div>
+    <div id="ulist"><div class="loading">Henter brugere…</div></div>
   </div>
 </div>
 
@@ -569,6 +589,92 @@ function switchAdminTab(tab){
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-'+tab));
   if(tab === 'templates') loadTemplates();
+  if(tab === 'users') loadUsers();
+}
+
+// ── USERS ──────────────────────────────────────────
+let allUsers = [];
+let userFavCounts = {};
+
+async function loadUsers(){
+  document.getElementById('ulist').innerHTML = '<div class="loading">Henter brugere…</div>';
+  try {
+    // Fetch all users from profiles table
+    const r = await sb('/rest/v1/profiles?order=created_at.desc&limit=1000', {
+      headers: { 'Range': '0-999' }
+    });
+    if(!r.ok){
+      document.getElementById('ulist').innerHTML = `<div class="empty">Kunne ikke hente brugere. Har du kørt SQL for profiles-tabellen? Fejl: ${JSON.stringify(r.data)}</div>`;
+      return;
+    }
+    allUsers = r.data || [];
+
+    // Fetch favorite counts per user
+    const favResp = await sb('/rest/v1/favorites?select=user_id&limit=10000', {
+      headers: { 'Range': '0-9999' }
+    });
+    userFavCounts = {};
+    if(favResp.ok && favResp.data){
+      favResp.data.forEach(f => {
+        userFavCounts[f.user_id] = (userFavCounts[f.user_id] || 0) + 1;
+      });
+    }
+
+    // Update stats
+    document.getElementById('s-users').textContent = allUsers.length;
+    document.getElementById('s-users-active').textContent = Object.keys(userFavCounts).length;
+    const weekAgo = new Date(Date.now() - 7*24*60*60*1000);
+    document.getElementById('s-users-new').textContent = allUsers.filter(u => new Date(u.created_at) > weekAgo).length;
+
+    renderUsers();
+  } catch(e){
+    console.error(e);
+    document.getElementById('ulist').innerHTML = `<div class="empty">Fejl: ${e.message}</div>`;
+  }
+}
+
+function renderUsers(){
+  const q = (document.getElementById('u-search')?.value || '').toLowerCase();
+  const sort = document.getElementById('u-sort')?.value || 'newest';
+
+  let list = allUsers.filter(u => {
+    if(!q) return true;
+    return (u.email || '').toLowerCase().includes(q) || (u.full_name || '').toLowerCase().includes(q);
+  });
+
+  if(sort === 'newest') list.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  else if(sort === 'oldest') list.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+  else if(sort === 'active') list.sort((a,b) => (userFavCounts[b.id]||0) - (userFavCounts[a.id]||0));
+  else if(sort === 'email') list.sort((a,b) => (a.email||'').localeCompare(b.email||''));
+
+  const container = document.getElementById('ulist');
+  if(!list.length){
+    container.innerHTML = '<div class="empty">Ingen brugere fundet</div>';
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="background:var(--sur);border:1px solid var(--bor);border-radius:8px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;gap:1rem;padding:.75rem 1rem;background:#F8F6FB;border-bottom:1px solid var(--bor);font-size:.75rem;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.05em">
+        <div>Email</div>
+        <div>Navn</div>
+        <div>Oprettet</div>
+        <div style="text-align:right">Favoritter</div>
+      </div>
+      ${list.map(u => {
+        const email = u.email || '(ingen email)';
+        const name = u.full_name || '—';
+        const created = u.created_at ? new Date(u.created_at).toLocaleDateString('da-DK', {year:'numeric',month:'short',day:'numeric'}) : '—';
+        const favCount = userFavCounts[u.id] || 0;
+        return `<div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr;gap:1rem;padding:.75rem 1rem;border-bottom:1px solid var(--bor);align-items:center;font-size:.85rem">
+          <div style="color:var(--txt);word-break:break-all">${email}</div>
+          <div style="color:var(--txt2)">${name}</div>
+          <div style="color:var(--txt3);font-size:.8rem">${created}</div>
+          <div style="text-align:right;color:${favCount>0?'var(--acc)':'var(--txt3)'};font-weight:${favCount>0?'600':'400'}">${favCount}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
 }
 
 async function loadTemplates(){
