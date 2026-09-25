@@ -4256,7 +4256,16 @@ let currentUser=null;
 let publicRecipes=[];
 function userKey(k){return currentUser?.sbId?'dp_'+currentUser.sbId+'_'+k:k;}
 
-let saved=new Set(JSON.parse(localStorage.getItem(userKey('sv_saved'))||'[]'));
+// Favorites are only kept when logged in — otherwise start empty
+let saved = new Set();
+try {
+  const stored = localStorage.getItem(userKey('sv_saved'));
+  if(stored && currentUser?.sbId) saved = new Set(JSON.parse(stored));
+} catch(e){}
+// Clean up any stale fallback-key data (from before user-scoped keys were used)
+if(!currentUser?.sbId){
+  try { localStorage.removeItem('sv_saved'); } catch(e){}
+}
 let plan=loadPlan();
 let slotRoles = {};
 let fridgeItems=JSON.parse(localStorage.getItem(userKey('sv_fridge'))||'[]');
