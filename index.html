@@ -444,7 +444,11 @@ body:has(#view-mine.active) #filterBar { display: none !important; }
 .panel{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--surface);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);box-shadow:-8px 0 48px rgba(80,50,120,.15);overflow:hidden}
 .panel.open{transform:translateX(0)}
 .phero{height:220px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.pbadges{position:absolute;top:1rem;left:1rem;right:3.5rem;display:flex;gap:.4rem;flex-wrap:wrap}
+.pbadges{position:absolute;top:1rem;left:1rem;display:flex;gap:.4rem}
+.p-tags-row{display:flex;flex-wrap:wrap;gap:.4rem;margin:-0.8rem 0 1.2rem}
+.p-tag-pill{display:inline-flex;align-items:center;gap:.35rem;background:#EEF3FA;border:1px solid #C7D9EB;color:#2C5A82;padding:.3rem .65rem;border-radius:100px;font-size:.68rem;font-weight:600;letter-spacing:.02em}
+.p-tag-pill.p-tag-allergy{background:#FBEEF1;border-color:#E5C4CE;color:#8B4A5B}
+.p-tag-pill svg{width:11px;height:11px;flex-shrink:0}
 .pbadge{background:rgba(255,255,255,.93);border:1px solid rgba(255,255,255,.5);border-radius:6px;padding:.2rem .65rem;font-size:.65rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text2)}
 .pclose{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.93);border:1px solid rgba(255,255,255,.5);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)}
 .pclose svg{width:16px;height:16px}
@@ -5377,36 +5381,9 @@ function renderPanelBody(id){
   } else {
     pCat2El.style.display = 'none';
   }
-  // Add diet and allergen badges next to MIDDEL/AFTENSMAD
-  const pbadges=document.querySelector('.pbadges');
-  // Remove old extra badges
-  pbadges.querySelectorAll('.p-extra-badge').forEach(b=>b.remove());
-  // Diet badges
-  const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};
-  const allTags=[...(rx(r.id).diet||[]),...(r.tags||[])];
-  Object.keys(dietMap).forEach(k=>{
-    if(allTags.includes(k)){
-      const b=document.createElement('span');
-      b.className='pbadge p-extra-badge';
-      b.style.cssText='background:#D6E8F5;border-color:#4A8AB5;color:#1E5380;font-weight:700';
-      b.textContent=dietMap[k];
-      pbadges.appendChild(b);
-    }
-  });
-  // Allergen badge (from explicit allergy field + detected from NUTR_DB)
-  const allerSet=new Set(r.allergy||[]);
-  (r.ing||[]).forEach(ing=>{
-    const name=ing.replace(/^[\d\s\/.,½¼¾]+\s*(g|kg|ml|l|dl|tsk|spsk|stk|fed|cm|bundt|dåse|pose)?\s*/i,'').split(',')[0].trim().toLowerCase();
-    const nutr=lookupNutr(name);
-    if(nutr)(nutr.allergens||[]).forEach(a=>allerSet.add(a));
-  });
-  if(allerSet.size){
-    const b=document.createElement('span');
-    b.className='pbadge p-extra-badge';
-    b.style.cssText='background:#FAF0F3;border-color:#B5667A;color:#9B4858;font-weight:700';
-    b.textContent='⚠ '+[...allerSet].join(', ');
-    pbadges.appendChild(b);
-  }
+  // Clean up any old badges (from previous implementation)
+  document.querySelectorAll('.p-extra-badge').forEach(b=>b.remove());
+  // Diet + allergen badges are now built as HTML and inserted into pBody below
   // Scale ingredients
   function scaleIng(ing){
     // Handle: single number ("150g"), range ("800-1000g"), decimal ("0.5"), fraction ("1/2")
@@ -5474,9 +5451,26 @@ function renderPanelBody(id){
     .join('');
   const ovnHTML = ovnPills ? `<div class="ovn-row"><div class="ovn-lbl">Ovnindstilling</div><div class="ovn-pills">${ovnPills}</div></div>` : '';
 
+  // Build diet + allergy pills for the panel body
+  const dietMap={vegetar:'Vegetar',vegansk:'Vegansk',pesketar:'Pesketar',glutenfri:'Glutenfri',laktosefri:'Laktosefri',antiinflammatorisk:'Anti-inflam.',keto:'Keto','lavt-kulhydrat':'Lavt kulh.','hjøt-protein':'Højt protein'};
+  const allTags=[...(rx(r.id).diet||[]),...(r.tags||[])];
+  const dietPillsHTML = Object.keys(dietMap).filter(k=>allTags.includes(k)).map(k=>
+    `<span class="p-tag-pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${dietMap[k]}</span>`
+  ).join('');
+  const allerSet=new Set(r.allergy||[]);
+  (r.ing||[]).forEach(ing=>{
+    const name=ing.replace(/^[\d\s\/.,½¼¾]+\s*(g|kg|ml|l|dl|tsk|spsk|stk|fed|cm|bundt|dåse|pose)?\s*/i,'').split(',')[0].trim().toLowerCase();
+    const nutr=lookupNutr(name);
+    if(nutr)(nutr.allergens||[]).forEach(a=>allerSet.add(a));
+  });
+  const allerHTML = allerSet.size ?
+    `<span class="p-tag-pill p-tag-allergy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Indeholder: ${[...allerSet].join(', ')}</span>` : '';
+  const tagsRowHTML = (dietPillsHTML || allerHTML) ? `<div class="p-tags-row">${dietPillsHTML}${allerHTML}</div>` : '';
+
   document.getElementById('pBody').innerHTML=`
     <div class="pcat">${(()=>{const s=getRecipeSubcat(r);return s||r.lbl;})()}</div>
     <div class="ptitle">${r.title}</div>
+    ${tagsRowHTML}
     <div class="pdesc">${r.desc}</div>
     <div class="pmeta-row">
       <div class="pmi"><div class="pmiv">${r.time}</div><div class="pmil">Tid</div></div>
