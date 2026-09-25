@@ -7834,11 +7834,12 @@ function swipeBuildQueue(){
   swipeQueue = all.filter(r => {
     if(saved.has(String(r.id))) return false;
     if(swipeSkipped.has(String(r.id))) return false;
-    if(swipeCat !== 'all' && r.cat !== swipeCat) return false;
+    // Category filter — match both primary cat and secondary cat2
+    if(swipeCat !== 'all' && r.cat !== swipeCat && r.cat2 !== swipeCat) return false;
     return true;
   });
   swipeQueue.sort(() => Math.random() - 0.5);
-  console.log(`Swipe queue built: ${swipeQueue.length} recipes (category: ${swipeCat}, total: ${all.length}, saved: ${saved.size})`);
+  console.log(`Swipe queue built: ${swipeQueue.length} recipes (category: ${swipeCat}, total: ${all.length}, saved: ${saved.size}, skipped: ${swipeSkipped.size})`);
 }
 
 function swipeRenderStack(){
