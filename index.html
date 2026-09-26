@@ -3894,16 +3894,48 @@ function getRecipeSubcat(r) {
   return null;
 }
 
-const SUBCATS={
-  morgenmad:{hurtig:r=>r.tags.includes('hurtig'),weekend:r=>r.tags.includes('weekend')},
-  frokost:{'smørrebrød':r=>r.tags.includes('smørrebrød'),salat:r=>r.tags.includes('salat')||r.subcat==='salat'},
-  aftensmad:{pasta:r=>r.tags.includes('pasta'),asiatisk:r=>r.tags.includes('asiatisk'),groent:r=>r.tags.includes('groent')||r.tags.includes('vegetar'),kylling:r=>r.tags.includes('kylling'),salat:r=>r.tags.includes('salat')||r.subcat==='salat'},
-  dessert:{chokolade:r=>r.tags.includes('chokolade'),let:r=>r.tags.includes('let-d')},
-  suppe:{kraftig:r=>r.tags.includes('kraftig'),let:r=>r.tags.includes('let-s')},
-  bagværk:{brød:r=>r.tags.includes('brød'),sødt:r=>r.tags.includes('sødt')},
-  snacks:{sund:r=>r.tags.includes('sund'),fest:r=>r.tags.includes('fest')},
-  drikkevarer:{varm:r=>r.tags.includes('varm'),kold:r=>r.tags.includes('kold'),smoothie:r=>r.tags.includes('smoothie')}
+// Generic tag-based matcher — a recipe belongs to a subcategory if its tags include the subcat slug
+// (This is what admin's saveRecipe stores when a subcategory is selected)
+function makeSubcatMatcher(slug){
+  return r => (r.tags||[]).includes(slug);
+}
+
+// Build SUBCATS dynamically from the nav menu structure
+const SUBCATS = {
+  morgenmad: {},
+  frokost: {},
+  aftensmad: {},
+  dessert: {},
+  suppe: {},
+  bagværk: {},
+  snacks: {},
+  drikkevarer: {}
 };
+// Populate every category's subcat filters from RF_SUBCATS if available, otherwise fall back
+['morgenmad','frokost','aftensmad','dessert','suppe','bagværk','snacks','drikkevarer'].forEach(cat => {
+  // These slugs are used in the nav menu across all categories
+  const knownSlugs = [
+    // morgenmad
+    'æg','brød-morgen','sund-morgen','hurtig-morgen','grød',
+    // frokost
+    'salat','sandwich','madpakke','mealprep','hurtig-frokost','sund-frokost','smørrebrød','bowl','varm-frokost','sandwich','suppe-frokost',
+    // aftensmad
+    'hverdagsret','forret','kød','fisk','vegetar','groent','pasta','kartofler','gryde','suppe-aften','familie','weekend-aften','asiatisk','kylling','verden','sides','salat-aften','ovn','tinderdate',
+    // dessert
+    'kager','tærter','is','chokolade','frugt','nem-dessert','fest-dessert','sund-dessert','klassisk','creme','småkager','saucer',
+    // snacks
+    'sød-snack','salt','dip','brød-snack','protein-snack','fest-snack','børn','hurtig-snack','sund','grønt-snack',
+    // drikkevarer
+    'smoothie','kaffe','te','lemonade','mocktail','cocktail','juice','milkshake','mad-drik','sund-drik','varm','kold'
+  ];
+  knownSlugs.forEach(slug => {
+    SUBCATS[cat][slug] = makeSubcatMatcher(slug);
+  });
+});
+// Special cases: salat/vegetar are used in multiple categories with tag OR subcat field
+SUBCATS.frokost.salat = r => (r.tags||[]).includes('salat') || r.subcat==='salat';
+SUBCATS.aftensmad.groent = r => (r.tags||[]).includes('groent') || (r.tags||[]).includes('vegetar');
+SUBCATS.aftensmad.salat = r => (r.tags||[]).includes('salat') || r.subcat==='salat';
 const RECIPES=[
   {id:1,title:"Cremet citronspaghetti med spinat",cat:"aftensmad",lbl:"Aftensmad",desc:"Silkeblød pasta med frisk citron og cremefraiche – klar på 20 minutter.",bg:"linear-gradient(160deg,#FDF8E8,#F4ECC0)",time:"20 min",pers:"4 pers.",diff:"Let",tags:['pasta','vegetar','hurtig'],
    ing:["400 g spaghetti","2 citroner, skal og saft","200 ml cremefraiche 18%","200 g frisk spinat","80 g parmesan, revet","3 fed hvidløg","30 g smør","Salt og peber"],
