@@ -3894,47 +3894,42 @@ function getRecipeSubcat(r) {
   return null;
 }
 
-// Generic tag-based matcher — a recipe belongs to a subcategory if its tags include the subcat slug
-// (This is what admin's saveRecipe stores when a subcategory is selected)
+// Tags that are DIET/ALLERGY/OVEN-related — must be excluded from subcategory matching
+// Otherwise recipes matching diet criteria show up under wrong subcategories
+const NON_SUBCAT_TAGS = new Set([
+  'vegetar','vegansk','pesketar','glutenfri','laktosefri','antiinflammatorisk','keto','lavt-kulhydrat','hjøt-protein','højt-protein',
+  'gluten','laktose','æg','nødder','jordnødder','soja','fisk','skaldyr','sesam','sennep','svovldioxid'
+]);
+
+// Per-category valid subcategory slugs (only these count for filtering)
+const CATEGORY_SUBCAT_SLUGS = {
+  morgenmad: ['æg','brød-morgen','sund-morgen','hurtig-morgen','grød'],
+  frokost: ['salat','sandwich','madpakke','mealprep','hurtig-frokost','sund-frokost','smørrebrød','bowl','varm-frokost','suppe-frokost'],
+  aftensmad: ['hverdagsret','forret','kød','fisk','groent','pasta','kartofler','gryde','suppe-aften','familie','weekend-aften','asiatisk','kylling','verden','sides','salat-aften','ovn','tinderdate'],
+  dessert: ['kager','tærter','is','chokolade','frugt','nem-dessert','fest-dessert','sund-dessert','klassisk','creme','småkager','saucer'],
+  suppe: ['kraftig','let-s'],
+  bagværk: ['brød','sødt'],
+  snacks: ['sød-snack','salt','dip','brød-snack','protein-snack','fest-snack','børn','hurtig-snack','grønt-snack'],
+  drikkevarer: ['smoothie','kaffe','te','lemonade','mocktail','cocktail','juice','milkshake','mad-drik','sund-drik','varm','kold']
+};
+
+// Strict matcher — only matches when the specific slug is present as a tag
 function makeSubcatMatcher(slug){
   return r => (r.tags||[]).includes(slug);
 }
 
-// Build SUBCATS dynamically from the nav menu structure
-const SUBCATS = {
-  morgenmad: {},
-  frokost: {},
-  aftensmad: {},
-  dessert: {},
-  suppe: {},
-  bagværk: {},
-  snacks: {},
-  drikkevarer: {}
-};
-// Populate every category's subcat filters from RF_SUBCATS if available, otherwise fall back
-['morgenmad','frokost','aftensmad','dessert','suppe','bagværk','snacks','drikkevarer'].forEach(cat => {
-  // These slugs are used in the nav menu across all categories
-  const knownSlugs = [
-    // morgenmad
-    'æg','brød-morgen','sund-morgen','hurtig-morgen','grød',
-    // frokost
-    'salat','sandwich','madpakke','mealprep','hurtig-frokost','sund-frokost','smørrebrød','bowl','varm-frokost','sandwich','suppe-frokost',
-    // aftensmad
-    'hverdagsret','forret','kød','fisk','vegetar','groent','pasta','kartofler','gryde','suppe-aften','familie','weekend-aften','asiatisk','kylling','verden','sides','salat-aften','ovn','tinderdate',
-    // dessert
-    'kager','tærter','is','chokolade','frugt','nem-dessert','fest-dessert','sund-dessert','klassisk','creme','småkager','saucer',
-    // snacks
-    'sød-snack','salt','dip','brød-snack','protein-snack','fest-snack','børn','hurtig-snack','sund','grønt-snack',
-    // drikkevarer
-    'smoothie','kaffe','te','lemonade','mocktail','cocktail','juice','milkshake','mad-drik','sund-drik','varm','kold'
-  ];
-  knownSlugs.forEach(slug => {
-    SUBCATS[cat][slug] = makeSubcatMatcher(slug);
-  });
+const SUBCATS = {};
+Object.entries(CATEGORY_SUBCAT_SLUGS).forEach(([cat, slugs]) => {
+  SUBCATS[cat] = {};
+  slugs.forEach(slug => { SUBCATS[cat][slug] = makeSubcatMatcher(slug); });
 });
-// Special cases: salat/vegetar are used in multiple categories with tag OR subcat field
+
+// Special cases:
+// - Fisk (aftensmad) — has to match legacy 'fisk' tag but not the fisk-allergy tag
+//   In practice, aftensmad recipes with subcat 'fisk' will have 'fisk' in tags — no ambiguity within aftensmad
+SUBCATS.aftensmad.fisk = r => (r.tags||[]).includes('fisk') && r.cat === 'aftensmad';
+// - Frokost/salat and aftensmad/salat also check the r.subcat field for old data
 SUBCATS.frokost.salat = r => (r.tags||[]).includes('salat') || r.subcat==='salat';
-SUBCATS.aftensmad.groent = r => (r.tags||[]).includes('groent') || (r.tags||[]).includes('vegetar');
 SUBCATS.aftensmad.salat = r => (r.tags||[]).includes('salat') || r.subcat==='salat';
 const RECIPES=[
   {id:1,title:"Cremet citronspaghetti med spinat",cat:"aftensmad",lbl:"Aftensmad",desc:"Silkeblød pasta med frisk citron og cremefraiche – klar på 20 minutter.",bg:"linear-gradient(160deg,#FDF8E8,#F4ECC0)",time:"20 min",pers:"4 pers.",diff:"Let",tags:['pasta','vegetar','hurtig'],
